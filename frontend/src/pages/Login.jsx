@@ -144,6 +144,7 @@ const Login = () => {
                     {errors.password.message}
                   </p>
                 )}
+                <p className="w-full mt-2 block"><button className="text-blue-500 w-full">Forgot Password?</button></p>
 
                 <button
                   type="submit"
