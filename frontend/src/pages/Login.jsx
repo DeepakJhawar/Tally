@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const schema = yup.object().shape({
   email: yup.string().email("Invalid email").required(),
@@ -26,11 +26,13 @@ const Login = () => {
 
   const onSubmit = async (data) => {
     try {
-        const response = await axios.post('htttp://localhost:6969/signup', data);
-        if(response.data.status === "ok")
-            navigate('/dashboard');
-        else
-            alert("Login Unsuccessful. Please Try again.");
+        const response = await axios.post("http://localhost:6969/login", data, {
+            validateStatus: (status) => {
+              return status >= 200 && status < 500;
+            },
+          });
+      if (response.data.status === "ok") navigate("/dashboard");
+      else alert(response.data.message);
     } catch (error) {
       console.error(error);
     }
@@ -163,6 +165,7 @@ const Login = () => {
                 </button>
               </form>
             </div>
+            <p className="mt-3">Don't have an account? <Link to={'/signup'} className="text-blue-500">Sign up</Link></p>
           </div>
         </div>
         <div className="flex-1 bg-indigo-100 text-center hidden lg:flex">

@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const schema = yup.object().shape({
   username: yup.string().required("Username is required"),
@@ -25,17 +25,15 @@ const SignUp = () => {
   const navigate = useNavigate();
   const onSubmit = async (data) => {
     try {
-        const response = await axios.post('http://localhost:6969/signup', data,  {
-            validateStatus: (status) => {
-              return status >= 200 && status < 500;
-            },
-          });
-        if(response.data.status === "ok")
-            navigate('/dashboard');
-        else
-            alert("Signup Unsuccessful. Please Try again.");
+      const response = await axios.post("http://localhost:6969/signup", data, {
+        validateStatus: (status) => {
+          return status >= 200 && status < 500;
+        },
+      });
+      if (response.data.status === "ok") navigate("/dashboard");
+      else alert(response.data.message);
     } catch (error) {
-        console.error(error);
+      console.error(error);
     }
   };
 
@@ -51,11 +49,13 @@ const SignUp = () => {
                 <button
                   className="w-full max-w-xs font-bold shadow-sm rounded-lg py-3 bg-indigo-100 text-gray-800 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline"
                   onClick={async () => {
-                    const res = await axios.get('http://localhost:6969/auth/google');
-                    if(res.data.status === 'ok'){
-                        navigate("/dashboard");
-                    }else{
-                        alert("Login Failed. Please try again");
+                    const res = await axios.get(
+                      "http://localhost:6969/auth/google"
+                    );
+                    if (res.data.status === "ok") {
+                      navigate("/dashboard");
+                    } else {
+                      alert("Login Failed. Please try again");
                     }
                     return;
                   }}
@@ -176,6 +176,9 @@ const SignUp = () => {
                 </button>
               </form>
             </div>
+          <p className="mt-3">
+            Already Have an Account? <Link to={"/login"} className="text-blue-500">Login</Link>
+          </p>
           </div>
         </div>
         <div className="flex-1 bg-indigo-100 text-center hidden lg:flex">
