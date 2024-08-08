@@ -165,7 +165,7 @@ const Login = () => {
                 </button>
               </form>
             </div>
-            <p className="mt-3">Don't have an account? <Link to={'/signup'} className="text-blue-500">Sign up</Link></p>
+            <p className="mt-3  ">Don't have an account? <Link to={'/signup'} className="text-blue-500">Sign up</Link></p>
           </div>
         </div>
         <div className="flex-1 bg-indigo-100 text-center hidden lg:flex">
