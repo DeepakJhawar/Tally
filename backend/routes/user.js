@@ -4,7 +4,7 @@ import crypto from 'crypto';
 import bcrypt from 'bcrypt';
 import OAuth2Client from 'google-auth-library'
 
-import User from '../Models/User';
+import User from '../Models/user.js';
 
 const router = express.Router();
 
@@ -53,8 +53,8 @@ router.post('/signup', async (req, res) => {
 const transporter = nodemailer.createTransport({
     service: 'Gmail',
     auth: {
-      user: 'your_email@gmail.com', // Replace with your email
-      pass: 'your_email_password', // Replace with your email password
+      user: process.env.MAIL_ID, // Replace with your email
+      pass: process.env.MAIL_PASSWORD, // Replace with your email password
     },
   });
   
@@ -74,7 +74,7 @@ router.post('/forgot-password', async (req, res) => {
   
       // Set the reset token and expiration on the user document
       user.resetPasswordToken = resetTokenHash;
-      user.resetPasswordExpires = Date.now() + 3600000; // 1 hour from now
+      user.resetPasswordExpires = Date.now() + 180; // 3 mins from now
   
       await user.save();
   
@@ -133,7 +133,7 @@ router.post('/reset-password/:token', async (req, res) => {
 });
 
 
-const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+// const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 router.get('/auth/google', (req, res) => {
   const redirectUri = `https://accounts.google.com/o/oauth2/v2/auth?` +

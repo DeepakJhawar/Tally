@@ -3,6 +3,7 @@ import cors from 'cors';
 import mongoose from 'mongoose';
 import session from 'express-session';
 import dotenv from 'dotenv';
+import UserRoutes from "./routes/user.js";
 
 dotenv.config();
 
@@ -28,6 +29,8 @@ const connectDB = async () => {
     }
 };
 connectDB();
+
+app.use('/', UserRoutes);
 
 
 app.listen(PORT, ()=>{
