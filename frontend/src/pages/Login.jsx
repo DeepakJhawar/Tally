@@ -5,24 +5,13 @@ import * as yup from "yup";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const schema = yup
-  .object()
-  .shape({
-    username: yup.string(),
-    email: yup.string().email("Invalid email"),
-    password: yup
-      .string()
-      .min(6, "Password must be at least 6 characters")
-      .required("Password is required"),
-  })
-  .test(
-    "either-username-or-email",
-    "Either username or email is required",
-    function (value) {
-      const { username, email } = value;
-      return username || email;
-    }
-  );
+const schema = yup.object().shape({
+  email: yup.string().email("Invalid email").required(),
+  password: yup
+    .string()
+    .min(6, "Password must be at least 6 characters")
+    .required("Password is required"),
+});
 
 const Login = () => {
   const {
@@ -37,13 +26,15 @@ const Login = () => {
 
   const onSubmit = async (data) => {
     try {
-        const response = await axios.post('htttp://localhost:6969/signup', data);
-        if(response.data.status === "ok")
-            navigate('/dashboard');
-        else
-            alert("Login Unsuccessful. Please Try again.");
+        const response = await axios.post("http://localhost:6969/login", data, {
+            validateStatus: (status) => {
+              return status >= 200 && status < 500;
+            },
+          });
+      if (response.data.status === "ok") navigate("/dashboard");
+      else alert(response.data.message);
     } catch (error) {
-        console.error(error);
+      console.error(error);
     }
   };
 
@@ -52,18 +43,20 @@ const Login = () => {
       <div className="max-w-screen-xl m-0 sm:m-10 bg-white shadow sm:rounded-lg flex justify-center flex-1">
         <div className="lg:w-1/2 xl:w-5/12 p-6 sm:p-12">
           <div className="mt-12 flex flex-col items-center">
-            <h1 className="text-2xl xl:text-3xl font-extrabold">Sign up</h1>
+            <h1 className="text-2xl xl:text-3xl font-extrabold">Log In</h1>
             <div className="w-full flex-1 mt-8">
               <div className="flex flex-col items-center">
                 {/* Google Sign-In Button */}
                 <button
                   className="w-full max-w-xs font-bold shadow-sm rounded-lg py-3 bg-indigo-100 text-gray-800 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline"
                   onClick={async () => {
-                    const res = await axios.get('http://localhost:6969/auth/google');
-                    if(res.data.status === 'ok'){
-                        navigate("/dashboard");
-                    }else{
-                        alert("Login Failed. Please try again");
+                    const res = await axios.get(
+                      "http://localhost:6969/auth/google"
+                    );
+                    if (res.data.status === "ok") {
+                      navigate("/dashboard");
+                    } else {
+                      alert("Login Failed. Please try again");
                     }
                     return;
                   }}
@@ -129,15 +122,12 @@ const Login = () => {
                       : "border-gray-200"
                   } placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white`}
                   type="text"
-                  placeholder="Username or Email"
-                  {...register("username")}
+                  placeholder="Email"
                   {...register("email")}
                 />
                 {(errors.username || errors.email) && (
                   <p className="text-red-500 text-sm mt-1">
-                    {errors.username
-                      ? errors.username.message
-                      : errors.email.message}
+                    {errors.email.message}
                   </p>
                 )}
 

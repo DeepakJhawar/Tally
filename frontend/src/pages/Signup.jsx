@@ -25,7 +25,11 @@ const SignUp = () => {
   const navigate = useNavigate();
   const onSubmit = async (data) => {
     try {
-        const response = await axios.post('htttp://localhost:6969/signup', data);
+        const response = await axios.post('http://localhost:6969/signup', data,  {
+            validateStatus: (status) => {
+              return status >= 200 && status < 500;
+            },
+          });
         if(response.data.status === "ok")
             navigate('/dashboard');
         else
