@@ -37,7 +37,7 @@ const Login = () => {
 
   const onSubmit = async (data) => {
     try {
-        const response = await axios.post('htttp://localhost:6969/signup', data);
+        const response = await axios.post('http://localhost:6969/signup', data);
         if(response.data.status === "ok")
             navigate('/dashboard');
         else
