@@ -2,10 +2,12 @@ import express from 'express';
 import nodemailer from 'nodemailer';
 import crypto from 'crypto';
 import bcrypt from 'bcrypt';
-import OAuth2Client from 'google-auth-library'
+import {OAuth2Client} from 'google-auth-library'
+import dotenv from 'dotenv';
 
-import User from '../Models/user.js';
+import User from '../Models/User.js';
 
+dotenv.config();
 const router = express.Router();
 
 router.post("/login", async (req, res)=>{
@@ -13,13 +15,16 @@ router.post("/login", async (req, res)=>{
     try{
         const user = await User.findOne({ $or: [{ username } , { email }]});
         if(!user)
-            return res.status(400).json({message: 'User not found'});
+            return res.status(400).json({status: "unsucessful", message: 'User not found'});
         const isMatch = await bcrypt.compare(password, user.password);
         if(!isMatch)
-            return res.status(400).json({message: 'Incorrect Password'});
-        return res.status(200).json({message: 'Login Successful'});
+            return res.status(400).json({status: "unsucessful", message: 'Incorrect Password'});
+		
+		const userResponse = { ...user._doc };
+        delete userResponse.password;
+		return res.status(200).json({status: "ok", message: 'Login Successful', user: userResponse});
     }catch(err){
-        res.status(500).json({message: 'Internal Server Error'});
+        res.status(500).json({status: "unsucessful", message: 'Internal Server Error'});
     }
 })
 
@@ -43,8 +48,10 @@ router.post('/signup', async (req, res) => {
             password: hashedPassword,
         });
         await newUser.save();
-  
-        res.status(201).json({ message: 'User created successfully', user: newUser });
+
+		const userResponse = { ...newUser._doc };
+        delete userResponse.password;
+        res.status(201).json({ message: 'User created successfully', user: userResponse });
     } catch (error) {
         res.status(500).json({ message: 'Server error', error });
     }
@@ -56,6 +63,8 @@ const transporter = nodemailer.createTransport({
       user: process.env.MAIL_ID, // Replace with your email
       pass: process.env.MAIL_PASSWORD, // Replace with your email password
     },
+    logger: true, // Enable logging
+    debug: true, // Include SMTP traffic in logs
   });
   
 router.post('/forgot-password', async (req, res) => {
@@ -74,12 +83,12 @@ router.post('/forgot-password', async (req, res) => {
   
       // Set the reset token and expiration on the user document
       user.resetPasswordToken = resetTokenHash;
-      user.resetPasswordExpires = Date.now() + 180; // 3 mins from now
+      user.resetPasswordExpires = Date.now() + 180 * 1000; // 3 mins from now
   
       await user.save();
   
       // Send the reset token via email
-      const resetUrl = `http://localhost:6969/reset-password/${resetToken}`;
+      const resetUrl = `${process.env.BASE_URL}/reset-password/${resetToken}`;
       const message = `
         <h1>Password Reset</h1>
         <p>You requested a password reset. Please click on the following link to reset your password:</p>
@@ -105,7 +114,7 @@ router.post('/reset-password/:token', async (req, res) => {
     try {
         // Hash the token from the URL to match the one stored in the database
         const resetTokenHash = crypto.createHash('sha256').update(token).digest('hex');
-    
+        console.log(resetTokenHash);
         // Find the user by the reset token and ensure the token has not expired
         const user = await User.findOne({
             resetPasswordToken: resetTokenHash,
@@ -132,13 +141,16 @@ router.post('/reset-password/:token', async (req, res) => {
     }
 });
 
-
-// const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+const client = new OAuth2Client(
+	process.env.GOOGLE_CLIENT_ID,
+	process.env.GOOGLE_CLIENT_SECRET,
+	process.env.BASE_URL
+);
 
 router.get('/auth/google', (req, res) => {
   const redirectUri = `https://accounts.google.com/o/oauth2/v2/auth?` +
     `client_id=${process.env.GOOGLE_CLIENT_ID}&` +
-    `redirect_uri=${'http://localhost:3000/auth/google/callback'}&` +
+    `redirect_uri=${process.env.BASE_URL}/auth/google/callback&` +
     `response_type=code&` +
     `scope=profile email`;
 
@@ -153,7 +165,7 @@ router.get('/auth/google/callback', async (req, res) => {
     // Exchange the authorization code for tokens
     const { tokens } = await client.getToken({
       code,
-      redirect_uri: 'http://localhost:6969/auth/google/callback',
+      redirect_uri: `${process.env.BASE_URL}/auth/google/callback`,
       grant_type: 'authorization_code'
     });
 
@@ -165,16 +177,29 @@ router.get('/auth/google/callback', async (req, res) => {
       audience: process.env.GOOGLE_CLIENT_ID
     });
 
-    const payload = ticket.getPayload();
+    const { email } = ticket.getPayload();
 
     // Store user profile information
     req.session.user = payload;
 
-    res.redirect('/profile');
+    const existingUser = await User.findOne( {email } );
+    if (existingUser) {
+        return res.status(200).json({status: "ok", message: 'User already exists', user: existingUser });
+    }
+    else {
+		const newUser = new User({
+			username,
+            email,
+            password: "",
+		});
+		await newUser.save();
+		res.status(201).json({status: "ok", message: 'User created successfully', user: newUser });
+    }
+
   } catch (error) {
-    console.error('Error handling Google callback:', error);
-    res.redirect('/');
-  }
+		console.error('Error handling Google callback:', error);
+        return res.status(400).json({status: "unsucessful", message: 'Error handling Google callback' });
+  	}
 });
 
 // Profile route to show user information
