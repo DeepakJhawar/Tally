@@ -177,14 +177,16 @@ router.get('/auth/google/callback', async (req, res) => {
 			audience: process.env.GOOGLE_CLIENT_ID
 		});
 
-		const { email } = ticket.getPayload();
+		const payload = ticket.getPayload();
+		const { email } = payload;
 
 		// Store user profile information
 		req.session.user = payload;
 
 		const existingUser = await User.findOne({ email });
 		if (existingUser) {
-			return res.status(200).json({ status: "ok", message: 'User already exists', user: existingUser });
+			res.redirect(`${process.env.ORIGIN_URL}/dashboard`);
+			return;
 		}
 		else {
 			const newUser = new User({
@@ -193,12 +195,13 @@ router.get('/auth/google/callback', async (req, res) => {
 				password: "",
 			});
 			await newUser.save();
-			res.status(201).json({ status: "ok", message: 'User created successfully', user: newUser });
+			
+			res.redirect(`${process.env.ORIGIN_URL}/dashboard`);
 		}
-
+		
 	} catch (error) {
 		console.error('Error handling Google callback:', error);
-		return res.status(400).json({ status: "unsucessful", message: 'Error handling Google callback' });
+		res.redirect(`${process.env.ORIGIN_URL}/login`);
 	}
 });
 
