@@ -9,6 +9,8 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Problems from "./components/Problems";
 import Contest from "./components/Contest";
+import CodingArena from "./pages/CodingArena";
+import CodingPlayGround from "./pages/CodingPlayground";
 
 const darkTheme = createTheme({
   palette: {
@@ -37,6 +39,8 @@ function App() {
             <Route path="/problems" element={<Problems />} />
             <Route path="/contest" element={<Contest />} /> {/* Add Contest route */}
           </Route>
+          <Route path="/codingPlayground" element={<CodingPlayGround/>} />
+          <Route path="/codingArena" element={<CodingArena />}/>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/dashboard" element={<Dashboard />} />
