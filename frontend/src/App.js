@@ -11,6 +11,7 @@ import Problems from "./components/Problems";
 import Contest from "./components/Contest";
 import CodingArena from "./pages/CodingArena";
 import CodingPlayGround from "./pages/CodingPlayground";
+import Contribute from "./components/Contribute";
 
 const darkTheme = createTheme({
   palette: {
@@ -37,7 +38,8 @@ function App() {
           <Route path="/" element={<Home />}>
             <Route index element={<Problems />} />
             <Route path="/problems" element={<Problems />} />
-            <Route path="/contest" element={<Contest />} /> {/* Add Contest route */}
+            <Route path="/contest" element={<Contest />} /> 
+            <Route path="/contribute" element={<Contribute />}></Route>
           </Route>
           <Route path="/codingPlayground" element={<CodingPlayGround/>} />
           <Route path="/codingArena" element={<CodingArena />}/>
