@@ -39,7 +39,7 @@ const Navbar = () => {
           <Button
             color="inherit"
             component={Link}
-            to="/problems"
+            to="/"
             sx={{ marginLeft: 2 }}
           >
             Problems
