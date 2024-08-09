@@ -2,7 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import session from 'express-session';
-import UserRoutes from "./routes/user.js";
+import userRoutes from "./routes/user.js";
+import problemsRoutes from "./routes/problems.js";
 
 
 const app = express();
@@ -28,7 +29,8 @@ const connectDB = async () => {
 };
 connectDB();
 
-app.use('/', UserRoutes);
+app.use('/', userRoutes);
+app.use('/', problemsRoutes);
 
 
 app.listen(PORT, ()=>{
