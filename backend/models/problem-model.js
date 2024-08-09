@@ -2,9 +2,16 @@ import mongoose from "mongoose";
 
 const Schema = new mongoose.Schema(
     {
+        problemNumber: {
+            type: Number,
+            unique: true,
+        },
         name: {
             type: String,
             required: [true, "Name cannot be empty"],
+        },
+        examples: {
+            type: [String],
         },
         testCaseId: {
             type: mongoose.Schema.ObjectId,
@@ -14,6 +21,9 @@ const Schema = new mongoose.Schema(
         description: {
             type: String,
             required: [true, "A Problem Shoud have it's description"],
+        },
+        constrains: {
+            type: String,
         },
         submissionsCount: {
             type: Number,
@@ -37,10 +47,28 @@ const Schema = new mongoose.Schema(
     }
 );
 
-Schema.virtual("submissions", {
-    ref: "Submission",
-    foreignField: "problem",
-    localField: "_id",
+const counterSchema = new mongoose.Schema({
+    _id: String,
+    seq: Number
+});
+
+const Counter = mongoose.model('Counter', counterSchema);
+
+async function getNextSequenceValue(sequenceName) {
+    const sequenceDocument = await Counter.findByIdAndUpdate(
+        { _id: sequenceName },
+        { $inc: { seq: 1 } },
+        { new: true, upsert: true }
+    );
+    return sequenceDocument.seq;
+}
+
+
+Schema.pre('save', async function (next) {
+    if (this.isNew) {
+        this.problemNumber = await getNextSequenceValue('problemNumber');
+    }
+    next();
 });
 
 const Problem = mongoose.model("Problem", Schema);

@@ -17,6 +17,7 @@ const login = async (req, res) => {
 
 		const userResponse = { ...user._doc };
 		delete userResponse.password;
+		req.session.user = userResponse;
 		return res.status(200).json({ status: "ok", message: 'Login Successful', user: userResponse });
 	} catch (err) {
 		res.status(500).json({ status: "unsucessful", message: 'Internal Server Error' });
@@ -46,6 +47,7 @@ const singup = async (req, res) => {
 
 		const userResponse = { ...newUser._doc };
 		delete userResponse.password;
+		req.session.user = userResponse;
 		res.status(201).json({ status: "ok", message: 'User created successfully', user: userResponse });
 	} catch (error) {
 		res.status(500).json({ status: "unsucessful", message: 'Server error', error });

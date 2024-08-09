@@ -35,11 +35,11 @@ const Schema = new mongoose.Schema(
 
 Schema.pre(/^find/, function (next) {
     this.populate({
-      path: "user",
-      select: "name",
+        path: "user",
+        select: "_id",
     }).populate({
-      path: "problem",
-      select: "name",
+        path: "problem",
+        select: "problemNumber",
     });
     next();
 });

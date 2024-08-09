@@ -1,0 +1,8 @@
+# Node.js Dockerfile
+FROM node:14-slim
+
+# Set the working directory
+WORKDIR /usr/src/app
+
+# Command to run the Node.js script
+CMD ["node", "tempCode.js"]

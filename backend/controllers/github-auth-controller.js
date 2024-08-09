@@ -45,6 +45,7 @@ const githubCallback = async (req, res) => {
             // If the user doesn't exist, create a new user
             user = new User({ username, githubId });
             await user.save();
+            req.session.user = user;
             res.redirect(`${process.env.ORIGIN_URL}/dashboard`);
         } else {
             // If the user exists, log them in
