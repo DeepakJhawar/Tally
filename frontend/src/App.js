@@ -6,6 +6,7 @@ import Dashboard from "./pages/Dashboard";
 import ResetPassword from "./pages/resetPassword";
 import ForgotPassword from "./pages/forgotPassword";
 import CodingPlayGround from "./pages/CodingPlayground";
+import CodingArena from "./pages/CodingArena";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path="/forgotPassword" element={<ForgotPassword />} /> 
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/codingPlayground" element={<CodingPlayGround />} />
+        <Route path="/codingArena" element={<CodingArena />} />
       </Routes>
     </Router>
   );
