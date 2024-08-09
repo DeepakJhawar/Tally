@@ -1,13 +1,14 @@
 // pages/Contest.js
 import React from "react";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, Container } from "@mui/material";
 
 const Contest = () => {
   return (
-    <Box p={2}>
-      <Typography variant="h4">Contest</Typography>
-      {/* Add your contest content here */}
-    </Box>
+    <Container>
+      <Box p={2}>
+        <Typography variant="h4" display={"block"} textAlign={"center"}>Contests</Typography>
+      </Box>
+    </Container>
   );
 };
 

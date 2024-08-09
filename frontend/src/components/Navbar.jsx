@@ -47,6 +47,14 @@ const Navbar = () => {
           <Button
             color="inherit"
             component={Link}
+            to="/contribute"
+            sx={{marginLeft: 2}}
+          >
+            Contribute
+          </Button>
+          <Button
+            color="inherit"
+            component={Link}
             to="/contest"
             sx={{ marginLeft: 2 }}
           >
