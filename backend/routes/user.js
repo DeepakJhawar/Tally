@@ -178,7 +178,7 @@ router.get('/auth/google/callback', async (req, res) => {
 		});
 
 		const payload = ticket.getPayload();
-		const { email } = payload;
+		const { name, email } = payload;
 
 		// Store user profile information
 		req.session.user = payload;
@@ -189,10 +189,11 @@ router.get('/auth/google/callback', async (req, res) => {
 			return;
 		}
 		else {
+			const username = name || email.split('@')[0];
 			const newUser = new User({
-				username,
-				email,
-				password: "",
+				username: username,
+				email: email,
+				password: "", // OAuth users generally don't need a password
 			});
 			await newUser.save();
 			
