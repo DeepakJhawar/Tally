@@ -26,9 +26,11 @@ const getAllProblems = async (req, res) => {
             }
 
             let result = {
+                problem_id: problem.problemNumber,
                 title: problem.title,
                 description: problem.description,
                 difficulty: problem.difficulty,
+                tags: problem.tags,
                 constrains: problem.constrains,
                 testcase: testcaseObject,
                 testCaseId: problem.testCaseId,
@@ -60,7 +62,8 @@ const getAllProblems = async (req, res) => {
 };
 
 const createProblem = async (req, res) => {
-    let { title, givenInput, correctOutput, description, examples, constrains, difficulty, tags } = req.query;
+    let { title, givenInput, correctOutput, description, constraints, examples, difficulty, tags } = req.body;
+
     // Validate the input
     if (!title || !description || !difficulty) {
         return res.status(400).json({
@@ -70,7 +73,8 @@ const createProblem = async (req, res) => {
     }
 
     const existingProblem = await Problem.findOne({ title });
-    if (!existingProblem) {
+
+    if (existingProblem) {
         return res.status(400).json({
             status: "unsuccessful",
             message: "Problem already exists"
@@ -78,14 +82,12 @@ const createProblem = async (req, res) => {
     }
 
     difficulty = difficulty.toLowerCase()
-    if (!testCaseId) {
-        const newTestCase = new TestCase({
-            givenInput: givenInput,
-            correctOutput: correctOutput
-        });
-        const savedTestCase = await newTestCase.save();
-        testCaseId = savedTestCase._id;
-    }
+    const newTestCase = new TestCase({
+        givenInput: givenInput,
+        correctOutput: correctOutput
+    });
+    const savedTestCase = await newTestCase.save();
+    const testCaseId = savedTestCase._id;
 
     try {
         // Create a new problem instance
@@ -95,7 +97,7 @@ const createProblem = async (req, res) => {
             description,
             examples,
             difficulty,
-            constrains,
+            constraints,
             tags
         });
 
@@ -107,6 +109,7 @@ const createProblem = async (req, res) => {
             message: "Problem created successfully",
             problem: savedProblem
         });
+
     } catch (err) {
         res.status(500).json({
             status: "unsuccessful",

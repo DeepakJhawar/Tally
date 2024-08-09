@@ -6,7 +6,7 @@ const Schema = new mongoose.Schema(
             type: Number,
             unique: true,
         },
-        name: {
+        title: {
             type: String,
             required: [true, "Name cannot be empty"],
         },
@@ -22,7 +22,7 @@ const Schema = new mongoose.Schema(
             type: String,
             required: [true, "A Problem Shoud have it's description"],
         },
-        constrains: {
+        constraints: {
             type: String,
         },
         submissionsCount: {
@@ -38,7 +38,7 @@ const Schema = new mongoose.Schema(
             ],
         },
         tags: {
-            type: String,
+            type: [String],
         },
     },
     {

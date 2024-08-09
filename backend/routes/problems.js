@@ -2,12 +2,15 @@ import express from 'express';
 const router = express.Router();
 
 import { getAllProblems, createProblem } from "../controllers/problems-controller.js";
+import { runCode } from "../controllers/submission-controller.js";
 import { addTestCase, editTestCase} from "../controllers/test-case-controller.js";
 
-router.get("/all-probelms", getAllProblems);
-router.get("/create-problem", createProblem);
+router.get("/all-problems", getAllProblems);
+router.post("/create-problem", createProblem);
 
-router.get("/add-test-case", addTestCase);
-router.get("/edit-test-case", editTestCase);
+router.post("/add-test-case", addTestCase);
+router.post("/edit-test-case", editTestCase);
+
+router.post("/runcode", runCode);
 
 export default router;

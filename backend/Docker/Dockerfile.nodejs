@@ -5,4 +5,5 @@ FROM node:14-slim
 WORKDIR /usr/src/app
 
 # Command to run the Node.js script
-CMD ["node", "tempCode.js"]
+ENTRYPOINT ["node"]
+CMD ["tempCode.js"]
