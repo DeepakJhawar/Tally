@@ -24,7 +24,8 @@ const execPromise = util.promisify(exec);
 
 const runCode = async (language, code, input, output) => {
     const uniqueId = uuidv4();
-    const fileName = `tempCode_${uniqueId}.${getFileExtension(language)}`;
+    const executable = `tempCode_${uniqueId}`;
+    const fileName = `${executable}.${getFileExtension(language)}`;
 
     try {
         // Determine the Docker image to use based on the language
@@ -37,7 +38,7 @@ const runCode = async (language, code, input, output) => {
         await fs.writeFile(fileName, code);
 
         // Construct the Docker run command
-        const command = `sudo docker run --rm -v ${process.cwd()}:/usr/src/app --memory="256m" --memory-swap="500m" --cpus="1.0" ${imageName} ${fileName}`;
+        const command = `sudo docker run --rm -e EXECUTABLE=${executable} -v ${process.cwd()}:/usr/src/app --memory="256m" --memory-swap="500m" --cpus="1.0" ${imageName}`;
 
         const timeout = 30000; // 30 seconds
         const execPromiseWithTimeout = (cmd) => {
@@ -62,6 +63,7 @@ const runCode = async (language, code, input, output) => {
             expectedOutput: expectedOutput.trim(),
         };
     } catch (error) {
+        console.log(error.message)
         if (error.message.includes('sudo')) {
             return {
                 status: 'failed',
@@ -77,6 +79,9 @@ const runCode = async (language, code, input, output) => {
     } finally {
         // Clean up the temp file
         try {
+            await fs.unlink(executable);
+        } catch (err){}
+        try {
             await fs.unlink(fileName);
         } catch (err) {
             console.error(`Failed to delete file: ${fileName}`, err);
@@ -84,8 +89,15 @@ const runCode = async (language, code, input, output) => {
     }
 }
 
-const sudmitCode = async (req, res) => {
+const submitCode = async (req, res) => {
     const { language, code, problemId } = req.body;
+    const response = await runCode(language, code, "", "hello world");
+    if (response.status == "failed"){
+        res.status(400).json(response)
+    }
+    else {
+        res.status(200).json(response)
+    }
     
 };
 
@@ -97,6 +109,8 @@ const getDockerImageName = (language) => {
             return 'code-judge-nodejs';
         case 'cpp':
             return 'code-judge-cpp';
+        case 'c':
+            return 'code-judge-c';
         default:
             return null;
     }
@@ -115,5 +129,5 @@ const getFileExtension = (language) => {
     }
 };
 
-export { runCode, getDockerImageName, getFileExtension, submit };
+export { submitCode, getDockerImageName, getFileExtension, submit };
 

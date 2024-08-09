@@ -4,6 +4,7 @@ FROM node:14-slim
 # Set the working directory
 WORKDIR /usr/src/app
 
+ENV EXECUTABLE="tempCode"
+
 # Command to run the Node.js script
-ENTRYPOINT ["node"]
-CMD ["tempCode.js"]
+CMD ["sh", "-c", "node ${EXECUTABLE}.js"]

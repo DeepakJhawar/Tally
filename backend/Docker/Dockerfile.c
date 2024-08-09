@@ -8,4 +8,4 @@ WORKDIR /usr/src/app
 ENV EXECUTABLE=tempCode
 
 # Command to compile and run the C++ code using the provided environment variables
-CMD ["sh", "-c", "g++ ${EXECUTABLE}.cpp -o ${EXECUTABLE} && ./${EXECUTABLE}"]
+CMD ["sh", "-c", "gcc ${EXECUTABLE}.c -o ${EXECUTABLE} && ./${EXECUTABLE}"]

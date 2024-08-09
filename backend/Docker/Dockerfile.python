@@ -1,9 +1,10 @@
 # Python Dockerfile
-FROM python:3.9-slim
+FROM python:latest
 
 # Set the working directory
 WORKDIR /usr/src/app
 
+ENV EXECUTABLE=tempCode
+
 # Command to run the Python script
-ENTRYPOINT ["python"]
-CMD ["tempCode.py"]
+CMD ["sh", "-c", "python ${EXECUTABLE}.py"]
