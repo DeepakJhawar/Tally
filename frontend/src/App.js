@@ -5,6 +5,7 @@ import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
 import ResetPassword from "./pages/resetPassword";
 import ForgotPassword from "./pages/forgotPassword";
+import CodingPlayGround from "./pages/CodingPlayground";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/forgotPassword" element={<ForgotPassword />} /> 
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/codingPlayground" element={<CodingPlayGround />} />
       </Routes>
     </Router>
   );
