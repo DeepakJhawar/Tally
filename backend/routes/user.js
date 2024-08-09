@@ -101,9 +101,9 @@ router.post('/forgot-password', async (req, res) => {
 			html: message,
 		});
 
-		res.status(200).json({ message: 'Password reset email sent' });
+		res.status(200).json({ status: "ok", message: 'Password reset email sent' });
 	} catch (error) {
-		res.status(500).json({ message: 'Server error', error });
+		res.status(500).json({ status: "unsucessful", message: 'Server error', error });
 	}
 });
 
@@ -196,10 +196,10 @@ router.get('/auth/google/callback', async (req, res) => {
 				password: "", // OAuth users generally don't need a password
 			});
 			await newUser.save();
-			
+
 			res.redirect(`${process.env.ORIGIN_URL}/dashboard`);
 		}
-		
+
 	} catch (error) {
 		console.error('Error handling Google callback:', error);
 		res.redirect(`${process.env.ORIGIN_URL}/login`);
