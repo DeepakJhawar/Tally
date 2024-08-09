@@ -12,9 +12,11 @@ import {
   Select,
   InputLabel,
   FormControl,
+  Grid, // Import Grid component for layout
 } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
+import axios from "axios";
 
 // Define validation schema
 const schema = yup
@@ -83,7 +85,7 @@ const ContributeQuestion = () => {
     name: "output",
   });
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     // Function to parse JSON with validation
     const parseJson = (value) => {
       try {
@@ -103,14 +105,34 @@ const ContributeQuestion = () => {
     const formattedData = {
       title: data.title,
       description: data.description,
-      givenInput: JSON.stringify(input.map((i) => parseJson(i))),
-      correctOutput: JSON.stringify(output.map((o) => parseJson(o))),
+      givenInput: input.map((i) => parseJson(i)),
+      correctOutput: output.map((o) => parseJson(o)),
       constraints: data.constraints,
       difficulty: data.difficulty,
       tags: data.tags,
     };
-    console.log(formattedData);
+  
+    try {
+      const response = await axios.post("http://localhost:6969/create-problem", formattedData, {
+        validateStatus: (status) => {
+          return status >= 200 && status < 500; // Accept all statuses from 200 to 499
+        },
+      });
+  
+      if (response.data.status === 'ok') {
+        alert("Problem added successfully");
+      } else {
+        alert(response.data.message);
+      }
+    } catch (err) {
+      console.log(err);
+      alert("An error occurred while adding the problem");
+    }
   };
+  
+
+  const tags = ['Array', 'Hash Table', 'Linked List', 'Math', 'Two Pointers', 'String', 'Dynamic Programming', 'Backtracking', 'Divide and Conquer', 'Binary Search', 'Stack', 'Heap', 'Greedy', 'Sort', 'Graph', 'Depth First Search', 'Breadth First Search', 'Bit Manipulation', 'Tree', 'Union Find', 'Design', 'Topological Sort', 'Trie', 'Binary Search Tree', 'Brainteaser', 'Segment Tree', 'Binary Index Tree', 'Memoization', 'Binary Indexed Tree'];
+
   
   return (
     <Box
@@ -265,58 +287,59 @@ const ContributeQuestion = () => {
           </Box>
         </Box>
 
-        {/* Tags Selection */}
-        <Box mb={2}>
-          <Controller
-            name="tags"
-            control={control}
-            render={({ field: { onChange, value, onBlur } }) => (
-              <FormControl fullWidth error={!!errors.tags}>
-                <InputLabel>Tags</InputLabel>
-                <Select
-                  multiple
-                  value={value || []} // Ensure value is an array
-                  onChange={onChange}
-                  onBlur={onBlur}
-                  label="Tags"
-                  renderValue={(selected) => selected.join(", ")}
-                >
-                  {["Algorithm", "Data Structure", "Mathematics"].map((tag) => (
-                    <MenuItem key={tag} value={tag}>
-                      {tag}
-                    </MenuItem>
-                  ))}
-                </Select>
-                {errors.tags && (
-                  <Typography color="error">{errors.tags.message}</Typography>
-                )}
-              </FormControl>
-            )}
-          />
-        </Box>
+        {/* Tags and Difficulty Selection in the same line */}
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={6}>
+            <Controller
+              name="tags"
+              control={control}
+              render={({ field: { onChange, value, onBlur } }) => (
+                <FormControl fullWidth error={!!errors.tags}>
+                  <InputLabel>Tags</InputLabel>
+                  <Select
+                    multiple
+                    value={value || []} // Ensure value is an array
+                    onChange={onChange}
+                    onBlur={onBlur}
+                    label="Tags"
+                    renderValue={(selected) => selected.join(", ")}
+                  >
+                    {tags.map((tag) => (
+                      <MenuItem key={tag} value={tag}>
+                        {tag}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  {errors.tags && (
+                    <Typography color="error">{errors.tags.message}</Typography>
+                  )}
+                </FormControl>
+              )}
+            />
+          </Grid>
 
-        {/* Difficulty Selection */}
-        <Box mb={2}>
-          <Controller
-            name="difficulty"
-            control={control}
-            render={({ field }) => (
-              <FormControl fullWidth error={!!errors.difficulty}>
-                <InputLabel>Difficulty</InputLabel>
-                <Select {...field} label="Difficulty">
-                  <MenuItem value="easy">Easy</MenuItem>
-                  <MenuItem value="medium">Medium</MenuItem>
-                  <MenuItem value="hard">Hard</MenuItem>
-                </Select>
-                {errors.difficulty && (
-                  <Typography color="error">
-                    {errors.difficulty.message}
-                  </Typography>
-                )}
-              </FormControl>
-            )}
-          />
-        </Box>
+          <Grid item xs={12} sm={6}>
+            <Controller
+              name="difficulty"
+              control={control}
+              render={({ field }) => (
+                <FormControl fullWidth error={!!errors.difficulty}>
+                  <InputLabel>Difficulty</InputLabel>
+                  <Select {...field} label="Difficulty">
+                    <MenuItem value="easy">Easy</MenuItem>
+                    <MenuItem value="medium">Medium</MenuItem>
+                    <MenuItem value="hard">Hard</MenuItem>
+                  </Select>
+                  {errors.difficulty && (
+                    <Typography color="error">
+                      {errors.difficulty.message}
+                    </Typography>
+                  )}
+                </FormControl>
+              )}
+            />
+          </Grid>
+        </Grid>
 
         <Box mt={2}>
           <Button type="submit" variant="contained" color="secondary">

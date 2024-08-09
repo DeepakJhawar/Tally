@@ -37,7 +37,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />}>
             <Route index element={<Problems />} />
-            <Route path="/problems" element={<Problems />} />
+            <Route path="/" element={<Problems />} />
             <Route path="/contest" element={<Contest />} /> 
             <Route path="/contribute" element={<Contribute />}></Route>
           </Route>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Container,
   Box,
@@ -23,11 +23,12 @@ import {
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import { PieChart, Pie, Cell, Legend, Tooltip } from "recharts";
+import axios from "axios";
 
 const filters = {
   status: ["All", "Solved", "Unsolved", "Attempted"],
   difficulty: ["All", "Easy", "Medium", "Hard"],
-  tags: ["All", "Array", "Hashing", "Trees", "Dynamic Programming"],
+  tags: ["All", 'Array', 'Hash Table', 'Linked List', 'Math', 'Two Pointers', 'String', 'Dynamic Programming', 'Backtracking', 'Divide and Conquer', 'Binary Search', 'Stack', 'Heap', 'Greedy', 'Sort', 'Graph', 'Depth First Search', 'Breadth First Search', 'Bit Manipulation', 'Tree', 'Union Find', 'Design', 'Topological Sort', 'Trie', 'Binary Search Tree', 'Brainteaser', 'Segment Tree', 'Binary Index Tree', 'Memoization', 'Binary Indexed Tree'],
 };
 
 const ProblemsPage = () => {
@@ -39,34 +40,24 @@ const ProblemsPage = () => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
 
-  const problems = [
-    {
-      id: 1,
-      title: "Two Sum",
-      difficulty: "Easy",
-      tags: ["Array"],
-      status: "Solved",
-    },
-    {
-      id: 2,
-      title: "Add Two Numbers",
-      difficulty: "Medium",
-      tags: ["LinkedList"],
-      status: "Solved",
-    },
-    {
-      id: 3,
-      title: "Longest Substring Without Repeating Characters",
-      difficulty: "Hard",
-      tags: ["String"],
-      status: "Solved",
-    },
-  ];
+  const [problems, setProblems] = useState([]);
+
+  const getAllProblems = async() =>{
+    try{
+      const response = await axios.get("http://localhost:6969/all-problems");
+      setProblems(response.data.data);
+    }catch(err){
+      console.log(err)
+    }
+  }
 
   const filteredProblems = problems.filter((problem) => {
+    const problemDifficulty = problem.difficulty ? problem.difficulty.toLowerCase() : "";
+    const problemStatus = problem.status ? problem.status.toLowerCase() : "";
+    
     return (
-      (statusFilter === "All" || problem.status === statusFilter) &&
-      (difficultyFilter === "All" || problem.difficulty === difficultyFilter) &&
+      (statusFilter === "All" || problemStatus === statusFilter.toLowerCase()) &&
+      (difficultyFilter === "All" || problemDifficulty === difficultyFilter.toLowerCase()) &&
       (tagFilter === "All" || problem.tags.includes(tagFilter)) &&
       problem.title.toLowerCase().includes(searchQuery.toLowerCase())
     );
@@ -85,17 +76,17 @@ const ProblemsPage = () => {
   };
 
   const solvedProblems = problems.filter(
-    (problem) => problem.status === "Solved"
+    (problem) => problem.status?.toLowerCase() === "solved"
   ).length;
 
   const easyProblems = problems.filter(
-    (problem) => problem.difficulty === "Easy" && problem.status === "Solved"
+    (problem) => problem.difficulty?.toLowerCase() === "easy" && problem.status?.toLowerCase() === "solved"
   ).length;
   const mediumProblems = problems.filter(
-    (problem) => problem.difficulty === "Medium" && problem.status === "Solved"
+    (problem) => problem.difficulty?.toLowerCase() === "medium" && problem.status?.toLowerCase() === "solved"
   ).length;
   const hardProblems = problems.filter(
-    (problem) => problem.difficulty === "Hard" && problem.status === "Solved"
+    (problem) => problem.difficulty?.toLowerCase() === "hard" && problem.status?.toLowerCase() === "solved"
   ).length;
 
   const totalProblems = problems.length;
@@ -105,6 +96,24 @@ const ProblemsPage = () => {
     { name: "Medium", value: mediumProblems, color: difficultyColors.medium },
     { name: "Hard", value: hardProblems, color: difficultyColors.hard },
   ];
+
+  useEffect(() => {
+    getAllProblems();
+  }, []);
+
+  // Function to truncate a string to a specified length
+  const truncateString = (str, maxLength) => {
+    if (str.length > maxLength) {
+      return str.substring(0, maxLength) + '...';
+    }
+    return str;
+  };
+
+  // Function to combine tags and truncate to 50 characters
+  const getCombinedTags = (tags) => {
+    const combinedTags = tags.join(", ");
+    return truncateString(combinedTags, 20);
+  };
 
   return (
     <Container>
@@ -196,7 +205,7 @@ const ProblemsPage = () => {
                 <TableBody>
                   {filteredProblems.map((problem, index) => (
                     <TableRow
-                      key={problem.id}
+                      key={problem.problem_id}
                       sx={{
                         backgroundColor:
                           index % 2 === 0 ? "primary.main" : "secondary.main",
@@ -206,11 +215,11 @@ const ProblemsPage = () => {
                         },
                       }}
                     >
-                      <TableCell>{problem.id}</TableCell>
+                      <TableCell>{problem.problem_id}</TableCell>
                       <TableCell>
                         <Link
                           className="text-white hover:text-blue-500 transition-all duration-300"
-                          to={`/problems/${problem?._id}`}
+                          to={`/problems/${problem?.problem_id}`}
                         >
                           {problem.title}
                         </Link>
@@ -219,7 +228,7 @@ const ProblemsPage = () => {
                         sx={{
                           color:
                             difficultyColors[
-                              problem.difficulty.toLowerCase()
+                              problem.difficulty?.toLowerCase() || ""
                             ] || "inherit",
                         }}
                       >
@@ -228,13 +237,16 @@ const ProblemsPage = () => {
                       <TableCell
                         sx={{
                           color:
-                            statusColors[problem.status.toLowerCase()] ||
-                            "inherit",
+                            statusColors[
+                              problem.status?.toLowerCase() || ""
+                            ] || "inherit",
                         }}
                       >
                         {problem.status}
                       </TableCell>
-                      <TableCell>{problem.tags.join(", ")}</TableCell>
+                      <TableCell>
+                        {getCombinedTags(problem.tags)}
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
