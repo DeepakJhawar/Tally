@@ -136,7 +136,11 @@ const Login = () => {
                     {errors.password.message}
                   </p>
                 )}
-                <p className="w-full mt-2 block"><button className="text-blue-500 w-full">Forgot Password?</button></p>
+                 <div className="w-full flex justify-center mt-2">
+                  <Link to="/forgotPassword" className="text-blue-500">
+                    Forgot Password?
+                  </Link>
+                </div>
 
                 <button
                   type="submit"
