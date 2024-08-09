@@ -63,8 +63,8 @@ const transporter = nodemailer.createTransport({
 		user: process.env.MAIL_ID, // Replace with your email
 		pass: process.env.MAIL_PASSWORD, // Replace with your email password
 	},
-	logger: true, // Enable logging
-	debug: true, // Include SMTP traffic in logs
+	logger: false, // Enable logging
+	debug: false, // Include SMTP traffic in logs
 });
 
 router.post('/forgot-password', async (req, res) => {
