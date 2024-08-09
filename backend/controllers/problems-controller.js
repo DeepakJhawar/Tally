@@ -34,6 +34,7 @@ const getAllProblems = async (req, res) => {
                 constrains: problem.constrains,
                 testcase: testcaseObject,
                 testCaseId: problem.testCaseId,
+                status: "unattempted"
             };
 
             if (req.session.user) {

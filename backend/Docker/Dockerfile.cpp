@@ -1,5 +1,5 @@
 # C++ Dockerfile
-FROM gcc:10.2-slim
+FROM gcc:11-slim
 
 # Set the working directory
 WORKDIR /usr/src/app
