@@ -94,19 +94,18 @@ const ContributeTestCase = () => {
       givenInput: input.map((i) => parseJson(i)),
       correctOutput: output.map((o) => parseJson(o)),
     };
-    console.log(formattedData)
     try {
-      // const response = await axios.post("http://localhost:6969/add-test-case", formattedData, {
-      //   validateStatus: (status) => {
-      //     return status >= 200 && status < 500; // Accept all statuses from 200 to 499
-      //   },
-      // });
+      const response = await axios.post("http://localhost:6969/add-test-case", formattedData, {
+        validateStatus: (status) => {
+          return status >= 200 && status < 500; // Accept all statuses from 200 to 499
+        },
+      });
 
-      // if (response.data.status === 'ok') {
-      //   alert("Test cases added successfully");
-      // } else {
-      //   alert(response.data.message);
-      // }
+      if (response.data.status === 'ok') {
+        alert("Test cases added successfully");
+      } else {
+        alert(response.data.message);
+      }
     } catch (err) {
       console.log(err);
       alert("An error occurred while adding the test cases");
