@@ -93,59 +93,6 @@ const ProblemStatement = ({
       >
         {renderContent()}
       </Box>
-
-      {currentView === "Problem" && (
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "flex-end",
-            padding: 2,
-            border: 0,
-            marginRight: 2,
-            position: "fixed",
-            bottom: 0,
-            right: 0,
-            backgroundColor: "transperent",
-            zIndex: 1,
-          }}
-        >
-          <Button
-            sx={{
-              ...customStyles.control,
-              width: "auto",
-              maxWidth: "none",
-              padding: "6px 12px",
-              marginRight: 1,
-              border: "none", // Remove border
-              backgroundColor: "black", // Transparent background
-              color: "white", // Transparent font color
-              "&:hover": {
-                cursor: "pointer",
-              },
-            }}
-            variant="text" // Ensures no background is applied
-          >
-            Run
-          </Button>
-          <Button
-            sx={{
-              ...customStyles.control,
-              width: "auto",
-              maxWidth: "none",
-              padding: "6px 12px",
-              border: "none", // Remove border
-              backgroundColor: "black", // Transparent background
-              color: "white", // Transparent font color
-              "&:hover": {
-                cursor: "pointer",
-              },
-            }}
-            variant="text" // Ensures no background is applied
-          >
-            Submit
-          </Button>
-        </Box>
-      )}
     </Box>
   );
 };

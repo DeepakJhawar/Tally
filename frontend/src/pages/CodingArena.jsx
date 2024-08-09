@@ -4,6 +4,8 @@ import ProblemStatement from "../components/codingArena/ProblemStatement";
 import Solutions from "../components/codingArena/Solutions";
 import Submissions from "../components/codingArena/Submissions";
 import Editor from "../components/CodeEditor/Editor";
+import { customStyles } from "../constants/customStyles";
+
 
 const problemData = {
   title: "Binary Search",
@@ -20,8 +22,13 @@ const problemData = {
 const CodingArena = () => {
   const [currentView, setCurrentView] = useState("Problem");
   const [solutions, setSolutions] = useState([]); // Initialize with default value
-  const [submissions, setSubmissions] = useState(["questionName: Two Sum, Memory: 15MB, Time: 0.02s, isCorrect: true"]); // Initialize with default value
+  const [submissions, setSubmissions] = useState([
+    "questionName: Two Sum, Memory: 15MB, Time: 0.02s, isCorrect: true",
+  ]); // Initialize with default value
 
+  const handleViewChange = (view) => {
+    setCurrentView(view);
+  };
   const renderContent = () => {
     switch (currentView) {
       case "Solutions":
@@ -42,53 +49,119 @@ const CodingArena = () => {
   };
 
   return (
-    <Grid container spacing={2} sx={{ height: "100vh", padding: 2 }}>
-      <Grid item xs={12} md={6}>
-        <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
-          <Box sx={{ display: "flex", justifyContent: "space-between", marginBottom: 2 }}>
-            <Button
+    <>
+      <Grid container spacing={2} sx={{ height: "100vh", padding: 2 }}>
+        <Grid item xs={12} md={6}>
+          <Box
+            sx={{ display: "flex", flexDirection: "column", height: "100%" }}
+          >
+            <Box
               sx={{
-                width: "auto",
-                maxWidth: "none",
-                marginRight: 1,
-                backgroundColor: currentView === "Problem" ? "#000" : "#444",
+                display: "flex",
+                justifyContent: "space-between",
+                marginBottom: 2,
               }}
-              onClick={() => setCurrentView("Problem")}
-              variant="contained"
             >
-              Problem
-            </Button>
-            <Button
-              sx={{
-                width: "auto",
-                maxWidth: "none",
-                marginRight: 1,
-                backgroundColor: currentView === "Solutions" ? "#000" : "#444",
-              }}
-              onClick={() => setCurrentView("Solutions")}
-              variant="contained"
-            >
-              Solutions
-            </Button>
-            <Button
-              sx={{
-                width: "auto",
-                maxWidth: "none",
-                backgroundColor: currentView === "Submissions" ? "#000" : "#444",
-              }}
-              onClick={() => setCurrentView("Submissions")}
-              variant="contained"
-            >
-              Submissions
-            </Button>
+              <Button
+                sx={{
+                  width: "auto",
+                  maxWidth: "none",
+                  marginRight: 1,
+                  backgroundColor: currentView === "Problem" ? "#000" : "#444",
+                }}
+                onClick={() => setCurrentView("Problem")}
+                variant="contained"
+              >
+                Problem
+              </Button>
+              <Button
+                sx={{
+                  width: "auto",
+                  maxWidth: "none",
+                  marginRight: 1,
+                  backgroundColor:
+                    currentView === "Solutions" ? "#000" : "#444",
+                }}
+                onClick={() => setCurrentView("Solutions")}
+                variant="contained"
+              >
+                Solutions
+              </Button>
+              <Button
+                sx={{
+                  width: "auto",
+                  maxWidth: "none",
+                  backgroundColor:
+                    currentView === "Submissions" ? "#000" : "#444",
+                }}
+                onClick={() => setCurrentView("Submissions")}
+                variant="contained"
+              >
+                Submissions
+              </Button>
+            </Box>
+            {renderContent()}
           </Box>
-          {renderContent()}
-        </Box>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <Editor />
+        </Grid>
       </Grid>
-      <Grid item xs={12} md={6}>
-        <Editor />
-      </Grid>
-    </Grid>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "flex-end",
+          padding: 2,
+          border: 0,
+          marginRight: 2,
+          position: "fixed",
+          bottom: 0,
+          right: 0,
+          backgroundColor: "transparent", // Transparent background
+          zIndex: 1,
+        }}
+      >
+        <Button
+          sx={{
+            ...customStyles.control,
+            width: "auto",
+            maxWidth: "none",
+            padding: "6px 12px",
+            marginRight: 1,
+            border: "none", // Remove border
+            backgroundColor: "black", // Transparent background
+            color: "white", // Black font color
+            "&:hover": {
+              cursor: "pointer",
+              color: "blue", // Change color on hover if desired
+            },
+          }}
+          variant="text" // Ensures no background is applied
+          onClick={() => handleViewChange("Submit")} // Replace with actual Run functionality
+        >
+          Run
+        </Button>
+        <Button
+          sx={{
+            ...customStyles.control,
+            width: "auto",
+            maxWidth: "none",
+            padding: "6px 12px",
+            border: "none", // Remove border
+            backgroundColor: "black", // Transparent background
+            color: "white", // Black font color
+            "&:hover": {
+              cursor: "pointer",
+              color: "blue", // Change color on hover if desired
+            },
+          }}
+          variant="text" // Ensures no background is applied
+          onClick={() => handleViewChange("Submit")} // Replace with actual Submit functionality
+        >
+          Submit
+        </Button>
+      </Box>
+    </>
   );
 };
 
