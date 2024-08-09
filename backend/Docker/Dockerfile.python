@@ -1,0 +1,8 @@
+# Python Dockerfile
+FROM python:3.9-slim
+
+# Set the working directory
+WORKDIR /usr/src/app
+
+# Command to run the Python script
+CMD ["python", "tempCode.py"]

@@ -3,10 +3,10 @@ import mongoose from 'mongoose';
 const Schema = new mongoose.Schema(
   {
     givenInput: {
-      type: [String],
+      type: [Object],
     },
     correctOutput: {
-      type: [String],
+      type: [Object],
     },
   },
   {

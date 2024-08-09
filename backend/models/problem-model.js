@@ -10,6 +10,9 @@ const Schema = new mongoose.Schema(
             type: String,
             required: [true, "Name cannot be empty"],
         },
+        examples: {
+            type: [String],
+        },
         testCaseId: {
             type: mongoose.Schema.ObjectId,
             ref: "TestCase",
@@ -18,6 +21,9 @@ const Schema = new mongoose.Schema(
         description: {
             type: String,
             required: [true, "A Problem Shoud have it's description"],
+        },
+        constrains: {
+            type: String,
         },
         submissionsCount: {
             type: Number,
