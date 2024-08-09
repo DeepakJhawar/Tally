@@ -1,11 +1,9 @@
-import React from "react";
-import { Grid } from "@mui/material";
-
-import "react-toastify/dist/ReactToastify.css";
-
+import React, { useState } from "react";
+import { Grid, Button, Box } from "@mui/material";
 import ProblemStatement from "../components/codingArena/ProblemStatement";
+import Solutions from "../components/codingArena/Solutions";
+import Submissions from "../components/codingArena/Submissions";
 import Editor from "../components/CodeEditor/Editor";
-
 
 const problemData = {
   title: "Binary Search",
@@ -20,15 +18,72 @@ const problemData = {
 };
 
 const CodingArena = () => {
+  const [currentView, setCurrentView] = useState("Problem");
+  const [solutions, setSolutions] = useState([]); // Initialize with default value
+  const [submissions, setSubmissions] = useState(["questionName: Two Sum, Memory: 15MB, Time: 0.02s, isCorrect: true"]); // Initialize with default value
+
+  const renderContent = () => {
+    switch (currentView) {
+      case "Solutions":
+        return <Solutions solutions={solutions} />;
+      case "Submissions":
+        return <Submissions submissions={submissions} />;
+      case "Problem":
+      default:
+        return (
+          <ProblemStatement
+            title={problemData.title}
+            description={problemData.description}
+            constraints={problemData.constraints}
+            examples={problemData.examples}
+          />
+        );
+    }
+  };
+
   return (
     <Grid container spacing={2} sx={{ height: "100vh", padding: 2 }}>
       <Grid item xs={12} md={6}>
-        <ProblemStatement
-          title={problemData.title}
-          description={problemData.description}
-          constraints={problemData.constraints}
-          examples={problemData.examples}
-        />
+        <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
+          <Box sx={{ display: "flex", justifyContent: "space-between", marginBottom: 2 }}>
+            <Button
+              sx={{
+                width: "auto",
+                maxWidth: "none",
+                marginRight: 1,
+                backgroundColor: currentView === "Problem" ? "#000" : "#444",
+              }}
+              onClick={() => setCurrentView("Problem")}
+              variant="contained"
+            >
+              Problem
+            </Button>
+            <Button
+              sx={{
+                width: "auto",
+                maxWidth: "none",
+                marginRight: 1,
+                backgroundColor: currentView === "Solutions" ? "#000" : "#444",
+              }}
+              onClick={() => setCurrentView("Solutions")}
+              variant="contained"
+            >
+              Solutions
+            </Button>
+            <Button
+              sx={{
+                width: "auto",
+                maxWidth: "none",
+                backgroundColor: currentView === "Submissions" ? "#000" : "#444",
+              }}
+              onClick={() => setCurrentView("Submissions")}
+              variant="contained"
+            >
+              Submissions
+            </Button>
+          </Box>
+          {renderContent()}
+        </Box>
       </Grid>
       <Grid item xs={12} md={6}>
         <Editor />
@@ -38,24 +93,3 @@ const CodingArena = () => {
 };
 
 export default CodingArena;
-
-// src/pages/CodingArena.js
-// import React from 'react';
-// import { Grid } from '@mui/material';
-// import ProblemStatement from '../components/codingArena/ProblemStatement';
-// import CodeEditorWindow from '../components/codingPlayground/CodeEditorWindow';
-
-// const CodingArena = () => {
-//   return (
-//     <Grid container spacing={2} sx={{ height: '100vh', padding: 2 }}>
-//       <Grid item xs={12} md={6}>
-//         <ProblemStatement />
-//       </Grid>
-//       <Grid item xs={12} md={6}>
-//         <CodeEditorWindow />
-//       </Grid>
-//     </Grid>
-//   );
-// };
-
-// export default CodingArena;
