@@ -5,19 +5,46 @@ import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
 import ResetPassword from "./pages/resetPassword";
 import ForgotPassword from "./pages/forgotPassword";
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import Problems from "./components/Problems";
+import Contest from "./components/Contest";
+
+const darkTheme = createTheme({
+  palette: {
+    mode: 'dark',
+    primary: {
+      main: '#000000', // Black
+    },
+    secondary: {
+      main: '#404040', // Dark gray
+    },
+    background: {
+      default: '#000000', // Black background for the whole app
+      paper: '#121212', // Slightly lighter black for paper elements
+    },
+  },
+});
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route exact path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} /> 
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/forgotPassword" element={<ForgotPassword />} /> 
-        <Route path="/reset-password" element={<ResetPassword />} />
-      </Routes>
-    </Router>
+    <ThemeProvider theme={darkTheme}>
+      <CssBaseline />
+      <Router>
+        <Routes>
+          <Route path="/" element={<Home />}>
+            <Route index element={<Problems />} />
+            <Route path="/problems" element={<Problems />} />
+            <Route path="/contest" element={<Contest />} /> {/* Add Contest route */}
+          </Route>
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+        </Routes>
+      </Router>
+    </ThemeProvider>
   );
 }
 
