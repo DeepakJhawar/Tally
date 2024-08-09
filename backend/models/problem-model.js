@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const Schema = new mongoose.Schema(
     {
-        title: {
+        name: {
             type: String,
             required: [true, "Name cannot be empty"],
         },

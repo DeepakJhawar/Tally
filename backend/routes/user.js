@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-import { login, singup } from '../controllers/auth-controller.js'
+import { login, singup, logout } from '../controllers/auth-controller.js'
 import { googleAuth, googleCallback } from '../controllers/google-auth-controller.js'
 import { githubAuth, githubCallback} from '../controllers/github-auth-controller.js'
 import { forgotPassword, resetPassword } from '../controllers/forgot-password-controller.js'
@@ -30,20 +30,8 @@ router.get('/auth/github', githubAuth);
 // GitHub callback route
 router.get('/auth/github/callback', githubCallback);
 
-// // Profile route to show user information
-// router.get('/profile', (req, res) => {
-// 	if (req.session.user) {
-// 		res.json(req.session.user);
-// 	} else {
-// 		res.redirect('/');
-// 	}
-// });
-
 // // Logout route
-// router.get('/logout', (req, res) => {
-// 	req.session.destroy();
-// 	res.redirect('/');
-// });
+router.get('/logout', logout);
 
 
 export default router;

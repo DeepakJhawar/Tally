@@ -52,4 +52,9 @@ const singup = async (req, res) => {
 	}
 }
 
-export { login, singup };
+const logout = (req, res) => {
+	req.session.destroy();
+	res.redirect('/');
+}
+
+export { login, singup, logout };
