@@ -73,78 +73,24 @@ const CodingPlayGround = () => {
     }
   };
 
-  const handleCompile = () => {
+  const handleCompile = async () => {
     setProcessing(true);
     const formData = {
-      language_id: language.id,
-      source_code: btoa(code),
-      stdin: btoa(customInput),
-    };
-    console.log(formData);
-
-    const options = {
-      method: "POST",
-      url: process.env.REACT_APP_RAPID_API_URL,
-      params: { base64_encoded: "false", fields: "*" },
-      headers: {
-        "content-type": "application/json",
-        "X-RapidAPI-Host": process.env.REACT_APP_RAPID_API_HOST,
-        "X-RapidAPI-Key": process.env.REACT_APP_RAPID_API_KEY,
-      },
-      data: formData,
+      language: language.value,
+      code: btoa(code),
+      input: btoa(customInput),
     };
 
-    axios
-      .request(options)
-      .then((response) => {
-        const token = response.data.token;
-        checkStatus(token);
-      })
-      .catch((err) => {
-        const status = err.response?.status;
-        if (status === 429) {
-          showErrorToast(
-            "Quota of 100 requests exceeded for the Day! Please read the blog on freeCodeCamp to learn how to setup your own RAPID API Judge0!",
-            10000
-          );
-        } else {
-          showErrorToast("Something went wrong! Please try again.");
-        }
-        setProcessing(false);
-      });
-  };
-
-  const checkStatus = async (token) => {
-    const options = {
-      method: "GET",
-      url: `${process.env.REACT_APP_RAPID_API_URL}/${token}`,
-      params: { base64_encoded: "true", fields: "*" },
-      headers: {
-        "X-RapidAPI-Host": process.env.REACT_APP_RAPID_API_HOST,
-        "X-RapidAPI-Key": process.env.REACT_APP_RAPID_API_KEY,
-      },
-    };
-
-    try {
-      const response = await axios.request(options);
-      const statusId = response.data.status?.id;
-
-      if (statusId === 1 || statusId === 2) {
-        setTimeout(() => {
-          checkStatus(token);
-        }, 2000);
-        return;
-      } else {
-        setProcessing(false);
-        setOutputDetails(response.data);
-        showSuccessToast("Compiled Successfully!");
-      }
-    } catch (err) {
-      showErrorToast();
+    const response = await axios.post("http://localhost:6969/run-playground-code", formData);
+    if(response.data.status === 'ok'){
+      setOutputDetails(response.data);
+      setProcessing(false);
+      showSuccessToast("Compiled Successfully!");
+    }else{
+      showErrorToast(response.data.message);
       setProcessing(false);
     }
   };
-
 
   const showSuccessToast = (msg) => {
     if (!toast.isActive("success-toast")) {

@@ -16,23 +16,22 @@ import {
 import axios from "axios";
 
 // Define validation schema
-const schema = yup.object({
-  title: yup.string().required("Title is required"),
-  description: yup
-    .string()
-    .max(5000, "Description must be less than 5000 characters")
-    .required("Description is required"),
-  constraints: yup.string().required("Constraints are required"),
-  input: yup
-    .string()
-    .required("Input is required")
-    .matches(/.*\n.*/, "Input should have multiple lines"),
-  output: yup.string().required("Output is required"),
-  tags: yup.array().of(yup.string()).min(1, "At least one tag is required"),
-  difficulty: yup
-    .string()
-    .oneOf(["easy", "medium", "hard"], "Difficulty is required"),
-}).required();
+const schema = yup
+  .object({
+    title: yup.string().required("Title is required"),
+    description: yup
+      .string()
+      .max(5000, "Description must be less than 5000 characters")
+      .required("Description is required"),
+    constraints: yup.string().required("Constraints are required"),
+    input: yup.string().required("Input is required"),
+    output: yup.string().required("Output is required"),
+    tags: yup.array().of(yup.string()).min(1, "At least one tag is required"),
+    difficulty: yup
+      .string()
+      .oneOf(["easy", "medium", "hard"], "Difficulty is required"),
+  })
+  .required();
 
 const ContributeQuestion = () => {
   const {
@@ -47,7 +46,7 @@ const ContributeQuestion = () => {
       constraints: "",
       input: "",
       output: "",
-      tags: [], 
+      tags: [],
       difficulty: "easy",
     },
   });
@@ -230,9 +229,7 @@ const ContributeQuestion = () => {
                     ))}
                   </Select>
                   {errors.tags && (
-                    <Typography color="error">
-                      {errors.tags.message}
-                    </Typography>
+                    <Typography color="error">{errors.tags.message}</Typography>
                   )}
                 </FormControl>
               )}

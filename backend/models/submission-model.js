@@ -8,7 +8,7 @@ const Schema = new mongoose.Schema(
             required: [true, "A submission must be done by a user"],
         },
         problem: {
-            type: mongoose.Schema.ObjectId,
+            type: Number,
             ref: "Problem",
             required: [true, "A submission Must Belong to a problem"],
         },
@@ -23,7 +23,7 @@ const Schema = new mongoose.Schema(
         language: { type: String, required: true },
         verdict: {
             type: String,
-            enum: ["ACCEPTED", "WRONG ANSWER", "ERROR"],
+            enum: ["ACCEPTED", "WRONG ANSWER", "MEMORY ERROR", "TIMELIMITED ERROR", "ERROR"],
             required: [true, "You should provide the verdict"],
         },
     },
