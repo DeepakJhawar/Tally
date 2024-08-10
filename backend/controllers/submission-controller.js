@@ -22,7 +22,7 @@ const submit = async (req, res) => {
 
 const execPromise = util.promisify(exec);
 
-const runCode = async (language, code, input, output) => {
+const runCode = async (language, code) => {
     const uniqueId = uuidv4();
     const executable = `tempCode_${uniqueId}`;
     const fileName = `${executable}.${getFileExtension(language)}`;
@@ -38,7 +38,8 @@ const runCode = async (language, code, input, output) => {
         await fs.writeFile(fileName, code);
 
         // Construct the Docker run command
-        const command = `sudo docker run --rm -e EXECUTABLE=${executable} -v ${process.cwd()}:/usr/src/app --memory="256m" --memory-swap="500m" --cpus="1.0" ${imageName}`;
+        const command = `sudo docker run --rm -e EXECUTABLE=${executable} \
+            -v ${process.cwd()}:/usr/src/app --memory="256m" --memory-swap="500m" --cpus="1.0" ${imageName}`;
 
         const timeout = 30000; // 30 seconds
         const execPromiseWithTimeout = (cmd) => {
@@ -80,25 +81,22 @@ const runCode = async (language, code, input, output) => {
         // Clean up the temp file
         try {
             await fs.unlink(executable);
-        } catch (err){}
+        } catch { }
         try {
             await fs.unlink(fileName);
-        } catch (err) {
-            console.error(`Failed to delete file: ${fileName}`, err);
-        }
+        } catch { }
     }
 }
 
 const submitCode = async (req, res) => {
     const { language, code, problemId } = req.body;
     const response = await runCode(language, code, "", "hello world");
-    if (response.status == "failed"){
+    if (response.status == "failed") {
         res.status(400).json(response)
     }
     else {
         res.status(200).json(response)
     }
-    
 };
 
 const getDockerImageName = (language) => {
