@@ -11,25 +11,37 @@ import { customStyles } from "../constants/customStyles";
 import axios from "axios";
 
 const CodingArena = () => {
+  const { problem_id } = useParams();
+  const [problemData, setProblemData] = useState({});
+  
+  useEffect(() => {
+    const fetchProblemData = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:6969/problem/${problem_id}`
+        );
+  
+        if (response.status == "ok") {
+          console.log(response.data.data);
+          setProblemData(response.data.data);
+        } else {
+          setProblemData({ Error: "Cannot Find Problem, Go back to home page." });
+        }
+      } catch (error) {
+        console.error("Error fetching problem data:", error);
+        setProblemData({ Error: "An error occurred. Please try again later." });
+      }
+    };
+  
+    fetchProblemData();
+  }, [problem_id]); // Add problem_id to the dependency array
+
   const [currentTab, setCurrentTab] = useState(0);
   const [solutions, setSolutions] = useState([]);
   const [submissions, setSubmissions] = useState([]);
   const [outputVisible, setOutputVisible] = useState(false);
 
-  const { problem_id } = useParams();
-  const [problemData, setProblemData] = useState({});
-
-  useEffect(() => {
-    const fetch = async () => {
-      const response = await axios.get(
-        `http://localhost:6969/problem/${problem_id}`
-      );
-      if (response.data.status === "ok") setProblemData(response.data.data);
-      else
-        setProblemData({ Error: "Cannot Find Problem, Go back to home page." });
-    };
-    fetch();
-  }, []);
+  
 
   const handleTabChange = (event, newValue) => {
     setCurrentTab(newValue);
@@ -52,7 +64,7 @@ const CodingArena = () => {
         return <Submissions submissions={submissions} />;
       case 0:
       default:
-        return (
+        return (problemData &&
           <ProblemStatement
             title={problemData.data.title}
             description={problemData.data.description}

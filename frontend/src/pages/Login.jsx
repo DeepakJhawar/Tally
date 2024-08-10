@@ -31,7 +31,11 @@ const Login = () => {
               return status >= 200 && status < 500;
             },
           });
-      if (response.data.status === "ok") navigate("/problems");
+      if (response.data.status === "ok") {
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("role", response.data.role);
+        navigate("/problems");
+      }
       else alert(response.data.message);
     } catch (error) {
       console.error(error);

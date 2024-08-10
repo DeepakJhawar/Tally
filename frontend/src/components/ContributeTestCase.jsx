@@ -36,14 +36,20 @@ const ContributeTestCase = () => {
 
   const onSubmit = async (data) => {
     try {
+      const obj = {
+        givenInput: data.input,
+        correctOutput: data.output,
+        problemNumber: data.problemId,
+      };
       const response = await axios.post(
         "http://localhost:6969/add-test-case",
-        data,
+        obj,
         {
           validateStatus: (status) => status >= 200 && status < 500,
         }
       );
-
+      console.log(obj);
+      
       if (response.data.status === "ok") {
         alert("Test cases added successfully");
       } else {
