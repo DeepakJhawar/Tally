@@ -121,7 +121,7 @@ const CodingPlayGround = () => {
         </div>
 
         <div className="right-container flex flex-shrink-0 w-[30%] flex-col h-[60%]">
-          <OutputWindow outputDetails={outputDetails} /> {/* Display the output */}
+          <OutputWindow outputDetails={outputDetails} /> 
           <div className="flex flex-col items-end">
             <CustomInput
               customInput={customInput}

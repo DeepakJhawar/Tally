@@ -2,7 +2,6 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
-import Dashboard from "./pages/Dashboard";
 import ResetPassword from "./pages/resetPassword";
 import ForgotPassword from "./pages/forgotPassword";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
@@ -49,7 +48,6 @@ function App() {
             <Route path="/playground" element={<CodingPlayGround />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
-            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/admin" element={<AdminPage />} />

@@ -73,7 +73,7 @@ const Landing = () => {
                   alt="playground"
                 />
                 <CardContent>
-                  <Typography gutterBottom variant="h6" component="div">
+                  <Typography gutterBottom variant="h5" component="div">
                     PlayGround
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
@@ -96,7 +96,7 @@ const Landing = () => {
                   alt="problems"
                 />
                 <CardContent>
-                  <Typography gutterBottom variant="h6" component="div">
+                  <Typography gutterBottom variant="h5" component="div">
                     Start Solving
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
@@ -120,7 +120,7 @@ const Landing = () => {
                   alt="contest"
                 />
                 <CardContent>
-                  <Typography gutterBottom variant="h6" component="div">
+                  <Typography gutterBottom variant="h5" component="div">
                     Contests
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
