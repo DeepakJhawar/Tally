@@ -46,11 +46,11 @@ const githubCallback = async (req, res) => {
             user = new User({ username, githubId });
             await user.save();
             req.session.user = user;
-            res.redirect(`${process.env.ORIGIN_URL}/dashboard`);
+            res.redirect(`${process.env.ORIGIN_URL}/problems`);
         } else {
             // If the user exists, log them in
             req.session.user = user;
-            res.redirect(`${process.env.ORIGIN_URL}/dashboard`);
+            res.redirect(`${process.env.ORIGIN_URL}/problems`);
         }
 
     } catch (error) {
