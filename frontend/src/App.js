@@ -2,7 +2,6 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
-import Dashboard from "./pages/Dashboard";
 import ResetPassword from "./pages/resetPassword";
 import ForgotPassword from "./pages/forgotPassword";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
@@ -20,14 +19,14 @@ const darkTheme = createTheme({
   palette: {
     mode: "dark",
     primary: {
-      main: "#000000", // Black
+      main: "#000000",
     },
     secondary: {
-      main: "#404040", // Dark gray
+      main: "#404040",
     },
     background: {
-      default: "#000000", // Black background for the whole app
-      paper: "#121212", // Slightly lighter black for paper elements
+      default: "#000000",
+      paper: "#121212", 
     },
   },
 });
@@ -49,7 +48,6 @@ function App() {
             <Route path="/playground" element={<CodingPlayGround />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
-            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/admin" element={<AdminPage />} />

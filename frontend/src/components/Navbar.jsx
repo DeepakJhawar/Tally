@@ -15,7 +15,7 @@ import { AuthContext } from "../AuthContext";
 
 const FullWidthAppBar = styled(AppBar)({
   width: "100%",
-  backgroundColor: 'primary', // Directly specify green color
+  backgroundColor: 'primary',
 });
 
 const Navbar = () => {
@@ -31,7 +31,6 @@ const Navbar = () => {
     setAnchorEl(null);
   };
 
-  // Function to determine if a button should be highlighted
   const isActive = (path) => location.pathname === path;
 
   return (
@@ -47,10 +46,10 @@ const Navbar = () => {
             to={"/"}
             sx={{
               flexGrow: 1,
-              textDecoration: "none", // Remove default underline
-              color: isActive("/") ? '#00C853' : '#E0E0E0', // Change color if active
+              textDecoration: "none",
+              color: isActive("/") ? '#00C853' : '#E0E0E0', 
               "&:hover": {
-                color: '#00C853', // Change color on hover
+                color: '#00C853', 
               },
             }}
           >
@@ -62,9 +61,9 @@ const Navbar = () => {
             to="/playground"
             sx={{
               marginLeft: 2,
-              color: isActive("/playground") ? '#00C853' : '#E0E0E0', // Highlight active button
+              color: isActive("/playground") ? '#00C853' : '#E0E0E0',
               "&:hover": {
-                color: '#00C853', // Change color on hover
+                color: '#00C853',
               },
             }}
           >
@@ -75,9 +74,9 @@ const Navbar = () => {
             to="/problems"
             sx={{
               marginLeft: 2,
-              color: isActive("/problems") ? '#00C853' : '#E0E0E0', // Highlight active button
+              color: isActive("/problems") ? '#00C853' : '#E0E0E0', 
               "&:hover": {
-                color: '#00C853', // Change color on hover
+                color: '#00C853',
               },
             }}
           >
@@ -88,9 +87,9 @@ const Navbar = () => {
             to="/contribute"
             sx={{
               marginLeft: 2,
-              color: isActive("/contribute") ? '#00C853' : '#E0E0E0', // Highlight active button
+              color: isActive("/contribute") ? '#00C853' : '#E0E0E0', 
               "&:hover": {
-                color: '#00C853', // Change color on hover
+                color: '#00C853', 
               },
             }}
           >
@@ -101,9 +100,9 @@ const Navbar = () => {
             to="/contest"
             sx={{
               marginLeft: 2,
-              color: isActive("/contest") ? '#00C853' : '#E0E0E0', // Highlight active button
+              color: isActive("/contest") ? '#00C853' : '#E0E0E0', 
               "&:hover": {
-                color: '#00C853', // Change color on hover
+                color: '#00C853', 
               },
             }}
           >
@@ -114,9 +113,9 @@ const Navbar = () => {
             to="/login"
             sx={{
               marginLeft: 2,
-              color: isActive("/login") ? '#00C853' : '#E0E0E0', // Highlight active button
+              color: isActive("/login") ? '#00C853' : '#E0E0E0', 
               "&:hover": {
-                color: '#00C853', // Change color on hover
+                color: '#00C853', 
               },
             }}
           >

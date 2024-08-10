@@ -9,7 +9,7 @@ import CodeEditorWindow from "../components/codingPlayground/CodeEditorWindow";
 import CustomInput from "../components/codingPlayground/CustomInput";
 import LanguagesDropdown from "../components/codingPlayground/LanguagesDropdown";
 import Navbar from "../components/Navbar";
-import OutputWindow from "../components/codingPlayground/OutputWindow"; // Import the OutputWindow component
+import OutputWindow from "../components/codingPlayground/OutputWindow";
 
 const CodingPlayGround = () => {
   const [code, setCode] = useState('');
@@ -121,7 +121,7 @@ const CodingPlayGround = () => {
         </div>
 
         <div className="right-container flex flex-shrink-0 w-[30%] flex-col h-[60%]">
-          <OutputWindow outputDetails={outputDetails} /> {/* Display the output */}
+          <OutputWindow outputDetails={outputDetails} /> 
           <div className="flex flex-col items-end">
             <CustomInput
               customInput={customInput}

@@ -142,7 +142,6 @@ const ProblemsPage = () => {
     getAllProblems();
   }, []);
 
-  // Function to truncate a string to a specified length
   const truncateString = (str, maxLength) => {
     if (str.length > maxLength) {
       return str.substring(0, maxLength) + "...";
@@ -150,7 +149,6 @@ const ProblemsPage = () => {
     return str;
   };
 
-  // Function to combine tags and truncate to 50 characters
   const getCombinedTags = (tags) => {
     const combinedTags = tags.join(", ");
     return truncateString(combinedTags, 20);
@@ -169,7 +167,6 @@ const ProblemsPage = () => {
           direction={isSmallScreen ? "column-reverse" : "row"}
         >
           <Grid item xs={12} md={9}>
-            {/* Filters and Problem List */}
             <Box
               display="flex"
               justifyContent="space-between"
@@ -293,7 +290,6 @@ const ProblemsPage = () => {
           </Grid>
 
           <Grid item xs={12} md={3}>
-            {/* Card with Pie Chart */}
             <Card>
               <CardContent>
                 <Typography variant="h6" gutterBottom>

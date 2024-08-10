@@ -13,11 +13,11 @@ const ProblemStatement = ({
   const getDifficultyColor = (difficulty) => {
     switch (difficulty) {
       case "Easy":
-        return "success"; // Green
+        return "success"; 
       case "Medium":
-        return "warning"; // Yellow
+        return "warning"; 
       case "Hard":
-        return "error"; // Red
+        return "error"; 
       default:
         return "default";
     }
@@ -26,8 +26,8 @@ const ProblemStatement = ({
   return (
     <Box
       sx={{
-        height: outputVisible ? "55vh" : "85vh", // Adjust height based on output visibility
-        overflowY: "auto", // Enable vertical scrollbar
+        height: outputVisible ? "55vh" : "85vh",
+        overflowY: "auto", 
         padding: 2,
       }}
     >

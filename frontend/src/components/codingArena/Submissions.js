@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Box, Typography, Paper, Divider, Modal, Button, IconButton } from "@mui/material";
 import { customStyles } from "../../constants/customStyles";
-import ContentCopyIcon from '@mui/icons-material/ContentCopy'; // Import Material-UI clipboard icon
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 
 const sampleCode = `// Sample code snippet
 function binarySearch(arr, target) {
@@ -38,7 +38,7 @@ const Submissions = ({ submissions = [] }) => {
   };
 
   const handleOpen = (code) => {
-    setCurrentCode(code || sampleCode); // Use sampleCode if code is not provided
+    setCurrentCode(code || sampleCode); 
     setOpen(true);
   };
 

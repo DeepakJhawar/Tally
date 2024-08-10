@@ -15,7 +15,6 @@ import {
 } from "@mui/material";
 import axios from "axios";
 
-// Define validation schema
 const schema = yup
   .object({
     title: yup.string().required("Title is required"),
@@ -23,7 +22,7 @@ const schema = yup
       .string()
       .max(5000, "Description must be less than 5000 characters")
       .required("Description is required"),
-    constraints: yup.string().required("Constraints are required"),
+    constraints: yup.string(),
     input: yup.string().required("Input is required"),
     output: yup.string().required("Output is required"),
     tags: yup.array().of(yup.string()).min(1, "At least one tag is required"),

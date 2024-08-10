@@ -1,5 +1,3 @@
-// components/codingPlayground/OutputWindow.js
-
 import React from "react";
 
 const OutputWindow = ({ outputDetails }) => {

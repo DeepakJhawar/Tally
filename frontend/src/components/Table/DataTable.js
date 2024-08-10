@@ -1,4 +1,3 @@
-// src/components/DataTable.js
 import React from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import TableRowComponent from './TableRow';
