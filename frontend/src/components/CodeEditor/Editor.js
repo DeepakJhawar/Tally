@@ -8,7 +8,6 @@ import "react-toastify/dist/ReactToastify.css";
 import { defineTheme } from "../../lib/defineTheme";
 import useKeyPress from "../../hooks/useKeyPress";
 import CodeEditorWindow from "../codingPlayground/CodeEditorWindow";
-import ThemeDropdown from "../codingPlayground/ThemeDropdown";
 import LanguagesDropdown from "../codingPlayground/LanguagesDropdown";
 
 const javascriptDefault = `/**

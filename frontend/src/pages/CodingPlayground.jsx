@@ -81,8 +81,10 @@ const CodingPlayGround = () => {
       input: btoa(customInput),
     };
 
-    const response = await axios.post("http://localhost:6969/run-playground-code", formData);
-    if(response.data.status === 'ok'){
+    const response = await axios.post("http://localhost:6969/run-playground-code", formData, {
+      validateStatus: (status) => status >= 200 && status < 500,
+    });
+    if(response.data.status === 'passed'){
       setOutputDetails(response.data);
       setProcessing(false);
       showSuccessToast("Compiled Successfully!");
