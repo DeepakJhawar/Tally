@@ -1,29 +1,104 @@
+// import React, { useState } from "react";
+// import {
+//   Typography,
+//   Paper,
+//   IconButton,
+//   Tabs,
+//   Tab,
+//   Box,
+// } from "@mui/material";
+// import CloseIcon from "@mui/icons-material/Close";
+
+// const parseResult = (resultString) => {
+//   const resultLines = resultString.split("\n");
+//   const inputLine = resultLines.find((line) => line.startsWith("Input:")) || "";
+//   const outputLine =
+//     resultLines.find((line) => line.startsWith("Output:")) || "";
+
+//   return {
+//     input: inputLine.replace("Input:", "").trim(),
+//     output: outputLine.replace("Output:", "").trim(),
+//   };
+// };
+
+// const Output = ({ results = [], onClose }) => {
+//   const [currentTab, setCurrentTab] = useState(0);
+
+//   const handleTabChange = (event, newValue) => {
+//     setCurrentTab(newValue);
+//   };
+
+//   const currentResult = parseResult(results[currentTab] || "");
+
+//   return (
+//     <Paper
+//       elevation={0}
+//       sx={{
+//         height: "50%",
+//         overflowY: "auto",
+//         position: "relative",
+//         border: "none",
+//         boxShadow: "none",
+//         padding: 1,
+//       }}
+//     >
+//       <IconButton
+//         sx={{ position: "relative", top: 0, left: 650 }}
+//         onClick={onClose} // Correctly call the onClose function passed as a prop
+//       >
+//         <CloseIcon />
+//       </IconButton>
+//       <Tabs
+//         value={currentTab}
+//         onChange={handleTabChange}
+//         aria-label="test case tabs"
+//         sx={{ borderBottom: 1, borderColor: "divider" }}
+//       >
+//         {results.map((_, index) => (
+//           <Tab key={index} label={`Test Case ${index + 1}`} />
+//         ))}
+//       </Tabs>
+//       <Box sx={{ padding: 2 }}>
+//         {results.length === 0 ? (
+//           <Typography variant="body2">No results available.</Typography>
+//         ) : (
+//           <>
+//             <Typography variant="body2">
+//               <strong>Input:</strong> {currentResult.input}
+//             </Typography>
+//             <Typography variant="body2">
+//               <strong>Output:</strong> {currentResult.output}
+//             </Typography>
+//           </>
+//         )}
+//       </Box>
+//     </Paper>
+//   );
+// };
+
+// export default Output;
 import React, { useState } from "react";
 import {
   Typography,
   Paper,
   IconButton,
-  Divider,
   Tabs,
   Tab,
   Box,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
-
 const parseResult = (resultString) => {
-    const resultLines = resultString.split('\n');
-    const inputLine = resultLines.find(line => line.startsWith('Input:')) || '';
-    const targetLine = resultLines.find(line => line.startsWith('Target:')) || '';
-    const outputLine = resultLines.find(line => line.startsWith('Output:')) || '';
-  
-    return {
-      input: inputLine.replace('Input:', '').trim(),
-      target: targetLine.replace('Target:', '').trim(),
-      output: outputLine.replace('Output:', '').trim()
-    };
+  const resultLines = resultString.split("\n");
+  const inputLine = resultLines.find((line) => line.startsWith("Input:")) || "";
+  const outputLine =
+    resultLines.find((line) => line.startsWith("Output:")) || "";
+
+  return {
+    input: inputLine.replace("Input:", "").trim(),
+    output: outputLine.replace("Output:", "").trim(),
   };
-  
+};
 
 const Output = ({ results = [], onClose }) => {
   const [currentTab, setCurrentTab] = useState(0);
@@ -32,55 +107,55 @@ const Output = ({ results = [], onClose }) => {
     setCurrentTab(newValue);
   };
 
-  const currentResult = parseResult(results[currentTab] || '');
+  const currentResult = parseResult(results[currentTab] || "");
 
   return (
     <Paper
-      elevation={0} // Remove shadow for a flatter look
+      elevation={0}
       sx={{
-        height: "50%", // Full height of the container
-        overflowY: "auto", // Enable vertical scrollbar
+        height: "50%",
+        overflowY: "auto",
         position: "relative",
-        border: "none", // Remove border to eliminate the outline
-        boxShadow: "none", // Remove box shadow to eliminate any additional outline effect
-        padding: 1, // Minimal padding
+        border: "none",
+        boxShadow: "none",
+        padding: 1,
       }}
     >
-      <IconButton
-        sx={{ position: "absolute", top: 8, right: 8 }}
-        onClick={onClose} // Call the onClose function when clicked
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          borderBottom: 1,
+          borderColor: "divider",
+        }}
       >
-        <CloseIcon />
-      </IconButton>
-      <Tabs
-        value={currentTab}
-        onChange={handleTabChange}
-        aria-label="test case tabs"
-        sx={{ borderBottom: 1, borderColor: "divider" }}
-      >
-        {results.map((_, index) => (
-          <Tab key={index} label={`Test Case ${index + 1}`} />
-        ))}
-      </Tabs>
+        <Tabs
+          value={currentTab}
+          onChange={handleTabChange}
+          aria-label="test case tabs"
+        >
+          {results.map((_, index) => (
+            <Tab key={index} label={`Test Case ${index + 1}`} />
+          ))}
+        </Tabs>
+        <IconButton
+          sx={{ marginLeft: "auto" }}
+          onClick={onClose} // Correctly call the onClose function passed as a prop
+        >
+          <CloseIcon />
+        </IconButton>
+      </Box>
       <Box sx={{ padding: 2 }}>
         {results.length === 0 ? (
           <Typography variant="body2">No results available.</Typography>
         ) : (
-          //   <Typography variant="body2">
-          //     <strong>Test Case {currentTab + 1}:</strong> {results[currentTab]}
-          //   </Typography>
           <>
             <Typography variant="body2">
               <strong>Input:</strong> {currentResult.input}
             </Typography>
             <Typography variant="body2">
-              <strong>Target:</strong> {currentResult.target}
-            </Typography>
-            <Typography variant="body2">
               <strong>Output:</strong> {currentResult.output}
-            </Typography>
-            <Typography variant="body2">
-              <strong>Expected:</strong> {currentResult.expected}
             </Typography>
           </>
         )}
