@@ -59,4 +59,11 @@ const logout = (req, res) => {
 	res.redirect('/');
 }
 
-export { login, singup, logout };
+const isLoggedIn = (req, res) => {
+	if(req.session.user)
+		res.status(200).json({ isLoggedIn: true });
+	else
+		res.status(200).json({ isLoggedIn: false });
+}
+
+export { login, singup, logout, isLoggedIn };

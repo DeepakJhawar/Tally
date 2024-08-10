@@ -31,7 +31,7 @@ const Login = () => {
               return status >= 200 && status < 500;
             },
           });
-      if (response.data.status === "ok") navigate("/dashboard");
+      if (response.data.status === "ok") navigate("/problems");
       else alert(response.data.message);
     } catch (error) {
       console.error(error);

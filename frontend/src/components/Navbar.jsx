@@ -10,6 +10,8 @@ import AccountCircle from "@mui/icons-material/AccountCircle";
 import { Container } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { Link, useLocation } from "react-router-dom";
+import { useContext } from "react";
+import { AuthContext } from "../AuthContext";
 
 const FullWidthAppBar = styled(AppBar)({
   width: "100%",
@@ -19,6 +21,7 @@ const FullWidthAppBar = styled(AppBar)({
 const Navbar = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const location = useLocation(); 
+  const { isLoggedIn } = useContext(AuthContext);
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -106,7 +109,7 @@ const Navbar = () => {
           >
             Contest
           </Button>
-          <Button
+          {!isLoggedIn && <Button
             component={Link}
             to="/login"
             sx={{
@@ -118,7 +121,7 @@ const Navbar = () => {
             }}
           >
             Login
-          </Button>
+          </Button>}
           <IconButton
             aria-label="account of current user"
             aria-controls="menu-appbar"

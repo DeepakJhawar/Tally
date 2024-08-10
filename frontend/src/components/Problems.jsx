@@ -28,7 +28,38 @@ import axios from "axios";
 const filters = {
   status: ["All", "Solved", "Unsolved", "Attempted"],
   difficulty: ["All", "Easy", "Medium", "Hard"],
-  tags: ["All", 'Array', 'Hash Table', 'Linked List', 'Math', 'Two Pointers', 'String', 'Dynamic Programming', 'Backtracking', 'Divide and Conquer', 'Binary Search', 'Stack', 'Heap', 'Greedy', 'Sort', 'Graph', 'Depth First Search', 'Breadth First Search', 'Bit Manipulation', 'Tree', 'Union Find', 'Design', 'Topological Sort', 'Trie', 'Binary Search Tree', 'Brainteaser', 'Segment Tree', 'Binary Index Tree', 'Memoization', 'Binary Indexed Tree'],
+  tags: [
+    "All",
+    "Array",
+    "Hash Table",
+    "Linked List",
+    "Math",
+    "Two Pointers",
+    "String",
+    "Dynamic Programming",
+    "Backtracking",
+    "Divide and Conquer",
+    "Binary Search",
+    "Stack",
+    "Heap",
+    "Greedy",
+    "Sort",
+    "Graph",
+    "Depth First Search",
+    "Breadth First Search",
+    "Bit Manipulation",
+    "Tree",
+    "Union Find",
+    "Design",
+    "Topological Sort",
+    "Trie",
+    "Binary Search Tree",
+    "Brainteaser",
+    "Segment Tree",
+    "Binary Index Tree",
+    "Memoization",
+    "Binary Indexed Tree",
+  ],
 };
 
 const ProblemsPage = () => {
@@ -42,22 +73,26 @@ const ProblemsPage = () => {
 
   const [problems, setProblems] = useState([]);
 
-  const getAllProblems = async() =>{
-    try{
+  const getAllProblems = async () => {
+    try {
       const response = await axios.get("http://localhost:6969/all-problems");
       setProblems(response.data.data);
-    }catch(err){
-      console.log(err)
+    } catch (err) {
+      console.log(err);
     }
-  }
+  };
 
   const filteredProblems = problems.filter((problem) => {
-    const problemDifficulty = problem.difficulty ? problem.difficulty.toLowerCase() : "";
+    const problemDifficulty = problem.difficulty
+      ? problem.difficulty.toLowerCase()
+      : "";
     const problemStatus = problem.status ? problem.status.toLowerCase() : "";
-    
+
     return (
-      (statusFilter === "All" || problemStatus === statusFilter.toLowerCase()) &&
-      (difficultyFilter === "All" || problemDifficulty === difficultyFilter.toLowerCase()) &&
+      (statusFilter === "All" ||
+        problemStatus === statusFilter.toLowerCase()) &&
+      (difficultyFilter === "All" ||
+        problemDifficulty === difficultyFilter.toLowerCase()) &&
       (tagFilter === "All" || problem.tags.includes(tagFilter)) &&
       problem.title.toLowerCase().includes(searchQuery.toLowerCase())
     );
@@ -80,13 +115,19 @@ const ProblemsPage = () => {
   ).length;
 
   const easyProblems = problems.filter(
-    (problem) => problem.difficulty?.toLowerCase() === "easy" && problem.status?.toLowerCase() === "solved"
+    (problem) =>
+      problem.difficulty?.toLowerCase() === "easy" &&
+      problem.status?.toLowerCase() === "solved"
   ).length;
   const mediumProblems = problems.filter(
-    (problem) => problem.difficulty?.toLowerCase() === "medium" && problem.status?.toLowerCase() === "solved"
+    (problem) =>
+      problem.difficulty?.toLowerCase() === "medium" &&
+      problem.status?.toLowerCase() === "solved"
   ).length;
   const hardProblems = problems.filter(
-    (problem) => problem.difficulty?.toLowerCase() === "hard" && problem.status?.toLowerCase() === "solved"
+    (problem) =>
+      problem.difficulty?.toLowerCase() === "hard" &&
+      problem.status?.toLowerCase() === "solved"
   ).length;
 
   const totalProblems = problems.length;
@@ -104,7 +145,7 @@ const ProblemsPage = () => {
   // Function to truncate a string to a specified length
   const truncateString = (str, maxLength) => {
     if (str.length > maxLength) {
-      return str.substring(0, maxLength) + '...';
+      return str.substring(0, maxLength) + "...";
     }
     return str;
   };
@@ -121,7 +162,7 @@ const ProblemsPage = () => {
         <Typography variant="h4" gutterBottom>
           Problems
         </Typography>
-        
+
         <Grid
           container
           spacing={2}
@@ -237,23 +278,20 @@ const ProblemsPage = () => {
                       <TableCell
                         sx={{
                           color:
-                            statusColors[
-                              problem.status?.toLowerCase() || ""
-                            ] || "inherit",
+                            statusColors[problem.status?.toLowerCase() || ""] ||
+                            "inherit",
                         }}
                       >
                         {problem.status}
                       </TableCell>
-                      <TableCell>
-                        {getCombinedTags(problem.tags)}
-                      </TableCell>
+                      <TableCell>{getCombinedTags(problem.tags)}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
             </TableContainer>
           </Grid>
-          
+
           <Grid item xs={12} md={3}>
             {/* Card with Pie Chart */}
             <Card>
@@ -275,10 +313,7 @@ const ProblemsPage = () => {
                     label
                   >
                     {pieData.map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={entry.color}
-                      />
+                      <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
                   <Tooltip />
