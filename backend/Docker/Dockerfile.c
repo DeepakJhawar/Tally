@@ -6,6 +6,7 @@ WORKDIR /usr/src/app
 
 # Set environment variables for the source file and executable name
 ENV EXECUTABLE=tempCode
+ENV INPUT=""
 
 # Command to compile and run the C++ code using the provided environment variables
-CMD ["sh", "-c", "gcc ${EXECUTABLE}.c -o ${EXECUTABLE} && ./${EXECUTABLE}"]
+CMD ["sh", "-c", "gcc ${EXECUTABLE}.c -o ${EXECUTABLE} && echo -e \"${INPUT}\" | ./${EXECUTABLE}"]

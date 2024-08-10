@@ -22,7 +22,7 @@ const submit = async (req, res) => {
 
 const execPromise = util.promisify(exec);
 
-const runCode = async (language, code) => {
+const runCode = async (language, code, input, expectedOutput) => {
     const uniqueId = uuidv4();
     const executable = `tempCode_${uniqueId}`;
     const fileName = `${executable}.${getFileExtension(language)}`;
@@ -38,7 +38,7 @@ const runCode = async (language, code) => {
         await fs.writeFile(fileName, code);
 
         // Construct the Docker run command
-        const command = `sudo docker run --rm -e EXECUTABLE=${executable} \
+        const command = `sudo docker run --rm -e EXECUTABLE="${executable}" -e INPUT="${input}"\
             -v ${process.cwd()}:/usr/src/app --memory="256m" --memory-swap="500m" --cpus="1.0" ${imageName}`;
 
         const timeout = 30000; // 30 seconds
@@ -53,7 +53,10 @@ const runCode = async (language, code) => {
         const { stdout, stderr } = await execPromiseWithTimeout(command);
 
         if (stderr.includes('timeout')) {
-            throw new Error('Execution timed out');
+            return {
+                status: 'failed',
+                error: "timeout",
+            }
         }
 
         // Compare output to expected output
@@ -64,13 +67,11 @@ const runCode = async (language, code) => {
             expectedOutput: expectedOutput.trim(),
         };
     } catch (error) {
-        console.log(error.message)
-        if (error.message.includes('sudo')) {
+        if (error.stderr && error.stderr.includes("Killed")) {
             return {
                 status: 'failed',
                 error: 'Memory limit exceeded',
             };
-            ;
         }
 
         return {
@@ -89,8 +90,8 @@ const runCode = async (language, code) => {
 }
 
 const submitCode = async (req, res) => {
-    const { language, code, problemId } = req.body;
-    const response = await runCode(language, code, "", "hello world");
+    const { language, code, input, problemId } = req.body;
+    const response = await runCode(language, code, input, "hello world");
     if (response.status == "failed") {
         res.status(400).json(response)
     }

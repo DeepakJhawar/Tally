@@ -3,10 +3,10 @@ import mongoose from 'mongoose';
 const Schema = new mongoose.Schema(
   {
     givenInput: {
-      type: [Object],
+      type: [String],
     },
     correctOutput: {
-      type: [Object],
+      type: [String],
     },
   },
   {
@@ -14,6 +14,6 @@ const Schema = new mongoose.Schema(
     toObject: { virtuals: true },
   }
 );
-
+``
 const TestCase = mongoose.model("TestCase", Schema);
 export default TestCase;

@@ -64,8 +64,8 @@ const editTestCase = async (req, res) => {
             { _id: problemData.testCaseId }, // Filter: find by _id
             {
                 $set: {
-                    givenInput: givenInput,
-                    correctOutput: correctOutput,
+                    givenInput: [givenInput],
+                    correctOutput: [correctOutput],
                 },
             },
             {
