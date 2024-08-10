@@ -1,10 +1,13 @@
 import cors from 'cors';
+import http from 'http';
 import express from 'express';
 import mongoose from 'mongoose';
 import userRoutes from "./routes/user.js";
 import problemsRoutes from "./routes/problems.js";
 
+
 const app = express();
+const server = http.createServer(app);
 const PORT = 6969;
 
 app.use(cors());
@@ -24,7 +27,6 @@ connectDB();
 app.use('/', userRoutes);
 app.use('/', problemsRoutes);
 
-
-app.listen(PORT, ()=>{
+server.listen(PORT, ()=>{
     console.log(`Listening on port ${PORT}`);
 })

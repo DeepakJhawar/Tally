@@ -1,8 +1,61 @@
 import TestCase from "../models/testcase-model.js"
+import PendingTestCase from "../models/pending-testcase-model.js"
 import Problem from "../models/problem-model.js"
 
-const sendTestCase = async (req, res) => {
-    
+const getPendingTestCase = async (req, res) => {
+    try {
+        if (!req.user.role || req.user.role != "admin") {
+            res.status(200).json({
+                status: 'unauthorized',
+                data: "No sufficent permissions",
+            });
+            return
+        }
+        // Retrieve all test cases from the PendingTestCase collection
+        const response = await PendingTestCase.find({});
+
+        // Send the response with status 200 and the retrieved data
+        res.status(200).json({
+            status: 'ok',
+            data: response,
+        });
+    } catch (error) {
+        // Handle any errors that occur during the operation
+        console.error("Error retrieving test cases:", error);
+        res.status(500).json({
+            status: 'error',
+            message: 'An error occurred while retrieving test cases.',
+        });
+    }
+};
+
+const addPendingTestCase = async (req, res) => {
+    try {
+        const { problemNumber, givenInput, correctOutput } = req.body;
+        const problemData = await Problem.findOne({ problemNumber })
+        if (!problemData) {
+            res.status(404).json({
+                status: 'unsucessful',
+                message: `Problem Number not found`,
+            });
+            return;
+        }
+
+        const updatedTestCase = await PendingTestCase({ problemNumber, givenInput, correctOutput });
+        await updatedTestCase.save()
+
+        if (updatedTestCase) {
+            res.status(200).json({
+                status: 'ok',
+                message: `Test case successfully submitted for verification: ${updatedTestCase}`,
+            });
+        }
+    } catch (err) {
+        res.status(500).json({
+            status: 'unsuccessful',
+            message: err.message,
+        });
+    }
 }
 
 const addTestCase = async (req, res) => {
@@ -30,6 +83,11 @@ const addTestCase = async (req, res) => {
                 runValidators: true, // Run schema validations
             }
         );
+
+        try {
+            await PendingTestCase.deleteOne({ problemNumber, givenInput, correctOutput });
+        } catch { }
+
         if (updatedTestCase) {
             res.status(200).json({
                 status: 'ok',
@@ -95,4 +153,4 @@ const editTestCase = async (req, res) => {
     }
 }
 
-export { addTestCase, editTestCase };
+export { addTestCase, editTestCase, getPendingTestCase, addPendingTestCase };

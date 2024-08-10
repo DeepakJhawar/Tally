@@ -1,8 +1,12 @@
 const verifyToken = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+
+    // If the Authorization header is missing, send a 403 response
+    if (!authHeader) {
+        return res.status(403).send('Token is required');
+    }
     const token = req.headers['authorization'].split(' ')[1];
     if (!token) return res.status(403).send('Token is required');
-
-    console.log(process.env.SESSION_SECRET)
 
     jwt.verify(token, process.env.SESSION_SECRET, (err, user) => {
         if (err) return res.status(403).send('Invalid token');
@@ -11,4 +15,15 @@ const verifyToken = (req, res, next) => {
     });
 };
 
-export { verifyToken };
+const adminOnly = (req, res, next) => {
+    if (!req.user.role || req.user.role != "admin") {
+        res.status(200).json({
+            status: 'unauthorized',
+            data: "No sufficent permissions",
+        });
+        return
+    }
+    next();
+};
+
+export { verifyToken, adminOnly };
