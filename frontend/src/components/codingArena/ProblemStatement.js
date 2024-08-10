@@ -23,6 +23,13 @@ const ProblemStatement = ({
     }
   };
 
+  const combinedExamples = examples.flatMap((example) =>
+    example.givenInput.map((input, index) => ({
+      input,
+      output: example.correctOutput[index] || "", // Handle case where outputs may not align
+    }))
+  );
+
   return (
     <Box
       sx={{
@@ -92,12 +99,18 @@ const ProblemStatement = ({
           Examples
         </Typography>
         <Divider sx={{ marginBottom: 2 }} />
-        {examples.length > 0 ? (
-          examples.map((example, index) => (
+        {combinedExamples.length > 0 ? (
+          combinedExamples.map((example, index) => (
             <Box key={index} sx={{ marginBottom: 2 }}>
               <Typography variant="subtitle1">Example {index + 1}:</Typography>
-              <Typography variant="body2">Input: {example.givenInput}</Typography>
-              <Typography variant="body2">Output: {example.correctOutput}</Typography>
+              <Typography variant="body2">
+                Input:
+                <Box sx={{ whiteSpace: 'pre-line' }}>{example.input}</Box>
+              </Typography>
+              <Typography variant="body2">
+                Output:
+                <Box sx={{ whiteSpace: 'pre-line' }}>{example.output}</Box>
+              </Typography>
             </Box>
           ))
         ) : (
