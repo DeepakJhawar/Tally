@@ -8,4 +8,4 @@ ENV EXECUTABLE="tempCode"
 ENV INPUT=""
 
 # Command to run the Node.js script
-CMD ["sh", "-c", "echo -e \"${INPUT}\" | node ${EXECUTABLE}.js"]
+CMD ["sh", "-c", "printf '%s' \"$INPUT\" | node ${EXECUTABLE}.js"]

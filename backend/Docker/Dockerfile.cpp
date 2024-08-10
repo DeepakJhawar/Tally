@@ -9,4 +9,4 @@ ENV EXECUTABLE=tempCode
 ENV INPUT=""
 
 # Command to compile and run the C++ code using the provided environment variables
-CMD ["sh", "-c", "g++ ${EXECUTABLE}.cpp -o ${EXECUTABLE} && echo -e \"${INPUT}\" | ./${EXECUTABLE}"]
+CMD ["sh", "-c", "g++ ${EXECUTABLE}.cpp -o ${EXECUTABLE} && printf '%s' \"$INPUT\" | ./${EXECUTABLE}"]

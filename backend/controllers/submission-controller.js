@@ -40,7 +40,8 @@ const runCode = async (language, code, input, expectedOutput) => {
         // Construct the Docker run command
         const command = `sudo docker run --rm -e EXECUTABLE="${executable}" -e INPUT="${input}"\
             -v ${process.cwd()}:/usr/src/app --memory="256m" --memory-swap="500m" --cpus="1.0" ${imageName}`;
-
+        
+        console.log(command);
         const timeout = 30000; // 30 seconds
         const execPromiseWithTimeout = (cmd) => {
             return Promise.race([
