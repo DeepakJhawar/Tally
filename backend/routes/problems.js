@@ -1,7 +1,7 @@
 import express from 'express';
 const router = express.Router();
 
-import { getAllProblems, createProblem } from "../controllers/problems-controller.js";
+import { getAllProblems, createProblem, getProblemById } from "../controllers/problems-controller.js";
 import { submitCode, runCode } from "../controllers/submission-controller.js";
 import { addTestCase, editTestCase } from "../controllers/test-case-controller.js";
 

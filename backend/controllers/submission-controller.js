@@ -37,7 +37,6 @@ const _runCode = async (language, code, input, expectedOutput) => {
 
         // Execute the command
         const { stdout, stderr } = await execPromiseWithTimeout(command);
-        console.log(code, stdout);
         if (stderr.includes('timeout')) {
             return {
                 status: 'failed',
