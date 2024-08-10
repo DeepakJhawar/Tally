@@ -171,4 +171,84 @@ const createProblem = async (req, res) => {
 	}
 };
 
-export { getAllProblems, createProblem, getProblemById };
+const createPendingProblem = async (req, res) => {
+	let {
+		title,
+		givenInput,
+		correctOutput,
+		description,
+		constraints,
+		examples,
+		difficulty,
+		tags,
+	} = req.body;
+
+	// Validate the input
+	if (!title || !description || !difficulty) {
+		return res.status(400).json({
+			status: "unsuccessful",
+			message: "All fields are required: title, description, difficulty",
+		});
+	}
+
+	const existingProblem = await Problem.findOne({ title });
+
+	if (existingProblem) {
+		return res.status(400).json({
+			status: "unsuccessful",
+			message: "Problem already exists",
+		});
+	}
+
+	difficulty = difficulty.toLowerCase();
+	
+	let testcaseObject = {
+		givenInput: [],
+		correctOutput: []
+	};
+	if (givenInput) {
+		testcaseObject.givenInput.push(givenInput);
+	}
+	if (correctOutput) {
+		testcaseObject.correctOutput.push(correctOutput);
+	}
+
+	const savedTestCase = new TestCase.findOne(testcaseObject);
+	if (!savedTestCase){
+		return res.status(200).json({
+			status: "unsuccessful",
+			message: "TestCase ID not found"
+		})
+	}
+	const testCaseId = savedTestCase._id;
+
+	try {
+		// Create a new problem instance
+		const newProblem = new Problem({
+			title,
+			testCaseId,
+			description,
+			examples,
+			difficulty,
+			constraints,
+			tags,
+		});
+
+		// Save the new problem to the database
+		const savedProblem = await newProblem.save();
+
+		res.status(201).json({
+			status: "ok",
+			message: "Problem created successfully",
+			problem: savedProblem,
+		});
+	} catch (err) {
+		res.status(500).json({
+			status: "unsuccessful",
+			message: "Internal Server Error",
+			error: err.message,
+		});
+	}
+};
+
+export { getAllProblems, createProblem, createPendingProblem, getProblemById };

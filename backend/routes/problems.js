@@ -1,14 +1,25 @@
 import express from 'express';
 import { verifyToken, adminOnly } from '../middlewares/login-middleware.js';
 
-const router = express.Router();
+import {
+    getAllProblems, createProblem,
+    createPendingProblem, getProblemById, getPendingProblem
+} from "../controllers/problems-controller.js";
 
-import { getAllProblems, createProblem, getProblemById } from "../controllers/problems-controller.js";
+
+import {
+    addTestCase, editTestCase,
+    getPendingTestCase, addPendingTestCase
+} from "../controllers/test-case-controller.js";
+
 import { submitCode, runCode } from "../controllers/submission-controller.js";
-import { addTestCase, editTestCase, getPendingTestCase, addPendingTestCase } from "../controllers/test-case-controller.js";
+
+const router = express.Router();
 
 router.get("/all-problems", getAllProblems);
 router.post("/create-problem", createProblem);
+router.post("/create-pending-problem", verifyToken, adminOnly, createPendingProblem);
+router.post("/get-pending-problem", verifyToken, adminOnly, getPendingProblem);
 
 router.post("/add-test-case", verifyToken, adminOnly, addTestCase);
 router.post("/edit-testcase", verifyToken, adminOnly, editTestCase);
