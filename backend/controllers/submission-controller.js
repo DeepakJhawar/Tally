@@ -1,28 +1,14 @@
-import Submission from "../models/submission-model.js"
 import { exec } from 'child_process';
 import { promises as fs } from 'fs';
 import util from 'util';
 import { v4 as uuidv4 } from 'uuid';
-
-const submit = async (req, res) => {
-    try {
-        const { problem, language, verdict } = req.body;
-        const submission = await Submission(
-            { user, problem, code, language, verdict }
-        );
-        await submission.save();
-
-    } catch (err) {
-        res.status(500).json({
-            status: 'unsuccessful',
-            message: err.message,
-        });
-    }
-}
+import Submission from "../models/submission-model.js"
+import TestCase from "../models/testcase-model.js"
+import Problem from "../models/problem-model.js"
 
 const execPromise = util.promisify(exec);
 
-const runCode = async (language, code, input, expectedOutput) => {
+const _runCode = async (language, code, input, expectedOutput) => {
     const uniqueId = uuidv4();
     const executable = `tempCode_${uniqueId}`;
     const fileName = `${executable}.${getFileExtension(language)}`;
@@ -40,8 +26,7 @@ const runCode = async (language, code, input, expectedOutput) => {
         // Construct the Docker run command
         const command = `sudo docker run --rm -e EXECUTABLE="${executable}" -e INPUT="${input}"\
             -v ${process.cwd()}:/usr/src/app --memory="256m" --memory-swap="500m" --cpus="1.0" ${imageName}`;
-        
-        console.log(command);
+
         const timeout = 30000; // 30 seconds
         const execPromiseWithTimeout = (cmd) => {
             return Promise.race([
@@ -52,26 +37,32 @@ const runCode = async (language, code, input, expectedOutput) => {
 
         // Execute the command
         const { stdout, stderr } = await execPromiseWithTimeout(command);
-
+        console.log(code, stdout);
         if (stderr.includes('timeout')) {
             return {
                 status: 'failed',
-                error: "timeout",
+                message: "timeout",
             }
         }
 
         // Compare output to expected output
-        const passed = stdout.trim() === expectedOutput.trim();
+        let passed = true;
+        if (expectedOutput) {
+            passed = stdout.trim() === expectedOutput.trim();
+        }
+
         return {
             status: passed ? 'passed' : 'failed',
             output: stdout.trim(),
-            expectedOutput: expectedOutput.trim(),
+            expectedOutput: expectedOutput ? expectedOutput.trim() : null,
+            testCases: input,
+            message: passed ? "sucessful" : "wrong"
         };
     } catch (error) {
         if (error.stderr && error.stderr.includes("Killed")) {
             return {
                 status: 'failed',
-                error: 'Memory limit exceeded',
+                message: 'Memory limit exceeded',
             };
         }
 
@@ -91,14 +82,70 @@ const runCode = async (language, code, input, expectedOutput) => {
 }
 
 const submitCode = async (req, res) => {
-    const { language, code, input, problemId } = req.body;
-    const response = await runCode(language, code, input, "hello world");
+    let { language, code, problemNumber } = req.body;
+    code = atob(code);
+
+    if (req.session && req.session.user && req.session.user._id) {
+        return res.status(400).json({
+            status: "failed",
+            message: "User login required."
+        });
+    }
+
+    // Validate the input
+    if (!language || !code || !problemNumber) {
+        return res.status(400).json({
+            status: "failed",
+            message: "All fields are required: language, code, problemNumber"
+        });
+    }
+
+    const problemData = await Problem.findOne({ problemNumber }).exec();
+    const testCaseId = problemData.testCaseId;
+
+    const testCaseData = await TestCase.findOne({ _id: testCaseId });
+    if (!testCaseData) {
+        return res.status(400).json({
+            status: "failed",
+            message: "Test case not found"
+        });
+    }
+
+    const testCases = testCaseData.givenInput.map((input, index) => ({
+        input,
+        expectedOutput: testCaseData.correctOutput[index]
+    }));
+
+    for (const [index, { input, expectedOutput }] of testCases.entries()) {
+        const response = await _runCode(language, code, input, expectedOutput);
+        if (response.status == "failed") {
+            let verdict = "";
+            if (response.message == "timeout") {
+                verdict = "TIMELIMITED ERROR";
+            } else if (response.message == "Memory limit exceeded") {
+                verdict = "MEMORY ERROR";
+            } else if (response.message == "wrong") {
+                verdict = "WRONG ANSWER";
+            } else {
+                verdict = "ERROR";
+            }
+            await Submission({ user: req.session.user._id, problem: problemNumber, code: code, language: language, verdict: verdict })
+            return res.status(400).json({ ...response, passed: `${index + 1}/${testCases.length}` })
+        }
+    }
+    await Submission({ user: req.session.user._id, problem: problemNumber, code: code, language: language, verdict: "ACCEPTED" })
+    res.status(200).json({ status: "passed", message: "All testcases passed.", passed: `${testCases.length}/${testCases.length}` })
+};
+
+const runCode = async (req, res) => {
+    let { language, code, input, expectedOutput } = req.body;
+    code = atob(code);
+
+    const response = await _runCode(language, code, input, expectedOutput);
     if (response.status == "failed") {
-        res.status(400).json(response)
+        return res.status(400).json(response)
     }
-    else {
-        res.status(200).json(response)
-    }
+    res.status(200).json(response)
 };
 
 const getDockerImageName = (language) => {
@@ -129,5 +176,5 @@ const getFileExtension = (language) => {
     }
 };
 
-export { submitCode, getDockerImageName, getFileExtension, submit };
+export { submitCode, runCode };
 
