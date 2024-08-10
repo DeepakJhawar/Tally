@@ -1,6 +1,10 @@
 import TestCase from "../models/testcase-model.js"
 import Problem from "../models/problem-model.js"
 
+const sendTestCase = async (req, res) => {
+    
+}
+
 const addTestCase = async (req, res) => {
     try {
         const { problemNumber, givenInput, correctOutput } = req.body;
@@ -17,8 +21,8 @@ const addTestCase = async (req, res) => {
             { _id: problemData.testCaseId }, // Filter: find by _id
             {
                 $push: {
-                    givenInput: { $each: givenInput },
-                    correctOutput: { $each: correctOutput },
+                    givenInput: givenInput,
+                    correctOutput: correctOutput,
                 },
             },
             {

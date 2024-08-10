@@ -14,6 +14,6 @@ const Schema = new mongoose.Schema(
     toObject: { virtuals: true },
   }
 );
-``
+
 const TestCase = mongoose.model("TestCase", Schema);
 export default TestCase;

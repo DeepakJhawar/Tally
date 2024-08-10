@@ -81,7 +81,7 @@ const getProblemById = async (req, res) => {
 	let testcaseObject = {};
 	if (testcase) {
 		testcaseObject = testcase.toObject();
-	
+
 		// Slice givenInput and correctOutput to include only the first 2 elements
 		testcaseObject.givenInput = testcaseObject.givenInput ? testcaseObject.givenInput.slice(0, 2) : [];
 		testcaseObject.correctOutput = testcaseObject.correctOutput ? testcaseObject.correctOutput.slice(0, 2) : [];
@@ -126,10 +126,19 @@ const createProblem = async (req, res) => {
 	}
 
 	difficulty = difficulty.toLowerCase();
-	const newTestCase = new TestCase({
-		givenInput: [givenInput],
-		correctOutput: [correctOutput],
-	});
+	
+	let testcaseObject = {
+		givenInput: [],
+		correctOutput: []
+	};
+	if (givenInput) {
+		testcaseObject.givenInput.push(givenInput);
+	}
+	if (correctOutput) {
+		testcaseObject.correctOutput.push(correctOutput);
+	}
+
+	const newTestCase = new TestCase(testcaseObject);
 	const savedTestCase = await newTestCase.save();
 	const testCaseId = savedTestCase._id;
 

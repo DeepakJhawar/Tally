@@ -10,7 +10,7 @@ import { addTestCase, editTestCase } from "../controllers/test-case-controller.j
 router.get("/all-problems", getAllProblems);
 router.post("/create-problem", createProblem);
 
-router.post("/add-test-case", verifyToken, addTestCase);
+router.post("/add-test-case", addTestCase);
 router.post("/edit-test-case", verifyToken, editTestCase);
 
 router.post("/submit-code", verifyToken, submitCode);
