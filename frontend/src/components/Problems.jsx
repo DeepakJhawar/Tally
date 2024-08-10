@@ -64,9 +64,11 @@ const filters = {
 
 const ProblemsPage = () => {
   const params = useParams();
-  if(!localStorage.getItem("token") && params){
+  const token = params.token;
+  console.log(token);
+  if(!localStorage.getItem("token") && token){
     localStorage.setItem("token", token);
-    window.location.reload();
+    // window.location.reload();
   }
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");

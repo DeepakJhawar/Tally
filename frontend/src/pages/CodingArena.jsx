@@ -66,13 +66,13 @@ const CodingArena = () => {
       default:
         return (problemData &&
           <ProblemStatement
-            title={problemData.data.title}
-            description={problemData.data.description}
-            constraints={problemData.data.constraints}
-            examples={problemData.data.examples}
-            tags={problemData.data.tags}
+            title={problemData.title}
+            description={problemData.description}
+            constraints={problemData.constraints}
+            examples={problemData.examples}
+            tags={problemData.tags}
             outputVisible={outputVisible} // Pass outputVisible to adjust height
-            difficulty={problemData.data.difficulty}
+            difficulty={problemData.difficulty}
           />
         );
     }
