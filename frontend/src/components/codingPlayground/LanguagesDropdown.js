@@ -1,17 +1,28 @@
 import React from "react";
-import Select from "react-select";
-import { customStyles } from "../../constants/customStyles";
+import { MenuItem, Select } from "@mui/material";
 import { languageOptions } from "../../constants/languageOptions";
 
 const LanguagesDropdown = ({ onSelectChange }) => {
+  const [selectedLanguage, setSelectedLanguage] = React.useState(languageOptions[0]);
+
+  const handleChange = (event) => {
+    const selected = languageOptions.find(option => option.value === event.target.value);
+    setSelectedLanguage(selected);
+    onSelectChange(selected); // Pass the selected language object
+  };
+
   return (
     <Select
-      placeholder={`Filter By Category`}
-      options={languageOptions}
-      styles={customStyles}
-      defaultValue={languageOptions[0]}
-      onChange={(selectedOption) => onSelectChange(selectedOption)}
-    />
+      value={selectedLanguage.value}
+      onChange={handleChange}
+      displayEmpty
+    >
+      {languageOptions.map((option) => (
+        <MenuItem key={option.value} value={option.value}>
+          {option.label}
+        </MenuItem>
+      ))}
+    </Select>
   );
 };
 
