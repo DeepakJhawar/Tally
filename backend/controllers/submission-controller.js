@@ -170,6 +170,8 @@ const getFileExtension = (language) => {
             return 'js';
         case 'cpp':
             return 'cpp';
+        case 'c':
+            return 'c';
         default:
             return '';
     }
