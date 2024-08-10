@@ -15,14 +15,6 @@ const getAllProblems = async (req, res) => {
 		const updatedProblems = problems.map(async (problem) => {
 			// Check if there's a submission for the problem and user
 			problem = problem.toObject();
-			const testcase = await TestCase.findById(problem.testCaseId);
-			let testcaseObject = testcase ? testcase.toObject() : {};
-
-			if (testcaseObject.givenInput) {
-				testcaseObject = testcaseObject.givenInput.slice(0, 2);
-			} else {
-				testcaseObject = [];
-			}
 
 			let result = {
 				problem_id: problem.problemNumber,
@@ -31,8 +23,6 @@ const getAllProblems = async (req, res) => {
 				difficulty: problem.difficulty,
 				tags: problem.tags,
 				constrains: problem.constrains,
-				testcase: testcaseObject,
-				testCaseId: problem.testCaseId,
 				status: "unattempted",
 			};
 
@@ -138,8 +128,8 @@ const createProblem = async (req, res) => {
 
 	difficulty = difficulty.toLowerCase();
 	const newTestCase = new TestCase({
-		givenInput: givenInput,
-		correctOutput: correctOutput,
+		givenInput: [givenInput],
+		correctOutput: [correctOutput],
 	});
 	const savedTestCase = await newTestCase.save();
 	const testCaseId = savedTestCase._id;
