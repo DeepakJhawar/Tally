@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Grid, Box, IconButton, Tabs, Tab, Button } from "@mui/material";
 import ProblemStatement from "../components/codingArena/ProblemStatement";
 import Solutions from "../components/codingArena/Solutions";
@@ -9,7 +9,6 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useParams } from "react-router-dom";
 import { customStyles } from "../constants/customStyles";
 import axios from "axios";
-import { useContext } from "react";
 import { AuthContext } from "../AuthContext";
 import LoginModal from "../components/LoginModal";
 
@@ -18,15 +17,21 @@ const CodingArena = () => {
   const { problem_id } = useParams();
   const { isLoggedIn } = useContext(AuthContext);
   const [readyForRender, setReadyForRender] = useState(false);
+  const [currentTab, setCurrentTab] = useState(0);
+  const [solutions, setSolutions] = useState([]);
+  const [submissions, setSubmissions] = useState([]);
+  const [outputVisible, setOutputVisible] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [isSubmission, setIsSubmission] = useState(false); 
+
   useEffect(() => {
     const fetchProblemData = async () => {
       try {
         const response = await axios.get(
           `http://localhost:6969/problem/${problem_id}`
         );
-  
-        console.log(response.data.data);
-        if (response.data.status == "ok") {
+
+        if (response.data.status === "ok") {
           setProblemData(response.data.data);
         } else {
           setProblemData({ Error: "Cannot Find Problem, Go back to home page." });
@@ -37,26 +42,26 @@ const CodingArena = () => {
         setProblemData({ Error: "An error occurred. Please try again later." });
       }
     };
-  
+
     fetchProblemData();
-  }, [problem_id]); 
-  const [currentTab, setCurrentTab] = useState(0);
-  const [solutions, setSolutions] = useState([]);
-  const [submissions, setSubmissions] = useState([]);
-  const [outputVisible, setOutputVisible] = useState(false);
-  const [showModal, setShowModal] = useState(false);
+  }, [problem_id]);
 
   const handleTabChange = (event, newValue) => {
     setCurrentTab(newValue);
   };
 
   const handleRunClick = () => {
+    setIsSubmission(false);
     setOutputVisible(true);
-  }
+  };
 
   const handleSubmitClick = () => {
-    if(isLoggedIn) setOutputVisible(true);
-    else setShowModal(true);
+    if (isLoggedIn) {
+      setIsSubmission(true);
+      setOutputVisible(true);
+    } else {
+      setShowModal(true);
+    }
   };
 
   const handleOutputClose = () => {
@@ -76,9 +81,9 @@ const CodingArena = () => {
             <ProblemStatement
               title={problemData.title || ""}
               description={problemData.description || ""}
-              constraints={problemData.constraints || []} // Default to empty array
-              examples={problemData.examples || []}       // Default to empty array
-              tags={problemData.tags || []}               // Default to empty array
+              constraints={problemData.constraints || []}
+              examples={problemData.examples || []}
+              tags={problemData.tags || []}
               outputVisible={outputVisible}
               difficulty={problemData.difficulty || ""}
             />
@@ -90,7 +95,6 @@ const CodingArena = () => {
         );
     }
   };
-  
 
   return (
     <>
@@ -100,15 +104,15 @@ const CodingArena = () => {
             sx={{
               display: "flex",
               flexDirection: "column",
-              height: "100%", 
+              height: "100%",
             }}
           >
             <Box
               sx={{
                 display: "flex",
                 flexDirection: "column",
-                flex: 1, 
-                overflow: "hidden", 
+                flex: 1,
+                overflow: "hidden",
               }}
             >
               <Box
@@ -168,12 +172,12 @@ const CodingArena = () => {
             {outputVisible && (
               <Box
                 sx={{
-                  height: "40%",
+                  height: "60vh",
                   overflowY: "auto",
                   position: "absolute",
-                  top: "75%",
+                  top: "65%",
                   width: "50%",
-                  border: "none", 
+                  border: "none",
                   boxShadow: "none",
                   padding: 1,
                   marginTop: 2,
@@ -191,13 +195,16 @@ const CodingArena = () => {
                 </IconButton>
                 <Output
                   results={[
-                    "Input: [1, 2, 3, 4, 5]\nTarget: 3\nOutput: 2",
-                    "Input: [10, 20, 30, 40, 50]\nTarget: 25\nOutput: -1",
-                    "Input: [1, 3, 5, 7, 9]\nTarget: 7\nOutput: 3",
-                    "Input: [2, 4, 6, 8, 10]\nTarget: 4\nOutput: 1",
-                    "Input: [0, 2, 4, 6, 8, 10]\nTarget: 0\nOutput: 0",
+                    {
+                      input: "1 2 3",
+                      output: "143",
+                      expectedOutput: "123",
+                      message: "wrong answer.",
+                      passed: "1/3",
+                    },
                   ]}
                   onClose={handleOutputClose}
+                  isSubmission={isSubmission} e
                 />
               </Box>
             )}
@@ -217,7 +224,7 @@ const CodingArena = () => {
           position: "absolute",
           bottom: 0,
           right: 0,
-          backgroundColor: "transparent", 
+          backgroundColor: "transparent",
           zIndex: 1,
         }}
       >
@@ -228,16 +235,16 @@ const CodingArena = () => {
             maxWidth: "none",
             padding: "6px 12px",
             marginRight: 1,
-            border: "none", 
+            border: "none",
             backgroundColor: "black",
-            color: "white", 
+            color: "white",
             "&:hover": {
               cursor: "pointer",
-              color: "blue", 
+              color: "blue",
             },
           }}
-          variant="text" 
-          onClick={handleRunClick} 
+          variant="text"
+          onClick={handleRunClick}
         >
           Run
         </Button>
@@ -247,12 +254,12 @@ const CodingArena = () => {
             width: "auto",
             maxWidth: "none",
             padding: "6px 12px",
-            border: "none", 
-            backgroundColor: "black", 
+            border: "none",
+            backgroundColor: "black",
             color: "white",
             "&:hover": {
               cursor: "pointer",
-              color: "blue", 
+              color: "blue",
             },
           }}
           variant="text"
