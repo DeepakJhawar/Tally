@@ -5,7 +5,6 @@ FROM node:14-slim
 WORKDIR /usr/src/app
 
 ENV EXECUTABLE="tempCode"
-ENV INPUT=""
 
 # Command to run the Node.js script
-CMD ["sh", "-c", "printf '%s' \"$INPUT\" | node ${EXECUTABLE}.js"]
+CMD ["sh", "-c", "cat ${EXECUTABLE}.txt | node ${EXECUTABLE}.js"]
