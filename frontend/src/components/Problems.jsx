@@ -21,7 +21,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate} from "react-router-dom";
 import { PieChart, Pie, Cell, Legend, Tooltip } from "recharts";
 import axios from "axios";
 
@@ -63,12 +63,17 @@ const filters = {
 };
 
 const ProblemsPage = () => {
-  const params = useParams();
-  const token = params.token;
-  console.log(token);
-  if(!localStorage.getItem("token") && token){
-    localStorage.setItem("token", token);
-    // window.location.reload();
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const navigate = useNavigate();
+  const token = params.get('token'); 
+
+  console.log('Query Params:', params.toString()); 
+
+  if (!localStorage.getItem('token') && token) {
+    localStorage.setItem('token', token);
+    params.delete("token");
+    navigate(`${location.pathname}?${params.toString()}`, { replace: true });
   }
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");

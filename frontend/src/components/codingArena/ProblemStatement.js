@@ -2,22 +2,22 @@ import React from "react";
 import { Box, Typography, Paper, Divider, Chip } from "@mui/material";
 
 const ProblemStatement = ({
-  title,
-  description,
-  constraints,
-  examples,
+  title = "Untitled Problem",
+  description = "No description available.",
+  constraints = [], // Default to empty array
+  examples = [], // Default to empty array
   outputVisible,
-  tags,
-  difficulty,
+  tags = [], // Default to empty array
+  difficulty = "Unknown", // Default value
 }) => {
   const getDifficultyColor = (difficulty) => {
     switch (difficulty) {
       case "Easy":
-        return "success"; 
+        return "success";
       case "Medium":
-        return "warning"; 
+        return "warning";
       case "Hard":
-        return "error"; 
+        return "error";
       default:
         return "default";
     }
@@ -27,7 +27,7 @@ const ProblemStatement = ({
     <Box
       sx={{
         height: outputVisible ? "55vh" : "85vh",
-        overflowY: "auto", 
+        overflowY: "auto",
         padding: 2,
       }}
     >
@@ -58,9 +58,15 @@ const ProblemStatement = ({
           Constraints
         </Typography>
         <Divider sx={{ marginBottom: 2 }} />
-        <Typography variant="body1" gutterBottom>
-          {constraints}
-        </Typography>
+        {constraints.length > 0 ? (
+          <Typography variant="body1" gutterBottom>
+            {constraints}
+          </Typography>
+        ) : (
+          <Typography variant="body1" gutterBottom>
+            No constraints provided.
+          </Typography>
+        )}
       </Paper>
 
       <Paper elevation={3} sx={{ padding: 3, marginBottom: 3 }}>
@@ -71,9 +77,13 @@ const ProblemStatement = ({
         <Box
           sx={{ display: "flex", flexWrap: "wrap", gap: 1, marginBottom: 2 }}
         >
-          {tags.map((tag, index) => (
-            <Chip key={index} label={tag} sx={{ margin: "2px" }} />
-          ))}
+          {tags.length > 0 ? (
+            tags.map((tag, index) => (
+              <Chip key={index} label={tag} sx={{ margin: "2px" }} />
+            ))
+          ) : (
+            <Typography variant="body1">No tags provided.</Typography>
+          )}
         </Box>
       </Paper>
 
@@ -82,13 +92,17 @@ const ProblemStatement = ({
           Examples
         </Typography>
         <Divider sx={{ marginBottom: 2 }} />
-        {examples.map((example, index) => (
-          <Box key={index} sx={{ marginBottom: 2 }}>
-            <Typography variant="subtitle1">Example {index + 1}:</Typography>
-            <Typography variant="body2">{example.givenInput}</Typography>
-            <Typography variant="body2">{example.correctOutput}</Typography>
-          </Box>
-        ))}
+        {examples.length > 0 ? (
+          examples.map((example, index) => (
+            <Box key={index} sx={{ marginBottom: 2 }}>
+              <Typography variant="subtitle1">Example {index + 1}:</Typography>
+              <Typography variant="body2">Input: {example.givenInput}</Typography>
+              <Typography variant="body2">Output: {example.correctOutput}</Typography>
+            </Box>
+          ))
+        ) : (
+          <Typography variant="body1">No examples provided.</Typography>
+        )}
       </Paper>
     </Box>
   );
