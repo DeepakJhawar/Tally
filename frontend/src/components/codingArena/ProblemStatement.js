@@ -7,7 +7,6 @@ const ProblemStatement = ({ title, description, constraints, examples, outputVis
   // Difficulty level (for example, "Easy", "Medium", "Hard")
   const difficulty = "Easy";
 
-  // Function to determine chip color based on difficulty
   const getDifficultyColor = (difficulty) => {
     switch (difficulty) {
       case "Easy":
@@ -17,7 +16,7 @@ const ProblemStatement = ({ title, description, constraints, examples, outputVis
       case "Hard":
         return "error";   // Red
       default:
-        return "default"; // Gray or default color
+        return "default"; 
     }
   };
 

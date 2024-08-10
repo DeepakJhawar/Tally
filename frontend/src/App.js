@@ -43,8 +43,8 @@ function App() {
             <Route path="/contest" element={<Contest />} /> 
             <Route path="/contribute" element={<Contribute />}></Route>
           </Route>
+          <Route path="/problem/:problem_id" element={<CodingArena />} />
           <Route path="/playground" element={<CodingPlayGround/>} />
-          <Route path="/codingArena" element={<CodingArena />}/>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/dashboard" element={<Dashboard />} />

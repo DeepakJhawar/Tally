@@ -12,6 +12,7 @@ const _runCode = async (language, code, input, expectedOutput) => {
     const uniqueId = uuidv4();
     const executable = `tempCode_${uniqueId}`;
     const fileName = `${executable}.${getFileExtension(language)}`;
+    const inputFile = `${executable}.txt`;
 
     try {
         // Determine the Docker image to use based on the language
@@ -22,9 +23,10 @@ const _runCode = async (language, code, input, expectedOutput) => {
 
         // Create a temp file to hold the code
         await fs.writeFile(fileName, code);
+        await fs.writeFile(inputFile, input);
 
         // Construct the Docker run command
-        const command = `docker run --rm -e EXECUTABLE="${executable}" -e INPUT="${input}" -v "${process.cwd()}:/usr/src/app" --memory="256m" --memory-swap="500m" --cpus="1.0" ${imageName}`;
+        const command = `docker run --rm -e EXECUTABLE="${executable}" -v "${process.cwd()}:/usr/src/app" --memory="256m" --memory-swap="500m" --cpus="1.0" ${imageName}`;
 
         const timeout = 30000; // 30 seconds
         const execPromiseWithTimeout = (cmd) => {
@@ -72,6 +74,9 @@ const _runCode = async (language, code, input, expectedOutput) => {
         // Clean up the temp file
         try {
             await fs.unlink(executable);
+        } catch { }
+        try {
+            await fs.unlink(inputFile);
         } catch { }
         try {
             await fs.unlink(fileName);
