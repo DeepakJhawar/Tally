@@ -162,18 +162,5 @@ const getDockerImageName = (language) => {
     }
 };
 
-const getFileExtension = (language) => {
-    switch (language) {
-        case 'python':
-            return 'py';
-        case 'javascript':
-            return 'js';
-        case 'cpp':
-            return 'cpp';
-        default:
-            return '';
-    }
-};
-
 export { submitCode, runCode };
 
