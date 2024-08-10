@@ -240,7 +240,7 @@
 // };
 
 // export default CodingArena;
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Grid, Box, IconButton, Tabs, Tab, Button } from "@mui/material";
 import ProblemStatement from "../components/codingArena/ProblemStatement";
 import Solutions from "../components/codingArena/Solutions";
@@ -248,30 +248,29 @@ import Submissions from "../components/codingArena/Submissions";
 import Editor from "../components/CodeEditor/Editor";
 import Output from "../components/codingArena/Output";
 import CloseIcon from "@mui/icons-material/Close";
+import { useParams } from "react-router-dom";
 import { customStyles } from "../constants/customStyles";
-
-const problemData = {
-  title: "Binary Search",
-  description: `Given a sorted array of integers, write a function that returns the index of a given target value. 
-                If the target is not found in the array, return -1.`,
-  constraints: `1. The array is sorted in ascending order.
-                2. The function should have a time complexity of O(log n).`,
-  examples: [
-    "Input: arr = [1, 2, 3, 4, 5, 6, 7], target = 5\nOutput: 4",
-    "Input: arr = [1, 2, 3, 4, 5, 6, 7], target = 9\nOutput: -1",
-  ],
-  tags: ['hi', 'hello']
-};
+import axios from "axios";
 
 const CodingArena = () => {
   const [currentTab, setCurrentTab] = useState(0);
-  const [solutions, setSolutions] = useState([
-    { heading: "Solution 1", sol: "Binary search solution" },
-  ]); // Example solution data
-  const [submissions, setSubmissions] = useState([
-    "questionName: Two Sum, Memory: 15MB, Time: 0.02s, isCorrect: true",
-  ]); // Example submission data
+  const [solutions, setSolutions] = useState([]); 
+  const [submissions, setSubmissions] = useState([]); 
   const [outputVisible, setOutputVisible] = useState(false);
+  
+  const { problem_id } = useParams();
+  const [problemData, setProblemData] = useState({});
+
+  useEffect(()=>{
+    const fetch = async()=>{
+      const response = await axios.get(`http://localhost:6969/problem/${problem_id}`);
+      if(response.data.status === 'ok')
+        setProblemData(response.data.data);
+      else 
+        setProblemData({"Error": "Cannot Find Problem, Go back to home page."});
+    } 
+    fetch();
+  }, []);
 
   const handleTabChange = (event, newValue) => {
     setCurrentTab(newValue);
@@ -279,12 +278,10 @@ const CodingArena = () => {
 
   const handleRunClick = () => {
     setOutputVisible(true);
-    // console.log("Run clicked - Output should be visible now");
   };
 
   const handleOutputClose = () => {
     setOutputVisible(false);
-    // console.log("Output closed");
   };
 
   const renderContent = () => {
