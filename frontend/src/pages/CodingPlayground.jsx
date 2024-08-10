@@ -4,12 +4,9 @@ import { classnames } from "../utils/general";
 import { languageOptions } from "../constants/languageOptions";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
 import useKeyPress from "../hooks/useKeyPress";
 import CodeEditorWindow from "../components/codingPlayground/CodeEditorWindow";
-import OutputWindow from "../components/codingPlayground/OutputWindow";
 import CustomInput from "../components/codingPlayground/CustomInput";
-import OutputDetails from "../components/codingPlayground/OutputDetails";
 import LanguagesDropdown from "../components/codingPlayground/LanguagesDropdown";
 import Navbar from "../components/Navbar";
 
@@ -151,7 +148,7 @@ const CodingPlayGround = () => {
         </div>
 
         <div className="right-container flex flex-shrink-0 w-[30%] flex-col h-[60%]">
-          <OutputWindow outputDetails={outputDetails} />
+          {/* <OutputWindow outputDetails={outputDetails} /> */}
           <div className="flex flex-col items-end">
             <CustomInput
               customInput={customInput}
@@ -168,7 +165,6 @@ const CodingPlayGround = () => {
               {processing ? "Processing..." : "Compile and Execute"}
             </button>
           </div>
-          {outputDetails && <OutputDetails outputDetails={outputDetails} />}
         </div>
       </div>
     </>
