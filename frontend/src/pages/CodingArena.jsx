@@ -18,9 +18,12 @@ const CodingArena = () => {
   const [solutions, setSolutions] = useState([]);
   const [submissions, setSubmissions] = useState([]);
   const [outputVisible, setOutputVisible] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   const { problem_id } = useParams();
   const [problemData, setProblemData] = useState({});
+
+  const { isLoggedIn } = useContext(AuthContext);
 
   useEffect(() => {
     const fetchProblemData = async () => {
