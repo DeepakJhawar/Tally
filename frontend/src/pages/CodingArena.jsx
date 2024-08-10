@@ -23,12 +23,13 @@ const CodingArena = () => {
   const [currentView, setCurrentView] = useState("Problem");
   const [solutions, setSolutions] = useState([]); // Initialize with default value
   const [submissions, setSubmissions] = useState([
-    "questionName: Two Sum, Memory: 15MB, Time: 0.02s, isCorrect: true",
+    { questionName: "Two Sum", memory: "15MB", time: "0.02s", isCorrect: true },
   ]); // Initialize with default value
 
   const handleViewChange = (view) => {
     setCurrentView(view);
   };
+
   const renderContent = () => {
     switch (currentView) {
       case "Solutions":
@@ -52,9 +53,7 @@ const CodingArena = () => {
     <>
       <Grid container spacing={2} sx={{ height: "100vh", padding: 2 }}>
         <Grid item xs={12} md={6}>
-          <Box
-            sx={{ display: "flex", flexDirection: "column", height: "100%" }}
-          >
+          <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
             <Box
               sx={{
                 display: "flex",
@@ -129,15 +128,15 @@ const CodingArena = () => {
             padding: "6px 12px",
             marginRight: 1,
             border: "none", // Remove border
-            backgroundColor: "black", // Transparent background
-            color: "white", // Black font color
+            backgroundColor: "black", // Black background
+            color: "white", // White font color
             "&:hover": {
               cursor: "pointer",
               color: "blue", // Change color on hover if desired
             },
           }}
           variant="text" // Ensures no background is applied
-          onClick={() => handleViewChange("Submit")} // Replace with actual Run functionality
+          onClick={() => console.log("Run clicked")} // Replace with actual Run functionality
         >
           Run
         </Button>
@@ -148,15 +147,15 @@ const CodingArena = () => {
             maxWidth: "none",
             padding: "6px 12px",
             border: "none", // Remove border
-            backgroundColor: "black", // Transparent background
-            color: "white", // Black font color
+            backgroundColor: "black", // Black background
+            color: "white", // White font color
             "&:hover": {
               cursor: "pointer",
               color: "blue", // Change color on hover if desired
             },
           }}
           variant="text" // Ensures no background is applied
-          onClick={() => handleViewChange("Submit")} // Replace with actual Submit functionality
+          onClick={() => console.log("Submit clicked")} // Replace with actual Submit functionality
         >
           Submit
         </Button>
