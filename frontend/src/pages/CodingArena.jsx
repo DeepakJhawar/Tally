@@ -14,17 +14,10 @@ import { AuthContext } from "../AuthContext";
 import LoginModal from "../components/LoginModal";
 
 const CodingArena = () => {
-  const [currentTab, setCurrentTab] = useState(0);
-  const [solutions, setSolutions] = useState([]);
-  const [submissions, setSubmissions] = useState([]);
-  const [outputVisible, setOutputVisible] = useState(false);
-  const [showModal, setShowModal] = useState(false);
-
-  const { problem_id } = useParams();
   const [problemData, setProblemData] = useState({});
-
+  const { problem_id } = useParams();
   const { isLoggedIn } = useContext(AuthContext);
-
+  const [readyForRender, setReadyForRender] = useState(false);
   useEffect(() => {
     const fetchProblemData = async () => {
       try {
@@ -32,12 +25,13 @@ const CodingArena = () => {
           `http://localhost:6969/problem/${problem_id}`
         );
   
-        if (response.status == "ok") {
-          console.log(response.data.data);
+        console.log(response.data.data);
+        if (response.data.status == "ok") {
           setProblemData(response.data.data);
         } else {
           setProblemData({ Error: "Cannot Find Problem, Go back to home page." });
         }
+        setReadyForRender(true);
       } catch (error) {
         console.error("Error fetching problem data:", error);
         setProblemData({ Error: "An error occurred. Please try again later." });
@@ -46,6 +40,11 @@ const CodingArena = () => {
   
     fetchProblemData();
   }, [problem_id]); 
+  const [currentTab, setCurrentTab] = useState(0);
+  const [solutions, setSolutions] = useState([]);
+  const [submissions, setSubmissions] = useState([]);
+  const [outputVisible, setOutputVisible] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   const handleTabChange = (event, newValue) => {
     setCurrentTab(newValue);
@@ -72,19 +71,26 @@ const CodingArena = () => {
         return <Submissions submissions={submissions} />;
       case 0:
       default:
-        return (problemData &&
-          <ProblemStatement
-            title={problemData.title}
-            description={problemData.description}
-            constraints={problemData.constraints}
-            examples={problemData.examples}
-            tags={problemData.tags}
-            outputVisible={outputVisible} // Pass outputVisible to adjust height
-            difficulty={problemData.difficulty}
-          />
+        return (
+          readyForRender && problemData && Object.keys(problemData).length > 0 ? (
+            <ProblemStatement
+              title={problemData.title || ""}
+              description={problemData.description || ""}
+              constraints={problemData.constraints || []} // Default to empty array
+              examples={problemData.examples || []}       // Default to empty array
+              tags={problemData.tags || []}               // Default to empty array
+              outputVisible={outputVisible}
+              difficulty={problemData.difficulty || ""}
+            />
+          ) : (
+            <Box sx={{ padding: 2 }}>
+              <p>Loading or Error occurred. Please try again later.</p>
+            </Box>
+          )
         );
     }
   };
+  
 
   return (
     <>
