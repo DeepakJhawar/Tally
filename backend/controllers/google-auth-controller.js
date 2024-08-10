@@ -47,7 +47,7 @@ const googleCallback = async (req, res) => {
 
 		const existingUser = await User.findOne({ email });
 		if (existingUser) {
-			res.redirect(`${process.env.ORIGIN_URL}/dashboard`);
+			res.redirect(`${process.env.ORIGIN_URL}/problems`);
 			return;
 		}
 		else {
@@ -59,7 +59,7 @@ const googleCallback = async (req, res) => {
 			});
 			await newUser.save();
 
-			res.redirect(`${process.env.ORIGIN_URL}/dashboard`);
+			res.redirect(`${process.env.ORIGIN_URL}/problems`);
 		}
 
 	} catch (error) {
