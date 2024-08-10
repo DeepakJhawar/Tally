@@ -31,6 +31,12 @@ const Navbar = () => {
     setAnchorEl(null);
   };
 
+  const handleLogout = () => {
+    localStorage.clear("token");
+    localStorage.clear("role");
+    window.location.reload();
+  }
+
   // Function to determine if a button should be highlighted
   const isActive = (path) => location.pathname === path;
 
@@ -149,7 +155,7 @@ const Navbar = () => {
           >
             <MenuItem onClick={handleClose}>Profile</MenuItem>
             <MenuItem onClick={handleClose}>My account</MenuItem>
-            <MenuItem onClick={handleClose}>Logout</MenuItem>
+            <MenuItem onClick={handleLogout}>Logout</MenuItem>
           </Menu>
         </Container>
       </Toolbar>

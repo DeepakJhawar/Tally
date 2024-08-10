@@ -21,7 +21,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { PieChart, Pie, Cell, Legend, Tooltip } from "recharts";
 import axios from "axios";
 
@@ -63,6 +63,11 @@ const filters = {
 };
 
 const ProblemsPage = () => {
+  const params = useParams();
+  if(!localStorage.getItem("token") && params){
+    localStorage.setItem("token", token);
+    window.location.reload();
+  }
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [difficultyFilter, setDifficultyFilter] = useState("All");
@@ -260,7 +265,7 @@ const ProblemsPage = () => {
                       <TableCell>
                         <Link
                           className="text-white hover:text-blue-500 transition-all duration-300"
-                          to={`/problems/${problem?.problem_id}`}
+                          to={`/problem/${problem?.problem_id}`}
                         >
                           {problem.title}
                         </Link>
