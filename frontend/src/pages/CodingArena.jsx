@@ -9,11 +9,22 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useParams } from "react-router-dom";
 import { customStyles } from "../constants/customStyles";
 import axios from "axios";
+import { useContext } from "react";
+import { AuthContext } from "../AuthContext";
+import LoginModal from "../components/LoginModal";
 
 const CodingArena = () => {
+  const [currentTab, setCurrentTab] = useState(0);
+  const [solutions, setSolutions] = useState([]);
+  const [submissions, setSubmissions] = useState([]);
+  const [outputVisible, setOutputVisible] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+
   const { problem_id } = useParams();
   const [problemData, setProblemData] = useState({});
-  
+
+  const { isLoggedIn } = useContext(AuthContext);
+
   useEffect(() => {
     const fetchProblemData = async () => {
       try {
@@ -34,14 +45,7 @@ const CodingArena = () => {
     };
   
     fetchProblemData();
-  }, [problem_id]); // Add problem_id to the dependency array
-
-  const [currentTab, setCurrentTab] = useState(0);
-  const [solutions, setSolutions] = useState([]);
-  const [submissions, setSubmissions] = useState([]);
-  const [outputVisible, setOutputVisible] = useState(false);
-
-  
+  }, [problem_id]); 
 
   const handleTabChange = (event, newValue) => {
     setCurrentTab(newValue);
@@ -49,6 +53,11 @@ const CodingArena = () => {
 
   const handleRunClick = () => {
     setOutputVisible(true);
+  }
+
+  const handleSubmitClick = () => {
+    if(isLoggedIn) setOutputVisible(true);
+    else setShowModal(true);
   };
 
   const handleOutputClose = () => {
@@ -56,7 +65,6 @@ const CodingArena = () => {
   };
 
   const renderContent = () => {
-    console.log(problemData);
     switch (currentTab) {
       case 1:
         return <Solutions solutions={solutions} />;
@@ -71,7 +79,7 @@ const CodingArena = () => {
             constraints={problemData.data.constraints}
             examples={problemData.data.examples}
             tags={problemData.data.tags}
-            outputVisible={outputVisible} // Pass outputVisible to adjust height
+            outputVisible={outputVisible} 
             difficulty={problemData.data.difficulty}
           />
         );
@@ -86,15 +94,15 @@ const CodingArena = () => {
             sx={{
               display: "flex",
               flexDirection: "column",
-              height: "100%", // Ensure full height usage
+              height: "100%", 
             }}
           >
             <Box
               sx={{
                 display: "flex",
                 flexDirection: "column",
-                flex: 1, // Take up the remaining space
-                overflow: "hidden", // Enable scrolling if content overflows
+                flex: 1, 
+                overflow: "hidden", 
               }}
             >
               <Box
@@ -143,8 +151,8 @@ const CodingArena = () => {
               </Box>
               <Box
                 sx={{
-                  flex: 1, // Take up remaining space
-                  overflowY: "auto", // Enable vertical scrollbar
+                  flex: 1,
+                  overflowY: "auto",
                 }}
               >
                 {renderContent()}
@@ -154,14 +162,14 @@ const CodingArena = () => {
             {outputVisible && (
               <Box
                 sx={{
-                  height: "40%", // Reduced height of 40% for the output component
+                  height: "40%",
                   overflowY: "auto",
                   position: "absolute",
                   top: "75%",
                   width: "50%",
-                  border: "none", // Remove border to eliminate outline
-                  boxShadow: "none", // Remove shadow to eliminate any outline effect
-                  padding: 1, // Minimal padding
+                  border: "none", 
+                  boxShadow: "none",
+                  padding: 1,
                   marginTop: 2,
                 }}
               >
@@ -171,7 +179,7 @@ const CodingArena = () => {
                     top: 8,
                     right: 8,
                   }}
-                  onClick={handleOutputClose} // Ensure this function is called
+                  onClick={handleOutputClose}
                 >
                   <CloseIcon />
                 </IconButton>
@@ -203,7 +211,7 @@ const CodingArena = () => {
           position: "absolute",
           bottom: 0,
           right: 0,
-          backgroundColor: "transparent", // Transparent background
+          backgroundColor: "transparent", 
           zIndex: 1,
         }}
       >
@@ -214,16 +222,16 @@ const CodingArena = () => {
             maxWidth: "none",
             padding: "6px 12px",
             marginRight: 1,
-            border: "none", // Remove border
-            backgroundColor: "black", // Transparent background
-            color: "white", // Black font color
+            border: "none", 
+            backgroundColor: "black",
+            color: "white", 
             "&:hover": {
               cursor: "pointer",
-              color: "blue", // Change color on hover if desired
+              color: "blue", 
             },
           }}
-          variant="text" // Ensures no background is applied
-          onClick={handleRunClick} // Ensure handleRunClick is called
+          variant="text" 
+          onClick={handleRunClick} 
         >
           Run
         </Button>
@@ -233,20 +241,24 @@ const CodingArena = () => {
             width: "auto",
             maxWidth: "none",
             padding: "6px 12px",
-            border: "none", // Remove border
-            backgroundColor: "black", // Transparent background
-            color: "white", // Black font color
+            border: "none", 
+            backgroundColor: "black", 
+            color: "white",
             "&:hover": {
               cursor: "pointer",
-              color: "blue", // Change color on hover if desired
+              color: "blue", 
             },
           }}
-          variant="text" // Ensures no background is applied
-          onClick={handleRunClick} // Trigger output visibility on Submit as well
+          variant="text"
+          onClick={handleSubmitClick}
         >
           Submit
         </Button>
       </Box>
+
+      {showModal && (
+        <LoginModal />
+      )}
     </>
   );
 };
