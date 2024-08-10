@@ -4,6 +4,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import userRoutes from "./routes/user.js";
 import problemsRoutes from "./routes/problems.js";
+import testcaseRoutes from "./routes/testcases.js";
 
 
 const app = express();
@@ -26,6 +27,7 @@ connectDB();
 
 app.use('/', userRoutes);
 app.use('/', problemsRoutes);
+app.use('/', testcaseRoutes);
 
 server.listen(PORT, ()=>{
     console.log(`Listening on port ${PORT}`);

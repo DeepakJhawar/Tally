@@ -4,13 +4,6 @@ import Problem from "../models/problem-model.js"
 
 const getPendingTestCase = async (req, res) => {
     try {
-        if (!req.user.role || req.user.role != "admin") {
-            res.status(200).json({
-                status: 'unauthorized',
-                data: "No sufficent permissions",
-            });
-            return
-        }
         // Retrieve all test cases from the PendingTestCase collection
         const response = await PendingTestCase.find({});
 
