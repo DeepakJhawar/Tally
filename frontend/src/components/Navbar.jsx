@@ -9,14 +9,16 @@ import MenuItem from "@mui/material/MenuItem";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import { Container } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 const FullWidthAppBar = styled(AppBar)({
   width: "100%",
+  backgroundColor: 'primary', // Directly specify green color
 });
 
 const Navbar = () => {
   const [anchorEl, setAnchorEl] = useState(null);
+  const location = useLocation(); 
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -26,45 +28,94 @@ const Navbar = () => {
     setAnchorEl(null);
   };
 
+  // Function to determine if a button should be highlighted
+  const isActive = (path) => location.pathname === path;
+
   return (
-    <FullWidthAppBar position="static" color="primary">
+    <FullWidthAppBar position="static">
       <Toolbar>
         <Container
           maxWidth="lg"
           style={{ display: "flex", alignItems: "center" }}
         >
-          <Typography variant="h6" style={{ flexGrow: 1 }}>
+          <Typography
+            variant="h6"
+            component={Link}
+            to={"/"}
+            sx={{
+              flexGrow: 1,
+              textDecoration: "none", // Remove default underline
+              color: isActive("/") ? '#00C853' : '#E0E0E0', // Change color if active
+              "&:hover": {
+                color: '#00C853', // Change color on hover
+              },
+            }}
+          >
             Tally CodeBrewers
           </Typography>
+
           <Button
-            color="inherit"
             component={Link}
-            to="/"
-            sx={{ marginLeft: 2 }}
+            to="/playground"
+            sx={{
+              marginLeft: 2,
+              color: isActive("/playground") ? '#00C853' : '#E0E0E0', // Highlight active button
+              "&:hover": {
+                color: '#00C853', // Change color on hover
+              },
+            }}
+          >
+            Playground
+          </Button>
+          <Button
+            component={Link}
+            to="/problems"
+            sx={{
+              marginLeft: 2,
+              color: isActive("/problems") ? '#00C853' : '#E0E0E0', // Highlight active button
+              "&:hover": {
+                color: '#00C853', // Change color on hover
+              },
+            }}
           >
             Problems
           </Button>
           <Button
-            color="inherit"
             component={Link}
             to="/contribute"
-            sx={{marginLeft: 2}}
+            sx={{
+              marginLeft: 2,
+              color: isActive("/contribute") ? '#00C853' : '#E0E0E0', // Highlight active button
+              "&:hover": {
+                color: '#00C853', // Change color on hover
+              },
+            }}
           >
             Contribute
           </Button>
           <Button
-            color="inherit"
             component={Link}
             to="/contest"
-            sx={{ marginLeft: 2 }}
+            sx={{
+              marginLeft: 2,
+              color: isActive("/contest") ? '#00C853' : '#E0E0E0', // Highlight active button
+              "&:hover": {
+                color: '#00C853', // Change color on hover
+              },
+            }}
           >
             Contest
           </Button>
           <Button
-            color="inherit"
             component={Link}
             to="/login"
-            sx={{ marginLeft: 2 }}
+            sx={{
+              marginLeft: 2,
+              color: isActive("/login") ? '#00C853' : '#E0E0E0', // Highlight active button
+              "&:hover": {
+                color: '#00C853', // Change color on hover
+              },
+            }}
           >
             Login
           </Button>

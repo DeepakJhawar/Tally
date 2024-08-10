@@ -12,6 +12,7 @@ import Contest from "./components/Contest";
 import CodingArena from "./pages/CodingArena";
 import CodingPlayGround from "./pages/CodingPlayground";
 import Contribute from "./components/Contribute";
+import Landing from "./components/Landing";
 import AdminPage from "./pages/AdminPage";
 
 const darkTheme = createTheme({
@@ -37,12 +38,12 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<Home />}>
-            <Route index element={<Problems />} />
-            <Route path="/" element={<Problems />} />
+            <Route path="/" element={<Landing />} />
+            <Route path="/problems" element={<Problems />} />
             <Route path="/contest" element={<Contest />} /> 
             <Route path="/contribute" element={<Contribute />}></Route>
           </Route>
-          <Route path="/codingPlayground" element={<CodingPlayGround/>} />
+          <Route path="/playground" element={<CodingPlayGround/>} />
           <Route path="/codingArena" element={<CodingArena />}/>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />

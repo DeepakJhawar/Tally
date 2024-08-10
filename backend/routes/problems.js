@@ -15,4 +15,6 @@ router.post("/submit-code", submitCode);
 router.post("/run-arena-code", runCode);
 router.post("/run-playground-code", runCode);
 
+router.get("/problem/:problem_id", getProblemById);
+
 export default router;
