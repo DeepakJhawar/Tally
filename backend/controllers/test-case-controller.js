@@ -4,7 +4,6 @@ import Problem from "../models/problem-model.js"
 const addTestCase = async (req, res) => {
     try {
         const { problemNumber, givenInput, correctOutput } = req.body;
-
         const problemData = await Problem.findOne({ problemNumber })
         if (!problemData) {
             res.status(404).json({
@@ -35,7 +34,7 @@ const addTestCase = async (req, res) => {
         } else {
             res.status(200).json({
                 status: 'ok',
-                message: `Test case not found with ID: ${testCaseId}`,
+                message: `Test case not found with ID: ${problemData.testCaseId}`,
             });
         }
     } catch (err) {

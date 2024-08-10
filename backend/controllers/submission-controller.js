@@ -41,7 +41,8 @@ const _runCode = async (language, code, input, expectedOutput) => {
         if (stderr.includes('timeout')) {
             return {
                 status: 'failed',
-                message: "timeout",
+                message: 'Time limit exceeded',
+                output: 'Time limit exceeded'
             }
         }
 
@@ -63,12 +64,21 @@ const _runCode = async (language, code, input, expectedOutput) => {
             return {
                 status: 'failed',
                 message: 'Memory limit exceeded',
+                output: 'Memory limit exceeded'
+            };
+        }
+        if (error.stderr && error.stderr.includes("timeout")) {
+            return {
+                status: 'failed',
+                message: 'Time limit exceeded',
+                output: 'Time limit exceeded'
             };
         }
 
         return {
             status: 'failed',
-            error: error.stderr || error.message,
+            message: error.stderr || error.message,
+            output: error.stderr || error.message
         };
     } finally {
         // Clean up the temp file
@@ -91,7 +101,8 @@ const submitCode = async (req, res) => {
     if (req.session && req.session.user && req.session.user._id) {
         return res.status(400).json({
             status: "failed",
-            message: "User login required."
+            message: "User login required.",
+            output: "User login required."
         });
     }
 
@@ -99,7 +110,8 @@ const submitCode = async (req, res) => {
     if (!language || !code || !problemNumber) {
         return res.status(400).json({
             status: "failed",
-            message: "All fields are required: language, code, problemNumber"
+            message: "All fields are required: language, code, problemNumber",
+            output: "All fields are required: language, code, problemNumber"
         });
     }
 
@@ -110,7 +122,8 @@ const submitCode = async (req, res) => {
     if (!testCaseData) {
         return res.status(400).json({
             status: "failed",
-            message: "Test case not found"
+            message: "Test case not found",
+            output: "Test case not found"
         });
     }
 
@@ -133,7 +146,7 @@ const submitCode = async (req, res) => {
                 verdict = "ERROR";
             }
             await Submission({ user: req.session.user._id, problem: problemNumber, code: code, language: language, verdict: verdict })
-            return res.status(400).json({ ...response, passed: `${index + 1}/${testCases.length}` })
+            return res.status(400).json({ ...response, passed: `${index + 1}/${testCases.length}`, input, expectedOutput })
         }
     }
     await Submission({ user: req.session.user._id, problem: problemNumber, code: code, language: language, verdict: "ACCEPTED" })

@@ -18,47 +18,31 @@ const CodingArena = () => {
   const [solutions, setSolutions] = useState([]);
   const [submissions, setSubmissions] = useState([]);
   const [outputVisible, setOutputVisible] = useState(false);
-  const [showModal, setShowModal] = useState(false);
-
-  // const problemData = {
-  //   "status": "ok",
-  //   "data": {
-  //       "_id": "66b6768f950f2b73517210fe",
-  //       "title": "Two Sum",
-  //       "examples": [{"givenInput":"0","correctOutput":"1"},{"givenInput":"0","correctOutput":"1"}],
-  //       "testCaseId": "66b6768f950f2b73517210fc",
-  //       "description": "Given an array of Integers 'nums'. Return the indexes of exactly two numbers which sum up to the target value 'k'.",
-  //       "constraints": "2 <= nums.size <= 1000, 1 <= k <= 100000, -1000 <= nums[i] <= 10000 ",
-  //       "submissionsCount": 0,
-  //       "difficulty": "easy",
-  //       "tags": [
-  //           "Array",
-  //           "Hash Table",
-  //           "Two Pointers",
-  //           "Sort"
-  //       ],
-  //       "problemNumber": 3,
-  //       "__v": 0,
-  //       "id": "66b6768f950f2b73517210fe"
-  //   }
-  // }
 
   const { problem_id } = useParams();
   const [problemData, setProblemData] = useState({});
 
-  const { isLoggedIn } = useContext(AuthContext);
-
   useEffect(() => {
-    const fetch = async () => {
-      const response = await axios.get(
-        `http://localhost:6969/problem/${problem_id}`
-      );
-      if (response.data.status === "ok") setProblemData(response.data.data);
-      else
-        setProblemData({ Error: "Cannot Find Problem, Go back to home page." });
+    const fetchProblemData = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:6969/problem/${problem_id}`
+        );
+  
+        if (response.status == "ok") {
+          console.log(response.data.data);
+          setProblemData(response.data.data);
+        } else {
+          setProblemData({ Error: "Cannot Find Problem, Go back to home page." });
+        }
+      } catch (error) {
+        console.error("Error fetching problem data:", error);
+        setProblemData({ Error: "An error occurred. Please try again later." });
+      }
     };
-    fetch();
-  }, []);
+  
+    fetchProblemData();
+  }, [problem_id]); 
 
   const handleTabChange = (event, newValue) => {
     setCurrentTab(newValue);
@@ -78,7 +62,6 @@ const CodingArena = () => {
   };
 
   const renderContent = () => {
-    console.log(problemData);
     switch (currentTab) {
       case 1:
         return <Solutions solutions={solutions} />;
@@ -86,7 +69,7 @@ const CodingArena = () => {
         return <Submissions submissions={submissions} />;
       case 0:
       default:
-        return (
+        return (problemData &&
           <ProblemStatement
             title={problemData.data.title}
             description={problemData.data.description}

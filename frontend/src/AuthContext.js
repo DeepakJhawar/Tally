@@ -9,8 +9,10 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const checkLoginStatus = async () => {
       try {
-        const response = await axios.get("http://localhost:6969/isLoggedIn");
-        setIsLoggedIn(response.data.isLoggedIn);
+        if(localStorage.getItem("token"))
+          setIsLoggedIn(true);
+        else 
+          setIsLoggedIn(false);
       } catch (error) {
         console.error("Error checking login status:", error);
       }

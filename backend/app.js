@@ -1,10 +1,10 @@
-import express from 'express';
 import cors from 'cors';
+import express from 'express';
 import mongoose from 'mongoose';
+import MongoStore from 'connect-mongo';
 import session from 'express-session';
 import userRoutes from "./routes/user.js";
 import problemsRoutes from "./routes/problems.js";
-
 
 const app = express();
 const PORT = 6969;
@@ -15,7 +15,11 @@ app.use(express.json());
 app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
-    saveUninitialized: true
+    saveUninitialized: false,
+    cookie: {maxAge: 30*24*60*60*1000}, 
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGO_URI // Your MongoDB connection string
+  }),
 }));
 
 const connectDB = async () => {
