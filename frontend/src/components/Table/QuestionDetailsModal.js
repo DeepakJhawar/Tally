@@ -8,15 +8,15 @@ const modalStyle = {
   left: '50%',
   transform: 'translate(-50%, -50%)',
   width: '80%',
-  minWidth: '70vw', // Minimum width
-  minHeight: '70vh', // Minimum height
+  minWidth: '70vw', 
+  minHeight: '70vh', 
   bgcolor: 'background.paper',
   border: '2px solid #000',
   boxShadow: 24,
   p: 4,
   display: 'flex',
   flexDirection: 'column',
-  overflow: 'auto', // Enable scrolling if content exceeds the modal dimensions
+  overflow: 'auto', 
 };
 
 const headerStyle = {
@@ -26,7 +26,7 @@ const headerStyle = {
 };
 
 const contentStyle = {
-  flex: '1 1 auto', // Allows the content area to grow and shrink as needed
+  flex: '1 1 auto', 
 };
 
 const buttonContainerStyle = {

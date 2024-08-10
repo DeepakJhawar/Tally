@@ -12,7 +12,6 @@ import {
 } from "@mui/material";
 import axios from "axios";
 
-// Define validation schema
 const schema = yup
   .object({
     problemId: yup.string().required("Problem ID is required"),

@@ -19,14 +19,14 @@ const darkTheme = createTheme({
   palette: {
     mode: "dark",
     primary: {
-      main: "#000000", // Black
+      main: "#000000",
     },
     secondary: {
-      main: "#404040", // Dark gray
+      main: "#404040",
     },
     background: {
-      default: "#000000", // Black background for the whole app
-      paper: "#121212", // Slightly lighter black for paper elements
+      default: "#000000",
+      paper: "#121212", 
     },
   },
 });

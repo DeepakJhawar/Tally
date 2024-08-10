@@ -1,4 +1,5 @@
 import { OAuth2Client } from 'google-auth-library'
+import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 
 import User from '../models/user.js';
@@ -10,6 +11,7 @@ const client = new OAuth2Client(
 	process.env.GOOGLE_CLIENT_SECRET,
 	process.env.BASE_URL
 );
+
 const googleAuth = (req, res) => {
 	const redirectUri = `https://accounts.google.com/o/oauth2/v2/auth?` +
 		`client_id=${process.env.GOOGLE_CLIENT_ID}&` +
@@ -42,25 +44,18 @@ const googleCallback = async (req, res) => {
 		const payload = ticket.getPayload();
 		const { name, email } = payload;
 
-		// Store user profile information
-		req.session.user = payload;
-
-		const existingUser = await User.findOne({ email });
-		if (existingUser) {
-			res.redirect(`${process.env.ORIGIN_URL}/problems`);
-			return;
-		}
-		else {
+		let user = await User.findOne({ email });
+		if (!user) {
 			const username = name || email.split('@')[0];
-			const newUser = new User({
+			user = new User({
 				username: username,
 				email: email,
 				password: "", // OAuth users generally don't need a password
 			});
-			await newUser.save();
-
-			res.redirect(`${process.env.ORIGIN_URL}/problems`);
+			await user.save();
 		}
+        const token = jwt.sign({ user }, process.env.SESSION_SECRET, { expiresIn: '10d' });
+		res.redirect(`${process.env.ORIGIN_URL}/problems?token=${token}`);
 
 	} catch (error) {
 		console.error('Error handling Google callback:', error);

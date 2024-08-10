@@ -14,10 +14,10 @@ const CodeEditorWindow = ({ onChange, language, code }) => {
       <Editor
         height="85vh"
         width="100%"
-        language={language || 'python'} // Ensure the correct language identifier
+        language={language || 'python'}
         value={value}
         onChange={handleEditorChange}
-        theme="vs-dark" // Using a built-in dark theme
+        theme="vs-dark"
         options={{
           selectOnLineNumbers: true,
           automaticLayout: true,

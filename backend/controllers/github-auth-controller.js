@@ -1,4 +1,6 @@
 import axios from 'axios';
+import jwt from 'jsonwebtoken';
+
 import User from '../models/user.js';
 
 const githubAuth = (req, res) => {
@@ -45,14 +47,10 @@ const githubCallback = async (req, res) => {
             // If the user doesn't exist, create a new user
             user = new User({ username, githubId });
             await user.save();
-            req.session.user = user;
-            res.redirect(`${process.env.ORIGIN_URL}/problems`);
-        } else {
-            // If the user exists, log them in
-            req.session.user = user;
-            res.redirect(`${process.env.ORIGIN_URL}/problems`);
         }
 
+        const token = jwt.sign({ user }, process.env.SESSION_SECRET, { expiresIn: '10d' });
+        res.redirect(`${process.env.ORIGIN_URL}/problems?token=${token}`);
     } catch (error) {
         console.error('Error handling GitHub callback:', error);
         res.redirect('/');
