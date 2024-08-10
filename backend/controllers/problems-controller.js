@@ -81,8 +81,7 @@ const getProblemById = async (req, res) => {
 	let testcaseObject = {};
 	if (testcase) {
 		testcaseObject = testcase.toObject();
-		console.log("Testcase Object:", testcaseObject); // Log the entire testcase object for debugging
-
+	
 		// Slice givenInput and correctOutput to include only the first 2 elements
 		testcaseObject.givenInput = testcaseObject.givenInput ? testcaseObject.givenInput.slice(0, 2) : [];
 		testcaseObject.correctOutput = testcaseObject.correctOutput ? testcaseObject.correctOutput.slice(0, 2) : [];
