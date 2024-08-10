@@ -1,10 +1,21 @@
 import TestCase from "../models/testcase-model.js"
+import Problem from "../models/problem-model.js"
 
 const addTestCase = async (req, res) => {
     try {
-        const { testCaseId, givenInput, correctOutput } = req.body;
+        const { problemNumber, givenInput, correctOutput } = req.body;
+
+        const problemData = await Problem.findOne({ problemNumber })
+        if (!problemData) {
+            res.status(404).json({
+                status: 'unsucessful',
+                message: `Problem Number not found`,
+            });
+            return;
+        }
+
         const updatedTestCase = await TestCase.findOneAndUpdate(
-            { _id: testCaseId }, // Filter: find by _id
+            { _id: problemData.testCaseId }, // Filter: find by _id
             {
                 $push: {
                     givenInput: { $each: givenInput },
@@ -37,13 +48,24 @@ const addTestCase = async (req, res) => {
 
 const editTestCase = async (req, res) => {
     try {
-        const { testCaseId, givenInput, correctOutput } = req.body;
+        const { problemNumber, givenInput, correctOutput } = req.body;
+
+        const problemData = await Problem.findOne({ problemNumber })
+        if (!problemData) {
+            res.status(404).json({
+                status: 'unsucessful',
+                message: `Problem Number not found`,
+            });
+            return;
+
+        }
+
         const updatedTestCase = await TestCase.findOneAndUpdate(
-            { _id: testCaseId }, // Filter: find by _id
+            { _id: problemData.testCaseId }, // Filter: find by _id
             {
                 $set: {
-                    givenInput: updateData.givenInput,
-                    correctOutput: updateData.correctOutput,
+                    givenInput: givenInput,
+                    correctOutput: correctOutput,
                 },
             },
             {
