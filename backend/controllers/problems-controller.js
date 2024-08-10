@@ -1,3 +1,4 @@
+import PendingProblem from "../models/pending-problem-model.js";
 import Problem from "../models/problem-model.js";
 import Submission from "../models/submission-model.js";
 import TestCase from "../models/testcase-model.js";
@@ -96,62 +97,63 @@ const getProblemById = async (req, res) => {
 	return res.status(200).json({ status: "ok", data: problem });
 };
 
-const createProblem = async (req, res) => {
-	let {
-		title,
-		givenInput,
-		correctOutput,
-		description,
-		constraints,
-		examples,
-		difficulty,
-		tags,
-	} = req.body;
+const declineProblem = async (req, res) => {
+	try {
+		let { problem_id } = req.body;
 
-	// Validate the input
-	if (!title || !description || !difficulty) {
+		const pendingProblem = await PendingProblem.findById(problem_id);
+		if (!pendingProblem) {
+			return res.status(400).json({
+				status: "unsuccessful",
+				message: "Problem id doesnt exists",
+			});
+		}
+
+		await TestCase.deleteOne({ _id: pendingProblem.testCaseId });
+		await PendingProblem.deleteOne({ _id: problem_id });
+		res.status(201).json({
+			status: "ok",
+			message: "Declined Sucessfully",
+		});
+	} catch (err) {
+		res.status(500).json({
+			status: "unsuccessful",
+			message: "Internal Server Error",
+			error: err.message,
+		});
+	}
+};
+
+const createProblem = async (req, res) => {
+	let { problem_id } = req.body;
+
+
+	const pendingProblem = await PendingProblem.findById(problem_id);
+	if (!pendingProblem) {
 		return res.status(400).json({
 			status: "unsuccessful",
-			message: "All fields are required: title, description, difficulty",
+			message: "Problem id doesnt exists",
 		});
 	}
 
-	const existingProblem = await Problem.findOne({ title });
-
+	const existingProblem = await Problem.findOne({ title: pendingProblem.title });
 	if (existingProblem) {
 		return res.status(400).json({
 			status: "unsuccessful",
-			message: "Problem already exists",
+			message: "A problem already exists with same title",
 		});
 	}
-
-	difficulty = difficulty.toLowerCase();
-	
-	let testcaseObject = {
-		givenInput: [],
-		correctOutput: []
-	};
-	if (givenInput) {
-		testcaseObject.givenInput.push(givenInput);
-	}
-	if (correctOutput) {
-		testcaseObject.correctOutput.push(correctOutput);
-	}
-
-	const newTestCase = new TestCase(testcaseObject);
-	const savedTestCase = await newTestCase.save();
-	const testCaseId = savedTestCase._id;
 
 	try {
 		// Create a new problem instance
 		const newProblem = new Problem({
-			title,
-			testCaseId,
-			description,
-			examples,
-			difficulty,
-			constraints,
-			tags,
+			title: pendingProblem.title,
+			testCaseId: pendingProblem.testCaseId,
+			description: pendingProblem.description,
+			examples: pendingProblem.examples,
+			difficulty: pendingProblem.difficulty,
+			constraints: pendingProblem.constrains,
+			tags: pendingProblem.tags,
 		});
 
 		// Save the new problem to the database
@@ -162,6 +164,8 @@ const createProblem = async (req, res) => {
 			message: "Problem created successfully",
 			problem: savedProblem,
 		});
+
+		await PendingProblem.deleteOne({ _id: problem_id })
 	} catch (err) {
 		res.status(500).json({
 			status: "unsuccessful",
@@ -201,7 +205,7 @@ const createPendingProblem = async (req, res) => {
 	}
 
 	difficulty = difficulty.toLowerCase();
-	
+
 	let testcaseObject = {
 		givenInput: [],
 		correctOutput: []
@@ -213,8 +217,9 @@ const createPendingProblem = async (req, res) => {
 		testcaseObject.correctOutput.push(correctOutput);
 	}
 
-	const savedTestCase = new TestCase.findOne(testcaseObject);
-	if (!savedTestCase){
+	const testCase = new TestCase(testcaseObject);
+	const savedTestCase = await testCase.save();
+	if (!savedTestCase) {
 		return res.status(200).json({
 			status: "unsuccessful",
 			message: "TestCase ID not found"
@@ -224,7 +229,7 @@ const createPendingProblem = async (req, res) => {
 
 	try {
 		// Create a new problem instance
-		const newProblem = new Problem({
+		const newProblem = new PendingProblem({
 			title,
 			testCaseId,
 			description,
@@ -252,75 +257,12 @@ const createPendingProblem = async (req, res) => {
 };
 
 const getPendingProblem = async (req, res) => {
-	let {
-		title,
-		givenInput,
-		correctOutput,
-		description,
-		constraints,
-		examples,
-		difficulty,
-		tags,
-	} = req.body;
-
-	// Validate the input
-	if (!title || !description || !difficulty) {
-		return res.status(400).json({
-			status: "unsuccessful",
-			message: "All fields are required: title, description, difficulty",
-		});
-	}
-
-	const existingProblem = await Problem.findOne({ title });
-
-	if (existingProblem) {
-		return res.status(400).json({
-			status: "unsuccessful",
-			message: "Problem already exists",
-		});
-	}
-
-	difficulty = difficulty.toLowerCase();
-	
-	let testcaseObject = {
-		givenInput: [],
-		correctOutput: []
-	};
-	if (givenInput) {
-		testcaseObject.givenInput.push(givenInput);
-	}
-	if (correctOutput) {
-		testcaseObject.correctOutput.push(correctOutput);
-	}
-
-	const savedTestCase = new TestCase.findOne(testcaseObject);
-	if (!savedTestCase){
-		return res.status(200).json({
-			status: "unsuccessful",
-			message: "TestCase ID not found"
-		})
-	}
-	const testCaseId = savedTestCase._id;
-
 	try {
-		// Create a new problem instance
-		const newProblem = new Problem({
-			title,
-			testCaseId,
-			description,
-			examples,
-			difficulty,
-			constraints,
-			tags,
-		});
+		const response = await PendingProblem.find({});
 
-		// Save the new problem to the database
-		const savedProblem = await newProblem.save();
-
-		res.status(201).json({
+		res.status(200).json({
 			status: "ok",
-			message: "Problem created successfully",
-			problem: savedProblem,
+			response
 		});
 	} catch (err) {
 		res.status(500).json({
@@ -331,4 +273,4 @@ const getPendingProblem = async (req, res) => {
 	}
 };
 
-export { getAllProblems, createProblem, createPendingProblem, getProblemById, getPendingProblem };
+export { getAllProblems, createProblem, createPendingProblem, getProblemById, getPendingProblem, declineProblem};
