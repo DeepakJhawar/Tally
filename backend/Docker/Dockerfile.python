@@ -8,4 +8,5 @@ ENV EXECUTABLE=tempCode
 ENV INPUT=""
 
 # Command to run the Python script
-CMD ["sh", "-c", "echo -e \"${INPUT}\" | python ${EXECUTABLE}.py"]
+# CMD ["sh", "-c", "echo -e \"${INPUT}\" | python ${EXECUTABLE}.py"]
+CMD ["sh", "-c", "printf '%s' \"$INPUT\" | python ${EXECUTABLE}.py"]
