@@ -12,6 +12,7 @@ import Contest from "./components/Contest";
 import CodingArena from "./pages/CodingArena";
 import CodingPlayGround from "./pages/CodingPlayground";
 import Contribute from "./components/Contribute";
+import AdminPage from "./pages/AdminPage";
 
 const darkTheme = createTheme({
   palette: {
@@ -48,6 +49,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/admin" element={<AdminPage/>} />
         </Routes>
       </Router>
     </ThemeProvider>
