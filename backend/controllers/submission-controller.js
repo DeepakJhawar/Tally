@@ -24,8 +24,8 @@ const _runCode = async (language, code, input, expectedOutput) => {
         await fs.writeFile(fileName, code);
 
         // Construct the Docker run command
-        const command = `sudo docker run --rm -e EXECUTABLE="${executable}" -e INPUT="${input}"\
-            -v ${process.cwd()}:/usr/src/app --memory="256m" --memory-swap="500m" --cpus="1.0" ${imageName}`;
+        const command = `docker run --rm -e EXECUTABLE="${executable}" -e INPUT="${input}"\
+            -v ${process.cwd().replace(/\\/g, '/')}:/usr/src/app --memory="256m" --memory-swap="500m" --cpus="1.0" ${imageName}`;
 
         const timeout = 30000; // 30 seconds
         const execPromiseWithTimeout = (cmd) => {

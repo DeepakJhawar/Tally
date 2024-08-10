@@ -5,7 +5,7 @@
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"start": "nodemon app.js",
-		"docker": "sudo docker build -t code-judge-python -f ./Docker/Dockerfile.python . && sudo docker build -t code-judge-nodejs -f ./Docker/Dockerfile.nodejs . && sudo docker build -t code-judge-cpp -f ./Docker/Dockerfile.cpp . && sudo docker build -t code-judge-c -f ./Docker/Dockerfile.c ."
+		"docker": "docker build -t code-judge-python -f ./Docker/Dockerfile.python . && docker build -t code-judge-nodejs -f ./Docker/Dockerfile.nodejs . && docker build -t code-judge-cpp -f ./Docker/Dockerfile.cpp . && docker build -t code-judge-c -f ./Docker/Dockerfile.c ."
 	},
 	"type": "module",
 	"keywords": [],
