@@ -8,40 +8,40 @@ export const customStyles = {
     color: "#000",
     fontSize: "0.8rem",
     lineHeight: "1.75rem",
-    backgroundColor: "#f5f5f5", // Light gray background
+    backgroundColor: "#f5f5f5", 
     cursor: "pointer",
-    border: "2px solid #dcdcdc", // Light gray border
+    border: "2px solid #dcdcdc", 
     ":hover": {
-      border: "2px solid #b0b0b0", // Slightly darker gray on hover
+      border: "2px solid #b0b0b0",
     },
   }),
   option: (styles, { isSelected, isFocused }) => ({
     ...styles,
-    color: isSelected ? "#000" : "#333", // Dark text color for selected
+    color: isSelected ? "#000" : "#333", 
     fontSize: "0.8rem",
     lineHeight: "1.75rem",
     width: "100%",
     backgroundColor: isSelected
-      ? "#e0e0e0" // Gray background for selected option
+      ? "#e0e0e0"
       : isFocused
-      ? "#f0f0f0" // Light gray background for focused option
-      : "#f5f5f5", // Default light gray background
+      ? "#f0f0f0" 
+      : "#f5f5f5", 
     ":hover": {
-      backgroundColor: "#d0d0d0", // Darker gray on hover
+      backgroundColor: "#d0d0d0", 
       color: "#000",
       cursor: "pointer",
     },
   }),
   menu: (styles) => ({
     ...styles,
-    backgroundColor: "#f5f5f5", // Light gray background
+    backgroundColor: "#f5f5f5", 
     maxWidth: "14rem",
-    border: "2px solid #dcdcdc", // Light gray border
+    border: "2px solid #dcdcdc", 
     borderRadius: "5px",
   }),
   placeholder: (defaultStyles) => ({
     ...defaultStyles,
-    color: "#666", // Medium gray for placeholder text
+    color: "#666",
     fontSize: "0.8rem",
     lineHeight: "1.75rem",
   }),

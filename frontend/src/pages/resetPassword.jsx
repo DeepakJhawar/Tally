@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import axios from "axios";
-import { useNavigate, useLocation } from "react-router-dom"; // Corrected import
+import { useNavigate, useLocation } from "react-router-dom"; 
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -70,9 +70,6 @@ const ResetPassword = () => {
             alignItems: "center",
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-            {/* You can add an icon here if needed */}
-          </Avatar>
           <Typography component="h1" variant="h5">
             Reset Password
           </Typography>

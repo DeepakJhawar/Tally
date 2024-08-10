@@ -15,7 +15,6 @@ import {
 } from "@mui/material";
 import axios from "axios";
 
-// Define validation schema
 const schema = yup
   .object({
     title: yup.string().required("Title is required"),

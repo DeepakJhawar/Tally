@@ -12,7 +12,7 @@ import {
 import { useState, useEffect } from "react";
 import { PieChart, Pie, Cell, Legend, Tooltip } from "recharts";
 import axios from "axios";
-import { Link } from "react-router-dom"; // Import Link for navigation
+import { Link } from "react-router-dom"; 
 
 const Landing = () => {
   const [problems, setProblems] = useState([]);
@@ -61,7 +61,6 @@ const Landing = () => {
   return (
     <Container sx={{ mt: 4 }}>
       <Grid container spacing={4}>
-        {/* First Row */}
         <Grid item xs={12} sm={6} md={4} lg={6}>
           <Link to="/playground" style={{ textDecoration: 'none' }}>
             <Card sx={{ height: '100%' }}>
@@ -108,7 +107,6 @@ const Landing = () => {
           </Link>
         </Grid>
 
-        {/* Second Row */}
         <Grid item xs={12} sm={6} md={4} lg={6}>
           <Link to="/contest" style={{ textDecoration: 'none' }}>
             <Card sx={{ height: '100%' }}>
@@ -133,7 +131,6 @@ const Landing = () => {
         </Grid>
 
         <Grid item xs={12} sm={6} md={4} lg={6}>
-          {/* Card with Pie Chart */}
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>
