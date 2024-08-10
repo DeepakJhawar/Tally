@@ -98,7 +98,7 @@ const submitCode = async (req, res) => {
     let { language, code, problemNumber } = req.body;
     code = atob(code);
 
-    if (req.session && req.session.user && req.session.user._id) {
+    if (!req.user) {
         return res.status(400).json({
             status: "failed",
             message: "User login required.",
@@ -145,11 +145,11 @@ const submitCode = async (req, res) => {
             } else {
                 verdict = "ERROR";
             }
-            await Submission({ user: req.session.user._id, problem: problemNumber, code: code, language: language, verdict: verdict })
+            await Submission({ user: req.user._id, problem: problemNumber, code: code, language: language, verdict: verdict })
             return res.status(400).json({ ...response, passed: `${index + 1}/${testCases.length}`, input, expectedOutput })
         }
     }
-    await Submission({ user: req.session.user._id, problem: problemNumber, code: code, language: language, verdict: "ACCEPTED" })
+    await Submission({ user: req.user._id, problem: problemNumber, code: code, language: language, verdict: "ACCEPTED" })
     res.status(200).json({ status: "passed", message: "All testcases passed.", passed: `${testCases.length}/${testCases.length}` })
 };
 

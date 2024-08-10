@@ -26,8 +26,8 @@ const getAllProblems = async (req, res) => {
 				status: "unattempted",
 			};
 
-			if (req.session.user) {
-				const user = req.session.user._id;
+			if (req.user) {
+				const user = req.user._id;
 				const submissions = await Submission.find({
 					user: user,
 					problem: problem.problemNumber,
