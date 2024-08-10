@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { classnames } from "../utils/general";
 import { languageOptions } from "../constants/languageOptions";
@@ -9,11 +9,10 @@ import CodeEditorWindow from "../components/codingPlayground/CodeEditorWindow";
 import CustomInput from "../components/codingPlayground/CustomInput";
 import LanguagesDropdown from "../components/codingPlayground/LanguagesDropdown";
 import Navbar from "../components/Navbar";
-
-
+import OutputWindow from "../components/codingPlayground/OutputWindow"; // Import the OutputWindow component
 
 const CodingPlayGround = () => {
-  const [code, setCode] = useState();
+  const [code, setCode] = useState('');
   const [customInput, setCustomInput] = useState("");
   const [outputDetails, setOutputDetails] = useState(null);
   const [processing, setProcessing] = useState(false);
@@ -26,23 +25,7 @@ const CodingPlayGround = () => {
     setLanguage(sl);
   };
 
-  useEffect(() => {
-    if (enterPress && ctrlPress) {
-      handleCompile();
-    }
-  }, [ctrlPress, enterPress]);
-
-  const onChange = (action, data) => {
-    switch (action) {
-      case "code":
-        setCode(data);
-        break;
-      default:
-        console.warn("Unhandled action type:", action, data);
-    }
-  };
-
-  const handleCompile = async () => {
+  const handleCompile = useCallback(async () => {
     setProcessing(true);
     const formData = {
       language: language.value,
@@ -50,16 +33,34 @@ const CodingPlayGround = () => {
       input: btoa(customInput),
     };
 
-    const response = await axios.post("http://localhost:6969/run-playground-code", formData, {
-      validateStatus: (status) => status >= 200 && status < 500,
-    });
-    if(response.data.status === 'passed'){
-      setOutputDetails(response.data);
+    try {
+      const response = await axios.post("http://localhost:6969/run-playground-code", formData, {
+        validateStatus: (status) => status >= 200 && status < 500,
+      });
+      if(response.data.status === 'passed'){
+        setOutputDetails(response.data);
+        showSuccessToast("Compiled Successfully!");
+      } else {
+        console.log(response.data.error)
+        setOutputDetails(response.data.error);
+        showErrorToast(response.data.status);
+      }
+    } catch (error) {
+      showErrorToast("An error occurred while compiling.");
+    } finally {
       setProcessing(false);
-      showSuccessToast("Compiled Successfully!");
-    }else{
-      showErrorToast(response.data.message);
-      setProcessing(false);
+    }
+  }, [language.value, code, customInput]);
+
+  useEffect(() => {
+    if (enterPress && ctrlPress) {
+      handleCompile();
+    }
+  }, [enterPress, ctrlPress, handleCompile]);
+
+  const onChange = (action, data) => {
+    if (action === "code") {
+      setCode(data);
     }
   };
 
@@ -120,7 +121,7 @@ const CodingPlayGround = () => {
         </div>
 
         <div className="right-container flex flex-shrink-0 w-[30%] flex-col h-[60%]">
-          {/* <OutputWindow outputDetails={outputDetails} /> */}
+          <OutputWindow outputDetails={outputDetails} /> {/* Display the output */}
           <div className="flex flex-col items-end">
             <CustomInput
               customInput={customInput}

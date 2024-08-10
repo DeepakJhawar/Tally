@@ -24,7 +24,9 @@ const _runCode = async (language, code, input, expectedOutput) => {
         await fs.writeFile(fileName, code);
 
         // Construct the Docker run command
+        input = input.replace("")
         const command = `docker run --rm -e EXECUTABLE="${executable}" -e INPUT="${input}" -v "${process.cwd()}:/usr/src/app" --memory="256m" --memory-swap="500m" --cpus="1.0" ${imageName}`;
+        console.log(command);
 
         const timeout = 30000; // 30 seconds
         const execPromiseWithTimeout = (cmd) => {
@@ -138,6 +140,7 @@ const submitCode = async (req, res) => {
 const runCode = async (req, res) => {
     let { language, code, input, expectedOutput } = req.body;
     code = atob(code);
+    input = atob(input)
 
     const response = await _runCode(language, code, input, expectedOutput);
     if (response.status == "failed") {

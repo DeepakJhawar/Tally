@@ -13,16 +13,13 @@ import {
 import axios from "axios";
 
 // Define validation schema
-const schema = yup.object({
-  problemId: yup.string().required("Problem ID is required"),
-  input: yup
-    .string()
-    .required("Input is required")
-    .matches(/.*\n.*/, "Input should have multiple lines"),
-  output: yup
-    .string()
-    .required("Output is required")
-}).required();
+const schema = yup
+  .object({
+    problemId: yup.string().required("Problem ID is required"),
+    input: yup.string().required("Input is required"),
+    output: yup.string().required("Output is required"),
+  })
+  .required();
 
 const ContributeTestCase = () => {
   const {
