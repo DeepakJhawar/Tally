@@ -263,6 +263,7 @@ import CustomInput from "../components/codingPlayground/CustomInput";
 import OutputDetails from "../components/codingPlayground/OutputDetails";
 import ThemeDropdown from "../components/codingPlayground/ThemeDropdown";
 import LanguagesDropdown from "../components/codingPlayground/LanguagesDropdown";
+import Navbar from "../components/Navbar";
 
 const javascriptDefault = `/**
 * Problem: Binary Search: Search a sorted array for a target value.
@@ -332,7 +333,7 @@ const CodingPlayGround = () => {
       source_code: btoa(code),
       stdin: btoa(customInput),
     };
-    console.log(formData)
+    console.log(formData);
 
     const options = {
       method: "POST",
@@ -445,6 +446,7 @@ const CodingPlayGround = () => {
 
   return (
     <>
+      <Navbar />
       <ToastContainer
         position="top-right"
         autoClose={2000}
@@ -486,7 +488,7 @@ const CodingPlayGround = () => {
               disabled={!code || processing}
               className={classnames(
                 "mt-4 border-2 border-black z-10 rounded-md shadow-[5px_5px_0px_0px_rgba(0,0,0)] px-4 py-2 hover:shadow transition duration-200 bg-white flex-shrink-0 text-black",
-                (!code || processing) ? "opacity-50" : ""
+                !code || processing ? "opacity-50" : ""
               )}
             >
               {processing ? "Processing..." : "Compile and Execute"}

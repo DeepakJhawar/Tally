@@ -1,5 +1,5 @@
 import React from "react";
-import { useForm, Controller, useFieldArray } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import {
@@ -7,47 +7,32 @@ import {
   TextField,
   Typography,
   Button,
-  IconButton,
   MenuItem,
   Select,
   InputLabel,
   FormControl,
-  Grid, // Import Grid component for layout
+  Grid,
 } from "@mui/material";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import axios from "axios";
 
 // Define validation schema
-const schema = yup
-  .object({
-    title: yup.string().required("Title is required"),
-    description: yup
-      .string()
-      .max(5000, "Description must be less than 5000 characters"),
-    constraints: yup.string().required("Constraints are required"),
-    input: yup
-      .array()
-      .of(
-        yup.object({
-          value: yup.string().required("Input is required"),
-        })
-      )
-      .min(1, "At least one input is required"),
-    output: yup
-      .array()
-      .of(
-        yup.object({
-          value: yup.string().required("Output is required"),
-        })
-      )
-      .min(1, "At least one output is required"),
-    tags: yup.array().of(yup.string()).min(1, "At least one tag is required"),
-    difficulty: yup
-      .string()
-      .oneOf(["easy", "medium", "hard"], "Difficulty is required"),
-  })
-  .required();
+const schema = yup.object({
+  title: yup.string().required("Title is required"),
+  description: yup
+    .string()
+    .max(5000, "Description must be less than 5000 characters")
+    .required("Description is required"),
+  constraints: yup.string().required("Constraints are required"),
+  input: yup
+    .string()
+    .required("Input is required")
+    .matches(/.*\n.*/, "Input should have multiple lines"),
+  output: yup.string().required("Output is required"),
+  tags: yup.array().of(yup.string()).min(1, "At least one tag is required"),
+  difficulty: yup
+    .string()
+    .oneOf(["easy", "medium", "hard"], "Difficulty is required"),
+}).required();
 
 const ContributeQuestion = () => {
   const {
@@ -60,80 +45,66 @@ const ContributeQuestion = () => {
       title: "",
       description: "",
       constraints: "",
-      input: [{ value: "" }],
-      output: [{ value: "" }],
-      tags: [], // Default to an empty array
-      difficulty: "easy", // Default value for difficulty
+      input: "",
+      output: "",
+      tags: [], 
+      difficulty: "easy",
     },
   });
 
-  const {
-    fields: inputFields,
-    append: appendInput,
-    remove: removeInput,
-  } = useFieldArray({
-    control,
-    name: "input",
-  });
-
-  const {
-    fields: outputFields,
-    append: appendOutput,
-    remove: removeOutput,
-  } = useFieldArray({
-    control,
-    name: "output",
-  });
-
   const onSubmit = async (data) => {
-    // Function to parse JSON with validation
-    const parseJson = (value) => {
-      try {
-        // Try to parse and then re-stringify to ensure correct format
-        return JSON.parse(value);
-      } catch (e) {
-        console.error("Invalid JSON format:", e);
-        return 'Invalid JSON'; // or handle the error as needed
-      }
-    };
-  
-    // Extract input and output values
-    const input = data.input.map((i) => i.value);
-    const output = data.output.map((o) => o.value);
-  
-    // Format data for submission
-    const formattedData = {
-      title: data.title,
-      description: data.description,
-      givenInput: input.map((i) => parseJson(i)),
-      correctOutput: output.map((o) => parseJson(o)),
-      constraints: data.constraints,
-      difficulty: data.difficulty,
-      tags: data.tags,
-    };
-  
     try {
-      const response = await axios.post("http://localhost:6969/create-problem", formattedData, {
-        validateStatus: (status) => {
-          return status >= 200 && status < 500; // Accept all statuses from 200 to 499
-        },
-      });
-  
-      if (response.data.status === 'ok') {
-        alert("Problem added successfully");
-      } else {
-        alert(response.data.message);
-      }
+      const response = await axios.post(
+        "http://localhost:6969/create-problem",
+        data,
+        {
+          validateStatus: (status) => status >= 200 && status < 500,
+        }
+      );
+
+      alert(
+        response.data.status === "ok"
+          ? "Problem added successfully"
+          : response.data.message
+      );
     } catch (err) {
       console.log(err);
       alert("An error occurred while adding the problem");
     }
   };
-  
 
-  const tags = ['Array', 'Hash Table', 'Linked List', 'Math', 'Two Pointers', 'String', 'Dynamic Programming', 'Backtracking', 'Divide and Conquer', 'Binary Search', 'Stack', 'Heap', 'Greedy', 'Sort', 'Graph', 'Depth First Search', 'Breadth First Search', 'Bit Manipulation', 'Tree', 'Union Find', 'Design', 'Topological Sort', 'Trie', 'Binary Search Tree', 'Brainteaser', 'Segment Tree', 'Binary Index Tree', 'Memoization', 'Binary Indexed Tree'];
+  const tags = [
+    "Array",
+    "Hash Table",
+    "Linked List",
+    "Math",
+    "Two Pointers",
+    "String",
+    "Dynamic Programming",
+    "Backtracking",
+    "Divide and Conquer",
+    "Binary Search",
+    "Stack",
+    "Heap",
+    "Greedy",
+    "Sort",
+    "Graph",
+    "Depth First Search",
+    "Breadth First Search",
+    "Bit Manipulation",
+    "Tree",
+    "Union Find",
+    "Design",
+    "Topological Sort",
+    "Trie",
+    "Binary Search Tree",
+    "Brainteaser",
+    "Segment Tree",
+    "Binary Index Tree",
+    "Memoization",
+    "Binary Indexed Tree",
+  ];
 
-  
   return (
     <Box
       sx={{
@@ -198,107 +169,55 @@ const ContributeQuestion = () => {
             )}
           />
         </Box>
-
-        {/* Input Fields */}
         <Box mb={2}>
-          <Typography variant="subtitle1">Input</Typography>
-          {inputFields.map((item, index) => (
-            <Box key={item.id} display="flex" alignItems="center" mb={2}>
-              <Controller
-                name={`input[${index}].value`}
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="Input"
-                    variant="outlined"
-                    fullWidth
-                    placeholder='e.g., {"arr": [1,2,1,2,1], "k" : 9}'
-                    error={!!errors.input?.[index]?.value}
-                    helperText={errors.input?.[index]?.value?.message}
-                  />
-                )}
+          <Controller
+            name="input"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                label="Input According to question description"
+                variant="outlined"
+                multiline
+                rows={4}
+                fullWidth
+                error={!!errors.input}
+                helperText={errors.input?.message}
+                placeholder={`Sample Input:\n4 \n2 3 4\n4 5 6\n7 8 9\n15 12 46`}
               />
-              <IconButton
-                color="error"
-                onClick={() => removeInput(index)}
-                aria-label="remove"
-                sx={{ ml: 1 }}
-              >
-                <RemoveCircleOutlineIcon />
-              </IconButton>
-            </Box>
-          ))}
-          <Box display="flex" alignItems="center">
-            <Button
-              type="button"
-              variant="contained"
-              color="success"
-              startIcon={<AddCircleOutlineIcon />}
-              onClick={() => appendInput({ value: "" })}
-              sx={{ mr: 1 }}
-            >
-              Add Input
-            </Button>
-          </Box>
+            )}
+          />
         </Box>
-
-        {/* Output Fields */}
         <Box mb={2}>
-          <Typography variant="subtitle1">Output</Typography>
-          {outputFields.map((item, index) => (
-            <Box key={item.id} display="flex" alignItems="center" mb={2}>
-              <Controller
-                name={`output[${index}].value`}
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="Output"
-                    variant="outlined"
-                    fullWidth
-                    placeholder="e.g., [0,1]"
-                    error={!!errors.output?.[index]?.value}
-                    helperText={errors.output?.[index]?.value?.message}
-                  />
-                )}
+          <Controller
+            name="output"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                label="Output"
+                variant="outlined"
+                multiline
+                rows={4}
+                fullWidth
+                error={!!errors.output}
+                helperText={errors.output?.message}
+                placeholder={`Sample Output:\n10\n20\n30\n40`}
               />
-              <IconButton
-                color="error"
-                onClick={() => removeOutput(index)}
-                aria-label="remove"
-                sx={{ ml: 1 }}
-              >
-                <RemoveCircleOutlineIcon />
-              </IconButton>
-            </Box>
-          ))}
-          <Box display="flex" alignItems="center">
-            <Button
-              type="button"
-              variant="contained"
-              color="success"
-              startIcon={<AddCircleOutlineIcon />}
-              onClick={() => appendOutput({ value: "" })}
-              sx={{ mr: 1 }}
-            >
-              Add Output
-            </Button>
-          </Box>
+            )}
+          />
         </Box>
-
-        {/* Tags and Difficulty Selection in the same line */}
         <Grid container spacing={2}>
           <Grid item xs={12} sm={6}>
             <Controller
               name="tags"
               control={control}
-              render={({ field: { onChange, value, onBlur } }) => (
+              render={({ field: { onChange, value = [], onBlur } }) => (
                 <FormControl fullWidth error={!!errors.tags}>
                   <InputLabel>Tags</InputLabel>
                   <Select
                     multiple
-                    value={value || []} // Ensure value is an array
+                    value={value}
                     onChange={onChange}
                     onBlur={onBlur}
                     label="Tags"
@@ -311,13 +230,14 @@ const ContributeQuestion = () => {
                     ))}
                   </Select>
                   {errors.tags && (
-                    <Typography color="error">{errors.tags.message}</Typography>
+                    <Typography color="error">
+                      {errors.tags.message}
+                    </Typography>
                   )}
                 </FormControl>
               )}
             />
           </Grid>
-
           <Grid item xs={12} sm={6}>
             <Controller
               name="difficulty"
@@ -340,7 +260,6 @@ const ContributeQuestion = () => {
             />
           </Grid>
         </Grid>
-
         <Box mt={2}>
           <Button type="submit" variant="contained" color="secondary">
             Submit
