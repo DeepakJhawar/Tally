@@ -51,6 +51,7 @@ const githubCallback = async (req, res) => {
             await user.save();
         }
 
+		user = user.toObject()
         const token = jwt.sign({ user }, process.env.SESSION_SECRET, { expiresIn: '10d' });
         res.redirect(`${process.env.ORIGIN_URL}/problems?token=${token}&role=${user.role}`);
     } catch (error) {
