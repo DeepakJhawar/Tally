@@ -13,12 +13,14 @@ const verifyToken = (req, res, next) => {
     jwt.verify(token, process.env.SESSION_SECRET, (err, user) => {
         if (err) return res.status(403).send('Invalid token');
         req.user = user;
+        console.log(req.user)
         next();
     });
 };
 
 const adminOnly = (req, res, next) => {
-    if (!req.user.role || req.user.role != "admin") {
+    console.log(req.user);
+    if (!req.user.user.role || req.user.user.role != "admin") {
         res.status(200).json({
             status: 'unauthorized',
             data: "No sufficent permissions",

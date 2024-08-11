@@ -19,7 +19,7 @@ const login = async (req, res) => {
 		const userResponse = { ...user._doc };
 		delete userResponse.password;
 		
-		const token = jwt.sign({ userResponse }, process.env.SESSION_SECRET, { expiresIn: '10d' });
+		const token = jwt.sign({ user: userResponse }, process.env.SESSION_SECRET, { expiresIn: '10d' });
 		return res.status(200).json({ status: "ok", message: 'Login Successful', user: userResponse, token });
 	} catch (err) {
 		res.status(500).json({ status: "unsucessful", message: 'Internal Server Error' });
@@ -49,7 +49,7 @@ const singup = async (req, res) => {
 
 		const userResponse = { ...newUser._doc };
 		delete userResponse.password;
-		const token = jwt.sign({ userResponse }, process.env.SESSION_SECRET, { expiresIn: '10d' });
+		const token = jwt.sign({ user: userResponse }, process.env.SESSION_SECRET, { expiresIn: '10d' });
 		res.status(201).json({ status: "ok", message: 'User created successfully', user: userResponse, token });
 	} catch (error) {
 		res.status(500).json({ status: "unsucessful", message: 'Server error', error });

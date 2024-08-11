@@ -12,7 +12,7 @@ const router = express.Router();
 
 router.get("/all-problems", getAllProblems);
 router.post("/create-problem", createProblem);
-router.post("/create-pending-problem", verifyToken, adminOnly, createPendingProblem);
+router.post("/create-pending-problem", verifyToken, createPendingProblem);
 router.get("/get-pending-problem", verifyToken, adminOnly, getPendingProblem);
 router.post("/decline-pending-problem", declineProblem);
 

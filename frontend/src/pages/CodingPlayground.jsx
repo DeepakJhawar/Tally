@@ -42,7 +42,7 @@ const CodingPlayGround = () => {
         showSuccessToast("Compiled Successfully!");
       } else {
         console.log(response.data.error)
-        setOutputDetails(response.data.error);
+        setOutputDetails(response.data.message);
         showErrorToast(response.data.status);
       }
     } catch (error) {
