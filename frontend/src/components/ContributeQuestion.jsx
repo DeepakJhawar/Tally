@@ -66,7 +66,7 @@ const ContributeQuestion = () => {
 
       alert(
         response.data.status === "ok"
-          ? "Problem added successfully"
+          ? "Problem sent to our team for verification"
           : response.data.message
       );
     } catch (err) {

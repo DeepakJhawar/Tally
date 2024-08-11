@@ -4,19 +4,30 @@ import TableRowComponent from './TableRow';
 import axios from 'axios';
 
 const DataTable = ({ rows }) => {
-  const Approve = async () => {
+  const Approve = async (problemId) => {
+    console.log(problemId)
     const response = await axios.post(
-      "http://localhost:6969/create-problem",
+      "http://localhost:6969/create-problem", {problemId},
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       }
     );
+    alert(response.data.message);
   };
 
-  const Decline = async() =>{
-
+  const Decline = async(problemId) =>{
+    console.log(problemId)
+    const response = await axios.post(
+      "http://localhost:6969/decline-pending-problem", {problemId},
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+    alert(response.data.message);
   }
 
   return (
@@ -44,8 +55,8 @@ const DataTable = ({ rows }) => {
                   examples: row.examples,
                   tags: row.tags
                 }}
-                onApprove={Approve}
-                onDecline={Decline}
+                onApprove={() => Approve(row._id)}
+                onDecline={() => Decline(row._id)}
               />
             ))}
           </TableBody>
