@@ -139,7 +139,6 @@ const submitCode = async (req, res) => {
         input,
         expectedOutput: testCaseData.correctOutput[index]
     }));
-
     for (const [index, { input, expectedOutput }] of testCases.entries()) {
         const response = await _runCode(language, code, input, expectedOutput);
         if (response.status == "failed") {
@@ -155,14 +154,14 @@ const submitCode = async (req, res) => {
             }
 
             const newSubmission = new Submission(
-                { user: req.user._id, problem: problemNumber, code: code, language: language, verdict: verdict }
+                { user: req.user.user._id, problem: problemNumber, code: code, language: language, verdict: verdict }
             );
             await newSubmission.save();
             return res.status(400).json({ ...response, passed: `${index + 1}/${testCases.length}`, input, expectedOutput })
         }
     }
     const newSubmission = new Submission({
-        user: req.user._id,
+        user: req.user.user._id,
         problem: problemNumber,
         code: code,
         language: language,
