@@ -64,13 +64,13 @@ const getAllProblems = async (req, res) => {
 };
 
 const getProblemById = async (req, res) => {
-	const { problem_id } = req.params;
+	const { problemId } = req.params;
 
-	if (!problem_id) {
+	if (!problemId) {
 		return res.status(400).json({ message: "Problem ID not found!" });
 	}
 
-	let problem = await Problem.findOne({ problemNumber: problem_id });
+	let problem = await Problem.findOne({ problemNumber: problemId });
 	if (!problem) {
 		return res.status(404).json({ message: "Problem not found" });
 	}
@@ -99,9 +99,9 @@ const getProblemById = async (req, res) => {
 
 const declineProblem = async (req, res) => {
 	try {
-		let { problem_id } = req.body;
+		let { problemId } = req.body;
 
-		const pendingProblem = await PendingProblem.findById(problem_id);
+		const pendingProblem = await PendingProblem.findById(problemId);
 		if (!pendingProblem) {
 			return res.status(400).json({
 				status: "unsuccessful",
@@ -110,7 +110,7 @@ const declineProblem = async (req, res) => {
 		}
 
 		await TestCase.deleteOne({ _id: pendingProblem.testCaseId });
-		await PendingProblem.deleteOne({ _id: problem_id });
+		await PendingProblem.deleteOne({ _id: problemId });
 		res.status(201).json({
 			status: "ok",
 			message: "Declined Sucessfully",
@@ -125,10 +125,10 @@ const declineProblem = async (req, res) => {
 };
 
 const createProblem = async (req, res) => {
-	let { problem_id } = req.body;
+	let { problemId } = req.body;
 
 
-	const pendingProblem = await PendingProblem.findById(problem_id);
+	const pendingProblem = await PendingProblem.findById(problemId);
 	if (!pendingProblem) {
 		return res.status(400).json({
 			status: "unsuccessful",
@@ -165,7 +165,7 @@ const createProblem = async (req, res) => {
 			problem: savedProblem,
 		});
 
-		await PendingProblem.deleteOne({ _id: problem_id })
+		await PendingProblem.deleteOne({ _id: problemId })
 	} catch (err) {
 		res.status(500).json({
 			status: "unsuccessful",
@@ -273,4 +273,4 @@ const getPendingProblem = async (req, res) => {
 	}
 };
 
-export { getAllProblems, createProblem, createPendingProblem, getProblemById, getPendingProblem, declineProblem};
+export { getAllProblems, createProblem, createPendingProblem, getProblemById, getPendingProblem, declineProblem };
