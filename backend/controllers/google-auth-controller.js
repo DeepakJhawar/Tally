@@ -1,5 +1,6 @@
 import { OAuth2Client } from 'google-auth-library'
 import jwt from 'jsonwebtoken';
+import { v4 as uuidv4 } from 'uuid';
 import dotenv from 'dotenv';
 
 import User from '../models/user.js';
@@ -47,10 +48,12 @@ const googleCallback = async (req, res) => {
 		let user = await User.findOne({ email });
 		if (!user) {
 			const username = name || email.split('@')[0];
+            const password = uuidv4();
+
 			user = new User({
 				username: username,
 				email: email,
-				password: "", // OAuth users generally don't need a password
+				password: password, // OAuth users generally don't need a password
 			});
 			await user.save();
 		}

@@ -1,3 +1,4 @@
+import { Semaphore } from 'async-mutex';
 import { exec } from 'child_process';
 import { promises as fs } from 'fs';
 import util from 'util';
@@ -8,7 +9,12 @@ import Problem from "../models/problem-model.js"
 
 const execPromise = util.promisify(exec);
 
+
+const semaphore = new Semaphore(process.env.MAX_CONCURRENT_PROCESSES);
+
 const _runCode = async (language, code, input, expectedOutput) => {
+    // Wait for a free slot in the semaphore
+    const [value, release] = await semaphore.acquire();
     const uniqueId = uuidv4();
     const executable = `tempCode_${uniqueId}`;
     const fileName = `${executable}.${getFileExtension(language)}`;
@@ -81,6 +87,8 @@ const _runCode = async (language, code, input, expectedOutput) => {
             output: error.stderr || error.message
         };
     } finally {
+        release(); // Release the semaphore slot
+
         // Clean up the temp file
         try {
             await fs.unlink(executable);

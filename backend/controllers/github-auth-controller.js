@@ -1,5 +1,6 @@
 import axios from 'axios';
 import jwt from 'jsonwebtoken';
+import { v4 as uuidv4 } from 'uuid';
 
 import User from '../models/user.js';
 
@@ -45,7 +46,8 @@ const githubCallback = async (req, res) => {
 
         if (!user) {
             // If the user doesn't exist, create a new user
-            user = new User({ username, githubId });
+            const password = uuidv4();
+            user = new User({ username, githubId, password });
             await user.save();
         }
 
