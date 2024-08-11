@@ -1,5 +1,21 @@
 import jwt from 'jsonwebtoken';
 
+const checkToken = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    req.user = {}
+    // If the Authorization header is missing, send a 403 response
+    if (authHeader) {
+        const token = authHeader.split(' ')[1];
+        if (token != "null") {
+            jwt.verify(token, process.env.SESSION_SECRET, (err, user) => {
+                if (err) return res.status(403).send('Invalid token');
+                req.user = user;
+            })
+        };
+        next();
+    }
+};
+
 const verifyToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
 
@@ -30,4 +46,4 @@ const adminOnly = (req, res, next) => {
     next();
 };
 
-export { verifyToken, adminOnly };
+export { verifyToken, adminOnly, checkToken };

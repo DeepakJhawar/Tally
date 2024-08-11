@@ -21,7 +21,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { Link, useLocation, useNavigate} from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { PieChart, Pie, Cell, Legend, Tooltip } from "recharts";
 import axios from "axios";
 
@@ -66,10 +66,10 @@ const ProblemsPage = () => {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const navigate = useNavigate();
-  const token = params.get('token'); 
+  const token = params.get('token');
   const role = params.get('role');
 
-  console.log('Query Params:', params.toString()); 
+  console.log('Query Params:', params.toString());
 
   if (!localStorage.getItem('token') && token) {
     localStorage.setItem('token', token);
@@ -88,14 +88,21 @@ const ProblemsPage = () => {
 
   const [problems, setProblems] = useState([]);
 
+useEffect(()=>{
   const getAllProblems = async () => {
     try {
-      const response = await axios.get("http://localhost:6969/all-problems");
+      const response = await axios.get("http://localhost:6969/all-problems", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
       setProblems(response.data.data);
     } catch (err) {
       console.log(err);
     }
   };
+  getAllProblems();
+})
 
   const filteredProblems = problems.filter((problem) => {
     const problemDifficulty = problem.difficulty
@@ -152,10 +159,6 @@ const ProblemsPage = () => {
     { name: "Medium", value: mediumProblems, color: difficultyColors.medium },
     { name: "Hard", value: hardProblems, color: difficultyColors.hard },
   ];
-
-  useEffect(() => {
-    getAllProblems();
-  }, []);
 
   const truncateString = (str, maxLength) => {
     if (str.length > maxLength) {
@@ -281,7 +284,7 @@ const ProblemsPage = () => {
                         sx={{
                           color:
                             difficultyColors[
-                              problem.difficulty?.toLowerCase() || ""
+                            problem.difficulty?.toLowerCase() || ""
                             ] || "inherit",
                         }}
                       >

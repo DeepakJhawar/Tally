@@ -1,5 +1,5 @@
 import express from 'express';
-import { verifyToken, adminOnly } from '../middlewares/login-middleware.js';
+import { verifyToken, adminOnly, checkToken } from '../middlewares/login-middleware.js';
 
 import {
     getAllProblems, createProblem, declineProblem, getPendingProblemById,
@@ -10,7 +10,7 @@ import { submitCode, runCode } from "../controllers/submission-controller.js";
 
 const router = express.Router();
 
-router.get("/all-problems", getAllProblems);
+router.get("/all-problems", checkToken, getAllProblems);
 router.post("/create-problem", createProblem);
 router.post("/create-pending-problem", verifyToken, createPendingProblem);
 router.get("/get-pending-problem", verifyToken, adminOnly, getPendingProblem);

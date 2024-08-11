@@ -15,6 +15,7 @@ const semaphore = new Semaphore(process.env.MAX_CONCURRENT_PROCESSES);
 const _runCode = async (language, code, input, expectedOutput) => {
     // Wait for a free slot in the semaphore
     const [value, release] = await semaphore.acquire();
+    console.log(value, process.env.MAX_CONCURRENT_PROCESSES);
     const uniqueId = uuidv4();
     const executable = `tempCode_${uniqueId}`;
     const fileName = `${executable}.${getFileExtension(language)}`;
@@ -157,7 +158,7 @@ const submitCode = async (req, res) => {
                 { user: req.user.user._id, problem: problemNumber, code: code, language: language, verdict: verdict }
             );
             await newSubmission.save();
-            return res.status(400).json({ ...response, passed: `${index + 1}/${testCases.length}`, input, expectedOutput })
+            return res.status(400).json({ ...response, passed: `${index}/${testCases.length}`, input, expectedOutput })
         }
     }
     const newSubmission = new Submission({
