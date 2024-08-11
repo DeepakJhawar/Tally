@@ -122,23 +122,21 @@ const CodingArena = () => {
         code: btoa(editorData.code),
         problemNumber: problem_id,
       };
-      console.log(data)
+      console.log(data);
+  
       try {
-      console.log(data)
         const response = await axios.post(
           "http://localhost:6969/submit-code",
           data,
           {
-            validateStatus: (status) => status >= 200 && status < 500,
-          },
-          {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
             },
+            validateStatus: (status) => status >= 200 && status < 500,
           }
         );
         console.log(response);
-
+  
         const {
           status,
           input,
@@ -148,7 +146,7 @@ const CodingArena = () => {
           passed,
           testcases,
         } = response.data;
-
+  
         setIsSubmission(true);
         setSubmitVisible(true);
         setOutputData({
@@ -174,7 +172,7 @@ const CodingArena = () => {
     } else {
       setShowModal(true);
     }
-  };
+  };  
 
   const handleSubmitClose = () => {
     setSubmitVisible(false);

@@ -2,8 +2,14 @@ import React, { useEffect, useState } from "react";
 import DataTable from "../components/Table/DataTable";
 import axios from "axios";
 import { Typography } from "@mui/material";
+import TestCaseTable from "../components/Table/TestCaseTable";
 
 const AdminPage = () => {
+  const testCases = [
+    { serialNumber: "TC001" },
+    { serialNumber: "TC002" },
+    // Add more test cases as needed
+  ];
   const [data, setData] = useState(null);
   useEffect(() => {
     const fetch = async () => {
@@ -21,17 +27,31 @@ const AdminPage = () => {
     fetch();
   }, []);
   return (
-    <div
-      style={{
-        marginTop: "40px",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-      }}
-    >
-      <h1 style={{ fontSize: "24px", marginBottom: "20px" }}>Problems Table</h1>
-      {data ? <DataTable rows={data} /> : <Typography>No Data To display</Typography>}
-    </div>
+    <>
+      <div
+        style={{
+          marginTop: "40px",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
+        <h1 style={{ fontSize: "24px", marginBottom: "20px" }}>
+          Problems Table
+        </h1>
+        {data ? (
+          <DataTable rows={data} />
+        ) : (
+          <Typography>No Data To display</Typography>
+        )}
+      </div>
+      <div>
+        <h1 style={{ fontSize: "24px", marginBottom: "20px" }}>
+          TestCases Table
+        </h1>
+        <TestCaseTable testCases={testCases} />
+      </div>
+    </>
   );
 };
 
