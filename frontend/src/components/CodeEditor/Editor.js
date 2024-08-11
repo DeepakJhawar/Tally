@@ -1,18 +1,17 @@
 import React, { useState } from 'react';
-import { languageOptions } from '../../constants/languageOptions';
 import 'react-toastify/dist/ReactToastify.css';
 import CodeEditorWindow from '../codingPlayground/CodeEditorWindow';
 import LanguagesDropdown from '../codingPlayground/LanguagesDropdown';
-import useLanguage from '../../hooks/useLanguage'; // Import the custom hook
+import useLanguage from '../../hooks/useLanguage';
 
 const Editor = ({ onCodeChange }) => {
   const [code, setCode] = useState('');
-  const { language, changeLanguage } = useLanguage(); // Use the custom hook
+  const { language, changeLanguage } = useLanguage(); 
 
   const handleLanguageChange = (selectedLanguage) => {
-    changeLanguage(selectedLanguage.value); // Update language in the custom hook
+    changeLanguage(selectedLanguage.value);
     if (onCodeChange) {
-      onCodeChange(code); // Call the callback with the updated code
+      onCodeChange(code); 
     }
   };
 
@@ -20,7 +19,7 @@ const Editor = ({ onCodeChange }) => {
     if (action === 'code') {
       setCode(data);
       if (onCodeChange) {
-        onCodeChange(data); // Call the callback with the updated code
+        onCodeChange(data);
       }
     } else {
       console.warn('Unhandled action type:', action);
@@ -39,7 +38,7 @@ const Editor = ({ onCodeChange }) => {
           <CodeEditorWindow
             code={code}
             onChange={handleCodeChange}
-            language={language} // Pass the selected language
+            language={language} 
           />
         </div>
       </div>

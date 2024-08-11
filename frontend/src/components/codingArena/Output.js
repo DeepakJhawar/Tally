@@ -2,45 +2,25 @@ import React, { useState } from "react";
 import { Typography, Paper, IconButton, Tabs, Tab, Box } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
-const parseSubmissionResult = (result) => {
-  return {
-    input: result.input || "",
-    output: result.output || "",
-    expectedOutput: result.expectedOutput || "",
-    message: result.message || "",
-    passed: result.passed || "N/A",
-  };
-};
-
-const parseRunResult = (result) => {
-  return {
-    input: result.input || "",
-    output: result.output || "",
-    expectedOutput: result.expectedOutput || "",
-  };
-};
-
-const Output = ({ results = [], onClose, isSubmission }) => {
+const Output = ({ results = [], onClose }) => {
   const [currentTab, setCurrentTab] = useState(0);
 
   const handleTabChange = (event, newValue) => {
     setCurrentTab(newValue);
   };
 
-  const currentResult = isSubmission
-    ? parseSubmissionResult(results[currentTab] || {})
-    : parseRunResult(results[currentTab] || {});
+  const validResults = Array.isArray(results) ? results : [];
+
+  const currentResult = validResults[currentTab] || {};
 
   return (
     <Paper
       elevation={0}
       sx={{
-        height: "50%",
+        height: "60vh",
         overflowY: "auto",
         position: "relative",
-        border: "none",
-        boxShadow: "none",
-        padding: 1,
+        padding: 2,
       }}
     >
       <Box
@@ -57,8 +37,11 @@ const Output = ({ results = [], onClose, isSubmission }) => {
           onChange={handleTabChange}
           aria-label="test case tabs"
         >
-          {results.map((_, index) => (
-            <Tab sx={{bgcolor:"white"}} key={index} label={`Test Case ${index + 1}`} />
+          {validResults.map((_, index) => (
+            <Tab
+              key={index}
+              label={`Test Case ${index + 1}`}
+            />
           ))}
         </Tabs>
         <IconButton sx={{ marginLeft: "auto" }} onClick={onClose}>
@@ -66,29 +49,27 @@ const Output = ({ results = [], onClose, isSubmission }) => {
         </IconButton>
       </Box>
       <Box sx={{ padding: 2 }}>
-        {results.length === 0 ? (
+        {validResults.length === 0 ? (
           <Typography variant="body2">No results available.</Typography>
         ) : (
           <>
             <Typography variant="body2">
-              <strong>Input:</strong> {currentResult.input}
+              <strong>Input:</strong>
+              <Box
+                sx={{
+                  whiteSpace: "pre-line",
+                  mt: 1,
+                }}
+              >
+                {currentResult.input || "No input provided"}
+              </Box>
             </Typography>
             <Typography variant="body2">
-              <strong>Output:</strong> {currentResult.output}
+              <strong>Output:</strong> {currentResult.output || "No output available"}
             </Typography>
             <Typography variant="body2">
-              <strong>Expected Output:</strong> {currentResult.expectedOutput}
+              <strong>Expected Output:</strong> {currentResult.expectedOutput || "No expected output provided"}
             </Typography>
-            {isSubmission && (
-              <>
-                <Typography variant="body2">
-                  <strong>Status:</strong> {currentResult.message}
-                </Typography>
-                <Typography variant="body2">
-                  <strong>Passed:</strong> {currentResult.passed}
-                </Typography>
-              </>
-            )}
           </>
         )}
       </Box>

@@ -4,13 +4,15 @@ import ProblemStatement from "../components/codingArena/ProblemStatement";
 import Solutions from "../components/codingArena/Solutions";
 import Submissions from "../components/codingArena/Submissions";
 import Editor from "../components/CodeEditor/Editor";
-import OutputModal from "../components/OutputModal"; 
+import OutputModal from "../components/OutputModal";
 import { useParams } from "react-router-dom";
 import { customStyles } from "../constants/customStyles";
 import axios from "axios";
 import { AuthContext } from "../AuthContext";
 import LoginModal from "../components/LoginModal";
-import useLanguage from "../hooks/useLanguage"; // Import the custom hook
+import useLanguage from "../hooks/useLanguage";
+import Output from "../components/codingArena/Output";
+import CloseIcon from "@mui/icons-material/Close";
 
 const CodingArena = () => {
   const [problemData, setProblemData] = useState({});
@@ -22,10 +24,12 @@ const CodingArena = () => {
   const [solutions, setSolutions] = useState([]);
   const [submissions, setSubmissions] = useState([]);
   const [outputVisible, setOutputVisible] = useState(false);
+  const [submitVisible, setSubmitVisible] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [isSubmission, setIsSubmission] = useState(false);
-  const [outputData, setOutputData] = useState([]); // State for output data
-  const { language, changeLanguage } = useLanguage(); // Use the custom hook
+  const [outputData, setOutputData] = useState({});
+  const { language, changeLanguage } = useLanguage();
+  const [examples, setExamples] = useState([]);
 
   useEffect(() => {
     const fetchProblemData = async () => {
@@ -36,6 +40,7 @@ const CodingArena = () => {
 
         if (response.data.status === "ok") {
           setProblemData(response.data.data);
+          setExamples(response.data.data.examples);
         } else {
           setProblemData({
             Error: "Cannot Find Problem, Go back to home page.",
@@ -55,10 +60,60 @@ const CodingArena = () => {
     setCurrentTab(newValue);
   };
 
-  const handleRunClick = () => {
-    setIsSubmission(false);
-    setOutputVisible(true);
+  const handleRunClick = async () => {
+    if (isLoggedIn) {
+      const inputData = examples.map(example => example.givenInput); 
+  
+      let results = [];
+  
+      try {
+        for (let i = 0; i < inputData[0].length; i++) {
+          const data = {
+            language: language,
+            code: btoa(editorData.code),
+            input: examples[0].givenInput[i], 
+            output: examples[0].correctOutput[i],
+          };
+  
+          const response = await axios.post(
+            "http://localhost:6969/run-arena-code",
+            data,
+            {
+              validateStatus: (status) => status >= 200 && status < 500,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+            }
+          );
+          results.push({
+            input: examples[0].givenInput[i],
+            output: response.data.output,
+            expectedOutput: examples[0].correctOutput[i],
+            passed: response.data.passed, 
+          });
+        }
+  
+        setOutputData(results);
+        setOutputVisible(true);
+      } catch (error) {
+        console.error("Error running code:", error);
+        setOutputData({
+          input: [],
+          output: [],
+          expectedOutput: [],
+          message: "An error occurred while running the code.",
+          passed: "0/0",
+        });
+        setOutputVisible(true);
+      }
+      console.log(results);
+    } else {
+      setShowModal(true);
+    }
   };
+  
 
   const handleSubmitClick = async () => {
     if (isLoggedIn) {
@@ -67,23 +122,35 @@ const CodingArena = () => {
         code: btoa(editorData.code),
         problemNumber: problem_id,
       };
-      console.log(data);
+      console.log(data)
       try {
+      console.log(data)
         const response = await axios.post(
           "http://localhost:6969/submit-code",
           data,
+          {
+            validateStatus: (status) => status >= 200 && status < 500,
+          },
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
             },
           }
         );
+        console.log(response);
 
-        // Handling both success and failure cases
-        const { status, input, output, expectedOutput, message, passed, testcases } = response.data;
+        const {
+          status,
+          input,
+          output,
+          expectedOutput,
+          message,
+          passed,
+          testcases,
+        } = response.data;
 
         setIsSubmission(true);
-        setOutputVisible(true);
+        setSubmitVisible(true);
         setOutputData({
           status: status || "",
           input: input || "",
@@ -93,7 +160,6 @@ const CodingArena = () => {
           message: message || "",
           passed: passed || "",
         });
-
       } catch (error) {
         console.error("Error submitting code:", error);
         setOutputData({
@@ -103,11 +169,15 @@ const CodingArena = () => {
           message: "An error occurred while submitting the code.",
           passed: "0/0",
         });
-        setOutputVisible(true);
+        setSubmitVisible(true);
       }
     } else {
       setShowModal(true);
     }
+  };
+
+  const handleSubmitClose = () => {
+    setSubmitVisible(false);
   };
 
   const handleOutputClose = () => {
@@ -119,7 +189,7 @@ const CodingArena = () => {
   };
 
   const handleLanguageChange = (language) => {
-    changeLanguage(language.value); // Update language using the custom hook
+    changeLanguage(language.value); 
   };
 
   const renderContent = () => {
@@ -159,6 +229,7 @@ const CodingArena = () => {
               display: "flex",
               flexDirection: "column",
               height: "100%",
+              position: "relative",
             }}
           >
             <Box
@@ -223,15 +294,14 @@ const CodingArena = () => {
               </Box>
             </Box>
 
-            {/* Old output code commented out */}
-            {/* {outputVisible && (
+            {outputVisible && (
               <Box
                 sx={{
-                  height: "60vh",
+                  height: "30vh",
                   overflowY: "auto",
                   position: "absolute",
                   top: "65%",
-                  width: "50%",
+                  width: "100%",
                   border: "none",
                   boxShadow: "none",
                   padding: 1,
@@ -249,19 +319,19 @@ const CodingArena = () => {
                   <CloseIcon />
                 </IconButton>
                 <Output
-                  results={outputData} // Pass the dynamic output data
+                  results={outputData}
                   onClose={handleOutputClose}
                   isSubmission={isSubmission}
                 />
               </Box>
-            )} */}
+            )}
 
-            {/* New OutputModal */}
-            {outputVisible && (
+            {/* Output Modal */}
+            {submitVisible && (
               <OutputModal
-                open={outputVisible}
-                onClose={handleOutputClose}
-                data={outputData}
+                open={submitVisible}
+                onClose={handleSubmitClose}
+                outputData={outputData}
               />
             )}
           </Box>
