@@ -38,7 +38,7 @@ const CodingPlayGround = () => {
         validateStatus: (status) => status >= 200 && status < 500,
       });
       if(response.data.status === 'passed'){
-        setOutputDetails(response.data);
+        setOutputDetails(response.data.output);
         showSuccessToast("Compiled Successfully!");
       } else {
         console.log(response.data.error)
