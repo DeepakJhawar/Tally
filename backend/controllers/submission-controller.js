@@ -153,11 +153,23 @@ const submitCode = async (req, res) => {
             } else {
                 verdict = "ERROR";
             }
-            await Submission({ user: req.user._id, problem: problemNumber, code: code, language: language, verdict: verdict })
+
+            const newSubmission = new Submission(
+                { user: req.user._id, problem: problemNumber, code: code, language: language, verdict: verdict }
+            );
+            await newSubmission.save();
             return res.status(400).json({ ...response, passed: `${index + 1}/${testCases.length}`, input, expectedOutput })
         }
     }
-    await Submission({ user: req.user._id, problem: problemNumber, code: code, language: language, verdict: "ACCEPTED" })
+    const newSubmission = new Submission({
+        user: req.user._id,
+        problem: problemNumber,
+        code: code,
+        language: language,
+        verdict: "ACCEPTED"
+    });
+
+    await newSubmission.save();
     res.status(200).json({ status: "passed", message: "All testcases passed.", passed: `${testCases.length}/${testCases.length}` })
 };
 
