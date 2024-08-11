@@ -5,7 +5,6 @@ import axios from 'axios';
 
 const DataTable = ({ rows }) => {
   const Approve = async (problemId) => {
-    console.log(problemId)
     const response = await axios.post(
       "http://localhost:6969/create-problem", {problemId},
       {

@@ -51,10 +51,20 @@ const ContributeQuestion = () => {
   });
 
   const onSubmit = async (data) => {
+    const format = {
+      constraints: data.constraints,
+      description: data.description,
+      difficulty: data.difficulty,
+      givenInput: data.input,
+      correctOutput: data.output,
+      title: data.title,
+      tags: data.tags
+    }
+    console.log(format);
     try {
       const response = await axios.post(
         "http://localhost:6969/create-pending-problem",
-        data, 
+        format, 
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
