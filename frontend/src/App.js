@@ -41,7 +41,7 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<Home />}>
-            {/* <Route
+            <Route
               path="/"
               element={
                 isLoggedIn && localStorage.getItem("role") === "admin" ? (
@@ -50,8 +50,7 @@ function App() {
                   <Landing />
                 )
               }
-            /> */}
-            <Route path="/admin" element={<AdminPage/>} />
+            />
             <Route path="/problems" element={<Problems />} />
             <Route path="/contest" element={<Contest />} />
             <Route path="/contribute" element={<Contribute />} />
