@@ -2,12 +2,7 @@ import React from "react";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import {
-  Box,
-  TextField,
-  Typography,
-  Button,
-} from "@mui/material";
+import { Box, TextField, Typography, Button } from "@mui/material";
 import axios from "axios";
 
 const schema = yup
@@ -34,20 +29,24 @@ const ContributeTestCase = () => {
 
   const onSubmit = async (data) => {
     try {
-      const obj = {
-        givenInput: data.input,
-        correctOutput: data.output,
+      const formattedData = {
         problemNumber: data.problemId,
-      };
+        input: data.input,
+        output: data.output,
+      }
       const response = await axios.post(
         "http://localhost:6969/add-test-case",
-        obj,
+        formattedData,
         {
-          validateStatus: (status) => status >= 200 && status < 500,
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          validateStatus: (status) => status >= 200 && status < 500, // Ensure this is inside the configuration object
         }
       );
-      console.log(obj);
-      
+
+      console.log(formattedData);
+
       if (response.data.status === "ok") {
         alert("Test cases added successfully");
       } else {
