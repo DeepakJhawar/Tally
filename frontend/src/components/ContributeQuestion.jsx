@@ -53,12 +53,16 @@ const ContributeQuestion = () => {
   const onSubmit = async (data) => {
     try {
       const response = await axios.post(
-        "http://localhost:6969/create-problem",
-        data,
+        "http://localhost:6969/create-pending-problem",
+        data, 
         {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
           validateStatus: (status) => status >= 200 && status < 500,
         }
       );
+      
 
       alert(
         response.data.status === "ok"

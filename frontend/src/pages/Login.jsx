@@ -33,7 +33,7 @@ const Login = () => {
           });
       if (response.data.status === "ok") {
         localStorage.setItem("token", response.data.token);
-        localStorage.setItem("role", response.data.role);
+        localStorage.setItem("role", response.data.user.role);
         navigate("/problems");
       }
       else alert(response.data.message);

@@ -58,7 +58,7 @@ const googleCallback = async (req, res) => {
 			await user.save();
 		}
         const token = jwt.sign({ user }, process.env.SESSION_SECRET, { expiresIn: '10d' });
-		res.redirect(`${process.env.ORIGIN_URL}/problems?token=${token}`);
+		res.redirect(`${process.env.ORIGIN_URL}/problems?token=${token}&role=${user.role}`);
 
 	} catch (error) {
 		console.error('Error handling Google callback:', error);

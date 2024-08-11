@@ -67,12 +67,15 @@ const ProblemsPage = () => {
   const params = new URLSearchParams(location.search);
   const navigate = useNavigate();
   const token = params.get('token'); 
+  const role = params.get('role');
 
   console.log('Query Params:', params.toString()); 
 
   if (!localStorage.getItem('token') && token) {
     localStorage.setItem('token', token);
+    localStorage.setItem('role', role);
     params.delete("token");
+    params.delete("role");
     navigate(`${location.pathname}?${params.toString()}`, { replace: true });
   }
   const [searchQuery, setSearchQuery] = useState("");
