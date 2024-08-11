@@ -280,7 +280,7 @@ const getPendingProblemById = async (req, res) => {
 		return res.status(400).json({ message: "Problem ID not found!" });
 	}
 
-	let problem = await Problem.findOne({ problemNumber: problemId });
+	let problem = await PendingProblem.findById(problemId);
 	if (!problem) {
 		return res.status(404).json({ message: "Problem not found" });
 	}
@@ -294,8 +294,8 @@ const getPendingProblemById = async (req, res) => {
 		testcaseObject = testcase.toObject();
 
 		// Slice givenInput and correctOutput to include only the first 2 elements
-		testcaseObject.givenInput = testcaseObject.givenInput ? testcaseObject.givenInput.slice(0, 2) : [];
-		testcaseObject.correctOutput = testcaseObject.correctOutput ? testcaseObject.correctOutput.slice(0, 2) : [];
+		testcaseObject.givenInput = testcaseObject.givenInput;
+		testcaseObject.correctOutput = testcaseObject.correctOutput;
 	}
 
 	// Initialize examples array if it doesn't exist
@@ -307,4 +307,4 @@ const getPendingProblemById = async (req, res) => {
 	return res.status(200).json({ status: "ok", data: problem });
 };
 
-export { getAllProblems, createProblem, createPendingProblem, getProblemById, getPendingProblem, declineProblem };
+export { getAllProblems, createProblem, createPendingProblem, getProblemById, getPendingProblem, declineProblem, getPendingProblemById };

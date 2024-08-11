@@ -24,8 +24,8 @@ const getPendingTestCase = async (req, res) => {
 
 const getPendingTestCaseById = async (req, res) => {
     try {
-        const {  } = req.body;
-        const response = await PendingTestCase.findById({});
+        const { testcaseID } = req.params;
+        const response = await PendingTestCase.findById(testcaseID);
 
         // Send the response with status 200 and the retrieved data
         res.status(200).json({
@@ -166,4 +166,4 @@ const editTestCase = async (req, res) => {
     }
 }
 
-export { addTestCase, editTestCase, getPendingTestCase, addPendingTestCase };
+export { addTestCase, editTestCase, getPendingTestCase, addPendingTestCase, getPendingTestCaseById };

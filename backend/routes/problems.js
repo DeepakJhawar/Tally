@@ -2,7 +2,7 @@ import express from 'express';
 import { verifyToken, adminOnly } from '../middlewares/login-middleware.js';
 
 import {
-    getAllProblems, createProblem, declineProblem,
+    getAllProblems, createProblem, declineProblem, getPendingProblemById,
     createPendingProblem, getProblemById, getPendingProblem
 } from "../controllers/problems-controller.js";
 
@@ -21,5 +21,6 @@ router.post("/run-arena-code", runCode);
 router.post("/run-playground-code", runCode);
 
 router.get("/problem/:problemId", getProblemById);
+router.get("/pending-problem/:problemId", verifyToken, adminOnly, getPendingProblemById);
 
 export default router;

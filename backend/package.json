@@ -4,7 +4,7 @@
 	"main": "index.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"start": "nodemon app.js",
+		"start": "node app.js",
 		"docker": "docker build -t code-judge-python -f ./Docker/Dockerfile.python . && docker build -t code-judge-nodejs -f ./Docker/Dockerfile.nodejs . && docker build -t code-judge-cpp -f ./Docker/Dockerfile.cpp . && docker build -t code-judge-c -f ./Docker/Dockerfile.c ."
 	},
 	"type": "module",
