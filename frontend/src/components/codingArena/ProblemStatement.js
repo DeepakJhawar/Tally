@@ -4,11 +4,11 @@ import { Box, Typography, Paper, Divider, Chip } from "@mui/material";
 const ProblemStatement = ({
   title = "Untitled Problem",
   description = "No description available.",
-  constraints = [], // Default to empty array
-  examples = [], // Default to empty array
+  constraints = [], 
+  examples = [],
   outputVisible,
-  tags = [], // Default to empty array
-  difficulty = "Unknown", // Default value
+  tags = [], 
+  difficulty = "Unknown", 
 }) => {
   const getDifficultyColor = (difficulty) => {
     switch (difficulty) {
@@ -26,7 +26,7 @@ const ProblemStatement = ({
   const combinedExamples = examples.flatMap((example) =>
     example.givenInput.map((input, index) => ({
       input,
-      output: example.correctOutput[index] || "", // Handle case where outputs may not align
+      output: example.correctOutput[index] || "", 
     }))
   );
 
