@@ -22,6 +22,26 @@ const getPendingTestCase = async (req, res) => {
     }
 };
 
+const getPendingTestCaseById = async (req, res) => {
+    try {
+        const {  } = req.body;
+        const response = await PendingTestCase.findById({});
+
+        // Send the response with status 200 and the retrieved data
+        res.status(200).json({
+            status: 'ok',
+            data: response,
+        });
+    } catch (error) {
+        // Handle any errors that occur during the operation
+        console.error("Error retrieving test cases:", error);
+        res.status(500).json({
+            status: 'error',
+            message: 'An error occurred while retrieving test cases.',
+        });
+    }
+};
+
 const addPendingTestCase = async (req, res) => {
     try {
         const { problemNumber, givenInput, correctOutput } = req.body;

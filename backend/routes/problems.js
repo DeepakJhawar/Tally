@@ -20,6 +20,6 @@ router.post("/submit-code", verifyToken, submitCode);
 router.post("/run-arena-code", runCode);
 router.post("/run-playground-code", runCode);
 
-router.get("/problem/:problem_id", getProblemById);
+router.get("/problem/:problemId", getProblemById);
 
 export default router;
