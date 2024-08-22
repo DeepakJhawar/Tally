@@ -20,7 +20,6 @@ const semaphore = new Semaphore(process.env.MAX_CONCURRENT_PROCESSES);
 const _runCode = async (language, code, input, expectedOutput) => {
     // Wait for a free slot in the semaphore
     const [value, release] = await semaphore.acquire();
-    console.log(value, process.env.MAX_CONCURRENT_PROCESSES);
     const uniqueId = uuidv4();
     let executable = `tempCode_${uniqueId}`;
     const extension = getFileExtension(language);

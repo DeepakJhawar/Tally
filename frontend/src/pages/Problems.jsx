@@ -97,7 +97,6 @@ const ProblemsPage = () => {
 
   const [problems, setProblems] = useState([]);
 
-useEffect(()=>{
   const getAllProblems = async () => {
     const token = localStorage.getItem("token");
     try {
@@ -125,8 +124,6 @@ useEffect(()=>{
       console.log(err);
     }
   };
-  getAllProblems();
-})
 
   const debouncedFetchProblems = useCallback(
     debounce(() => {
@@ -284,7 +281,7 @@ useEffect(()=>{
                         sx={{
                           color:
                             difficultyColors[
-                            problem.difficulty?.toLowerCase() || ""
+                              problem.difficulty?.toLowerCase() || ""
                             ] || "inherit",
                         }}
                       >
