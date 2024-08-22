@@ -71,6 +71,7 @@ const ProblemsPage = () => {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const navigate = useNavigate();
+<<<<<<< HEAD:frontend/src/pages/Problems.jsx
   const token = params.get("token");
   const role = params.get("role");
 
@@ -78,6 +79,19 @@ const ProblemsPage = () => {
     localStorage.setItem("token", token);
     localStorage.setItem("role", role);
     navigate("/problems", { replace: true });
+=======
+  const token = params.get('token');
+  const role = params.get('role');
+
+  console.log('Query Params:', params.toString());
+
+  if (!localStorage.getItem('token') && token) {
+    localStorage.setItem('token', token);
+    localStorage.setItem('role', role);
+    params.delete("token");
+    params.delete("role");
+    navigate(`${location.pathname}?${params.toString()}`, { replace: true });
+>>>>>>> 787bb8cab8112437fa57649e068d7fccbc624137:frontend/src/components/Problems.jsx
   }
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -97,9 +111,11 @@ const ProblemsPage = () => {
 
   const [problems, setProblems] = useState([]);
 
+useEffect(()=>{
   const getAllProblems = async () => {
     const token = localStorage.getItem("token");
     try {
+<<<<<<< HEAD:frontend/src/pages/Problems.jsx
       const response = await axios.get("http://localhost:6969/problems", {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -117,6 +133,13 @@ const ProblemsPage = () => {
       setEasyProblems(response.data.easySolved);
       setMedProblems(response.data.mediumSolved);
       setHardProblems(response.data.hardSolved);
+=======
+      const response = await axios.get("http://localhost:6969/all-problems", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+>>>>>>> 787bb8cab8112437fa57649e068d7fccbc624137:frontend/src/components/Problems.jsx
       setProblems(response.data.data);
       setTotProblems(response.data.totalDocuments);
       setSolvedProblems(response.data.solved);
@@ -124,6 +147,8 @@ const ProblemsPage = () => {
       console.log(err);
     }
   };
+  getAllProblems();
+})
 
   const debouncedFetchProblems = useCallback(
     debounce(() => {
@@ -281,7 +306,7 @@ const ProblemsPage = () => {
                         sx={{
                           color:
                             difficultyColors[
-                              problem.difficulty?.toLowerCase() || ""
+                            problem.difficulty?.toLowerCase() || ""
                             ] || "inherit",
                         }}
                       >
