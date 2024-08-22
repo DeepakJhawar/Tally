@@ -30,6 +30,12 @@ const Schema = new mongoose.Schema({
 	resetPasswordExpires: {
 		type: Date,
 	},
+	solved: {
+		type: Object,
+	},
+	savedCode: {
+		type: Object,
+	}
 });
 
 const User = mongoose.model('User', Schema);

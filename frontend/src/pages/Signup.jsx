@@ -38,15 +38,19 @@ const SignUp = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 text-gray-900 flex justify-center">
-      <div className="max-w-screen-xl m-0 sm:m-10 bg-white shadow sm:rounded-lg flex justify-center flex-1">
-        <div className="lg:w-1/2 xl:w-5/12 p-6 sm:p-12">
+    <div className="min-h-screen bg-gray-100 text-gray-900 flex justify-center"
+    style={{
+      backgroundImage:
+        "url('https://i.pinimg.com/236x/0c/84/3f/0c843f96a6e997fff64e65057100b4af.jpg')",
+    }}>
+      <div className="max-w-screen-md m-0 sm:m-10 bg-black/55 shadow sm:rounded-lg flex justify-center flex-1">
+        <div className="lg:w-2/3 xl:w-7/12 p-6 sm:p-12">
           <div className="mt-12 flex flex-col items-center">
-            <h1 className="text-2xl xl:text-3xl font-extrabold">Sign up</h1>
+            <h1 className="text-2xl xl:text-3xl font-extrabold text-white">Sign up</h1>
             <div className="w-full flex-1 mt-8">
               <div className="flex flex-col items-center">
                 <button
-                  className="w-full max-w-xs font-bold shadow-sm rounded-lg py-3 bg-indigo-100 text-gray-800 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline"
+                  className="w-full max-w-xs font-bold shadow-sm rounded-lg py-3 bg-gray-50 text-gray-800 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline"
                   onClick={async () => {
                       window.location.href = "http://127.0.0.1:6969/auth/google"
                   }}
@@ -75,7 +79,7 @@ const SignUp = () => {
                 </button>
 
                 <button
-                  className="w-full max-w-xs font-bold shadow-sm rounded-lg py-3 bg-indigo-100 text-gray-800 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline mt-5"
+                  className="w-full max-w-xs font-bold shadow-sm rounded-lg py-3 bg-gray-50 text-gray-800 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline mt-5"
                   onClick={() => {
                     window.location.href = "http://127.0.0.1:6969/auth/github"
 
@@ -93,9 +97,12 @@ const SignUp = () => {
                 </button>
               </div>
 
-              <div className="my-12 border-b text-center">
-                <div className="leading-none px-2 inline-block text-sm text-gray-600 tracking-wide font-medium bg-white transform translate-y-1/2">
-                  Or sign up with e-mail
+              <div className="relative text-center my-8">
+                <span className="text-sm text-gray-600 font-medium bg-black px-2 relative z-10">
+                  Or sign in with e-mail
+                </span>
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-300"></div>
                 </div>
               </div>
 
@@ -147,11 +154,11 @@ const SignUp = () => {
 
                 <button
                   type="submit"
-                  className="mt-5 tracking-wide font-semibold bg-indigo-500 text-gray-100 w-full py-4 rounded-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none"
+                  className="mt-5 tracking-wide font-semibold bg-gray-800 text-white max-w-sm w-full py-2 px-4 rounded-lg hover:bg-gray-600 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none"
                 >
                   <svg
                     className="w-6 h-6 -ml-2"
-                    fill="none"
+                    fill="currentColor"
                     stroke="currentColor"
                     strokeWidth="2"
                     strokeLinecap="round"
@@ -165,19 +172,10 @@ const SignUp = () => {
                 </button>
               </form>
             </div>
-          <p className="mt-3">
-            Already Have an Account? <Link to={"/login"} className="text-blue-500">Login</Link>
+          <p className="mt-3 text-gray-600">
+            Already Have an Account? <Link to={"/login"} className="text-gray-200">Login</Link>
           </p>
           </div>
-        </div>
-        <div className="flex-1 bg-indigo-100 text-center hidden lg:flex">
-          <div
-            className="m-12 xl:m-16 w-full bg-contain bg-center bg-no-repeat"
-            style={{
-              backgroundImage:
-                "url('https://storage.googleapis.com/devitary-image-host.appspot.com/15848031292911696601-undraw_designer_life_w96d.svg')",
-            }}
-          ></div>
         </div>
       </div>
     </div>

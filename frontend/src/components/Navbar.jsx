@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
@@ -36,6 +36,10 @@ const Navbar = () => {
     localStorage.clear("role");
     window.location.reload();
   }
+
+  useEffect(()=> {
+
+  },[isLoggedIn])
 
   // Function to determine if a button should be highlighted
   const isActive = (path) => location.pathname === path;
@@ -153,8 +157,6 @@ const Navbar = () => {
             open={Boolean(anchorEl)}
             onClose={handleClose}
           >
-            <MenuItem onClick={handleClose}>Profile</MenuItem>
-            <MenuItem onClick={handleClose}>My account</MenuItem>
             <MenuItem onClick={handleLogout}>Logout</MenuItem>
           </Menu>
         </Container>

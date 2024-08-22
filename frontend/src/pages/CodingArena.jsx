@@ -3,20 +3,25 @@ import { Grid, Box, IconButton, Tabs, Tab, Button } from "@mui/material";
 import ProblemStatement from "../components/codingArena/ProblemStatement";
 import Solutions from "../components/codingArena/Solutions";
 import Submissions from "../components/codingArena/Submissions";
-import Editor from "../components/CodeEditor/Editor";
-import OutputModal from "../components/OutputModal";
-import { useParams } from "react-router-dom";
+import OutputModal from "../components/modals/OutputModal";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { customStyles } from "../constants/customStyles";
 import axios from "axios";
 import { AuthContext } from "../AuthContext";
-import LoginModal from "../components/LoginModal";
+import LoginModal from "../components/modals/LoginModal";
 import useLanguage from "../hooks/useLanguage";
 import Output from "../components/codingArena/Output";
 import CloseIcon from "@mui/icons-material/Close";
+import LanguagesDropdown from "../components/Editor/LanguagesDropdown";
+import CodeEditorWindow from "../components/Editor/CodeEditorWindow";
+import { languageOptions } from "../constants/languageOptions";
+import Input from "../components/codingArena/Input";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+
 
 const CodingArena = () => {
   const [problemData, setProblemData] = useState({});
-  const [editorData, setEditorData] = useState({ code: "" });
+  const navigate = useNavigate();
   const { problem_id } = useParams();
   const { isLoggedIn } = useContext(AuthContext);
   const [readyForRender, setReadyForRender] = useState(false);
@@ -28,8 +33,20 @@ const CodingArena = () => {
   const [showModal, setShowModal] = useState(false);
   const [isSubmission, setIsSubmission] = useState(false);
   const [outputData, setOutputData] = useState({});
-  const { language, changeLanguage } = useLanguage();
   const [examples, setExamples] = useState([]);
+  const [code, setCode] = useState("");
+  const [language, setLanguage] = useState(languageOptions[0]);
+  const [dataFetched, setDataFetched] = useState(false);
+  const [loading, setLoading] = useState({
+    save: false,
+    run: false,
+    submit: false,
+  });
+  const [customInputVisible, setCustomInputVisible] = useState(false);
+  const [customInputValue, setCustomInputValue] = useState("");
+  const { changeLanguage } = useLanguage(languageOptions[0]);
+  const location = useLocation();
+  const { solved } = location.state || {};
 
   useEffect(() => {
     const fetchProblemData = async () => {
@@ -41,47 +58,126 @@ const CodingArena = () => {
         if (response.data.status === "ok") {
           setProblemData(response.data.data);
           setExamples(response.data.data.examples);
+          setReadyForRender(true);
         } else {
           setProblemData({
             Error: "Cannot Find Problem, Go back to home page.",
           });
         }
-        setReadyForRender(true);
+        setDataFetched(true);
       } catch (error) {
         console.error("Error fetching problem data:", error);
         setProblemData({ Error: "An error occurred. Please try again later." });
+        setDataFetched(true);
       }
     };
 
     fetchProblemData();
   }, [problem_id]);
 
+  useEffect(() => {
+    if (dataFetched) {
+      changeLanguage(language);
+    }
+  }, [dataFetched, language, changeLanguage]);
+
+  const onSelectChange = (selectedLanguage) => {
+    setLanguage(selectedLanguage);
+  };
+
   const handleTabChange = (event, newValue) => {
     setCurrentTab(newValue);
   };
 
+  const handleSave = async () => {
+    const formData = {
+      language: language.value,
+      code: btoa(code),
+      problemNumber: problem_id,
+    };
+
+    try {
+      setLoading({
+        run: false,
+        submit: false,
+        save: true,
+      });
+      const response = await axios.post(
+        "http://127.0.0.1:6969/save-code",
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          validateStatus: (status) => status >= 200 && status < 500,
+        }
+      );
+
+      if (response.status === 200) {
+        console.log("Code saved successfully!");
+      } else {
+        console.error("Failed to save code.");
+      }
+    } catch (error) {
+      console.error("An error occurred while saving the code.");
+    } finally {
+      setLoading({
+        run: false,
+        submit: false,
+        save: false,
+      });
+    }
+  };
+
+  const fetchCode = async (selectedLanguage) => {
+    try {
+      const response = await axios.get(
+        `http://127.0.0.1:6969/get-saved-code?language=${selectedLanguage}&problemNumber=${problem_id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      if (response.data && response.data.code) {
+        setCode(response.data.code);
+      } else {
+        setCode("");
+      }
+    } catch (err) {
+      console.log(err);
+      setCode("");
+    }
+  };
+
+  useEffect(() => {
+    fetchCode(language.value);
+  }, [language]);
+
   const handleRunClick = async () => {
     if (isLoggedIn) {
-      const inputData = examples.map(example => example.givenInput); 
-  
+      const inputData = examples.map((example) => example.givenInput);
+
       let results = [];
-  
+
       try {
         for (let i = 0; i < inputData[0].length; i++) {
           const data = {
-            language: language,
-            code: btoa(editorData.code),
-            input: examples[0].givenInput[i], 
-            output: examples[0].correctOutput[i],
+            language: language.value,
+            code: btoa(code),
+            input: btoa(examples[0].givenInput[i]),
+            expectedOutput: examples[0].correctOutput[i],
           };
-  
+          setLoading({
+            run: true,
+            submit: false,
+            save: false,
+          });
           const response = await axios.post(
             "http://localhost:6969/run-arena-code",
             data,
             {
               validateStatus: (status) => status >= 200 && status < 500,
-            },
-            {
               headers: {
                 Authorization: `Bearer ${localStorage.getItem("token")}`,
               },
@@ -91,10 +187,10 @@ const CodingArena = () => {
             input: examples[0].givenInput[i],
             output: response.data.output,
             expectedOutput: examples[0].correctOutput[i],
-            passed: response.data.passed, 
+            passed: response.data.passed,
           });
         }
-  
+
         setOutputData(results);
         setOutputVisible(true);
       } catch (error) {
@@ -107,24 +203,100 @@ const CodingArena = () => {
           passed: "0/0",
         });
         setOutputVisible(true);
+      } finally {
+        setLoading({
+          run: false,
+          submit: false,
+          save: false,
+        });
       }
-      console.log(results);
     } else {
       setShowModal(true);
     }
   };
-  
+
+  const handleCustomInputClick = () => {
+    setCustomInputVisible(true);
+  };
+
+  const handleCustomInputClose = () => {
+    setCustomInputVisible(false);
+  };
+
+  const handleInputChange = (event) => {
+    setCustomInputValue(event.target.value);
+  };
+
+  const handleCustomInputTest = async () => {
+    if (isLoggedIn) {
+      const customInput = customInputValue; 
+
+      const data = {
+        language: language.value,
+        code: btoa(code),
+        input: btoa(customInput), 
+        expectedOutput: "", 
+      };
+
+      setLoading({ run: true, submit: false, save: false }); 
+
+      try {
+        const response = await axios.post(
+          "http://localhost:6969/run-arena-code",
+          data,
+          {
+            validateStatus: (status) => status >= 200 && status < 500,
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+
+        const result = {
+          input: customInput,
+          output: response.data.output,
+          expectedOutput: "", 
+          passed: response.data.passed,
+        };
+
+        setOutputData([result]); 
+        setOutputVisible(true); 
+      } catch (error) {
+        console.error("Error running custom input:", error);
+        setOutputData({
+          input: [customInput],
+          output: ["Error occurred"],
+          expectedOutput: [""],
+          message: "An error occurred while running the custom input.",
+          passed: "0/1",
+        });
+        setOutputVisible(true); 
+      } finally {
+        setLoading({
+          run: false,
+          submit: false,
+          save: false,
+        });
+      }
+    } else {
+      setShowModal(true); 
+    }
+  };
 
   const handleSubmitClick = async () => {
     if (isLoggedIn) {
       const data = {
-        language: language,
-        code: btoa(editorData.code),
+        language: language.value,
+        code: btoa(code),
         problemNumber: problem_id,
       };
-      console.log(data);
-  
+
       try {
+        setLoading({
+          run: false,
+          submit: true,
+          save: false,
+        });
         const response = await axios.post(
           "http://localhost:6969/submit-code",
           data,
@@ -135,8 +307,7 @@ const CodingArena = () => {
             validateStatus: (status) => status >= 200 && status < 500,
           }
         );
-        console.log(response);
-  
+
         const {
           status,
           input,
@@ -146,7 +317,7 @@ const CodingArena = () => {
           passed,
           testcases,
         } = response.data;
-  
+
         setIsSubmission(true);
         setSubmitVisible(true);
         setOutputData({
@@ -168,11 +339,17 @@ const CodingArena = () => {
           passed: "0/0",
         });
         setSubmitVisible(true);
+      } finally {
+        setLoading({
+          run: false,
+          submit: false,
+          save: false,
+        });
       }
     } else {
       setShowModal(true);
     }
-  };  
+  };
 
   const handleSubmitClose = () => {
     setSubmitVisible(false);
@@ -182,13 +359,37 @@ const CodingArena = () => {
     setOutputVisible(false);
   };
 
-  const handleCodeChange = (code) => {
-    setEditorData((prevData) => ({ ...prevData, code }));
+  const onChange = (action, data) => {
+    if (action === "code") {
+      setCode(data);
+    }
   };
 
-  const handleLanguageChange = (language) => {
-    changeLanguage(language.value); 
-  };
+  const handleSubmissions = async ()=>{
+    try {
+      const response = await axios.get("http://localhost:6969/get-submissions", {
+        params: { problemNumber: problem_id },
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        validateStatus: (status) => status >= 200 && status < 500,
+      });
+
+      if (response.data.status === 'ok') {
+        setSubmissions(response.data.data);
+      } else {
+        console.error("Unexpected response status:", response.data);
+      }
+    } catch (err) {
+      console.error("Error fetching data:", err);
+    }
+  }
+
+  useEffect(()=>{
+    if(currentTab === 2)
+      handleSubmissions();
+  }, [currentTab]);
+
 
   const renderContent = () => {
     switch (currentTab) {
@@ -209,6 +410,7 @@ const CodingArena = () => {
             tags={problemData.tags || []}
             outputVisible={outputVisible}
             difficulty={problemData.difficulty || ""}
+            solved = {solved}
           />
         ) : (
           <Box sx={{ padding: 2 }}>
@@ -233,112 +435,183 @@ const CodingArena = () => {
             <Box
               sx={{
                 display: "flex",
-                flexDirection: "column",
-                flex: 1,
-                overflow: "hidden",
+                flexDirection: "row",
+                alignItems: "center",
+                padding: 1,
+                borderBottom: 1,
+                borderColor: "divider",
               }}
             >
+              <IconButton
+                onClick={() => navigate(`/problems`)}
+                sx={{
+                  color: "#ffffff",
+                  flexShrink: 0, // Prevent the back button from shrinking
+                }}
+              >
+                <ArrowBackIcon />
+              </IconButton>
+
               <Box
                 sx={{
-                  borderBottom: 1,
-                  borderColor: "divider",
+                  flexGrow: 1,
+                  display: "flex",
+                  justifyContent: "center",
                 }}
               >
                 <Tabs
                   value={currentTab}
                   onChange={handleTabChange}
                   aria-label="Tabs for Problem, Solutions, and Submissions"
-                  sx={{ marginBottom: 2 }}
+                  sx={{
+                    marginBottom: 0, // Remove bottom margin
+                    minHeight: "auto", // Remove any default min-height
+                    padding: 0, // Remove any padding
+                  }}
                 >
                   <Tab
                     label="Problem"
                     sx={{
-                      bgcolor: currentTab === 0 ? "#8888" : "gray",
-                      color: currentTab === 0 ? "white" : "white",
+                      bgcolor: "transparent",
+                      color: "#888888",
                       "&:hover": {
-                        bgcolor: currentTab === 0 ? "#8899" : "darkgray",
+                        color: "#ffffff",
+                      },
+                      "&.Mui-selected": {
+                        color: "#ffffff",
                       },
                     }}
                   />
                   <Tab
                     label="Solutions"
                     sx={{
-                      bgcolor: currentTab === 1 ? "#8888" : "gray",
-                      color: currentTab === 1 ? "white" : "white",
+                      bgcolor: "transparent",
+                      color: "#888888",
                       "&:hover": {
-                        bgcolor: currentTab === 1 ? "#8899" : "darkgray",
+                        color: "#ffffff",
+                      },
+                      "&.Mui-selected": {
+                        color: "#ffffff",
                       },
                     }}
                   />
                   <Tab
                     label="Submissions"
                     sx={{
-                      bgcolor: currentTab === 2 ? "#8888" : "gray",
-                      color: currentTab === 2 ? "white" : "white",
+                      bgcolor: "transparent",
+                      color: "#888888",
                       "&:hover": {
-                        bgcolor: currentTab === 2 ? "#8899" : "darkgray",
+                        color: "#ffffff",
+                      },
+                      "&.Mui-selected": {
+                        color: "#ffffff",
                       },
                     }}
                   />
                 </Tabs>
               </Box>
+            </Box>
+
               <Box
                 sx={{
-                  flex: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                  height: "100%",
                   overflowY: "auto",
                 }}
               >
                 {renderContent()}
               </Box>
-            </Box>
 
-            {outputVisible && (
-              <Box
-                sx={{
-                  height: "30vh",
-                  overflowY: "auto",
-                  position: "absolute",
-                  top: "65%",
-                  width: "100%",
-                  border: "none",
-                  boxShadow: "none",
-                  padding: 1,
-                  marginTop: 2,
-                }}
-              >
-                <IconButton
+              {outputVisible && (
+                <Box
                   sx={{
+                    height: "30vh",
+                    overflowY: "auto",
                     position: "absolute",
-                    top: 8,
-                    right: 8,
+                    top: "65%",
+                    width: "100%",
+                    border: "none",
+                    boxShadow: "none",
+                    padding: 1,
+                    marginTop: 2,
                   }}
-                  onClick={handleOutputClose}
                 >
-                  <CloseIcon />
-                </IconButton>
-                <Output
-                  results={outputData}
-                  onClose={handleOutputClose}
-                  isSubmission={isSubmission}
-                />
-              </Box>
-            )}
+                  <IconButton
+                    sx={{
+                      position: "absolute",
+                      top: 8,
+                      right: 8,
+                    }}
+                    onClick={handleOutputClose}
+                  >
+                    <CloseIcon />
+                  </IconButton>
+                  <Output
+                    results={outputData}
+                    onClose={handleOutputClose}
+                    isSubmission={isSubmission}
+                  />
+                </Box>
+              )}
 
-            {/* Output Modal */}
-            {submitVisible && (
-              <OutputModal
-                open={submitVisible}
-                onClose={handleSubmitClose}
-                outputData={outputData}
-              />
-            )}
-          </Box>
+              {customInputVisible && (
+                <Input
+                  open={customInputVisible}
+                  onChange={handleInputChange}
+                  onClose={handleCustomInputClose}
+                  onTest={handleCustomInputTest}
+                />
+              )}
+
+              {submitVisible && (
+                <OutputModal
+                  open={submitVisible}
+                  onClose={handleSubmitClose}
+                  outputData={outputData}
+                />
+              )}
+            </Box>
         </Grid>
         <Grid item xs={12} md={6}>
-          <Editor
-            onCodeChange={handleCodeChange}
-            onLanguageChange={handleLanguageChange}
-          />
+          <div className="flex flex-row">
+            <div className="px-4 py-2">
+              <LanguagesDropdown onSelectChange={onSelectChange} />
+            </div>
+            <div>
+              <Button
+                sx={{
+                  ...customStyles.control,
+                  width: "auto",
+                  maxHeight: "50px",
+                  maxWidth: "none",
+                  marginRight: 1,
+                  border: "none",
+                  backgroundColor: "white",
+                  color: "black",
+                  "&:hover": {
+                    cursor: "pointer",
+                    color: "white",
+                  },
+                  position: "absolute",
+                  right: "40px",
+                  top: "30px",
+                }}
+                variant="text"
+                onClick={handleSave}
+                disabled={loading.run || loading.save || loading.submit}
+              >
+                Save
+              </Button>
+            </div>
+          </div>
+          <div>
+            <CodeEditorWindow
+              code={code}
+              onChange={onChange}
+              language={language?.value}
+            />
+          </div>
         </Grid>
       </Grid>
       <Box
@@ -367,14 +640,15 @@ const CodingArena = () => {
             color: "white",
             "&:hover": {
               cursor: "pointer",
-              color: "blue",
+              color: "black",
             },
           }}
           variant="text"
-          onClick={handleRunClick}
+          onClick={handleCustomInputClick}
         >
-          Run
+          Custom Input
         </Button>
+
         <Button
           sx={{
             ...customStyles.control,
@@ -387,11 +661,42 @@ const CodingArena = () => {
             color: "white",
             "&:hover": {
               cursor: "pointer",
-              color: "blue",
+              color: "black",
             },
+            position: "relative",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
           }}
           variant="text"
-          onClick={handleSubmitClick}
+          onClick={handleRunClick}
+          disabled={loading.run || loading.save || loading.submit}
+        >
+          Run
+        </Button>
+
+        <Button
+          sx={{
+            ...customStyles.control,
+            width: "auto",
+            maxWidth: "none",
+            padding: "6px 12px",
+            marginRight: 1,
+            border: "none",
+            backgroundColor: "black",
+            color: "white",
+            "&:hover": {
+              cursor: "pointer",
+              color: "black",
+            },
+            position: "relative", 
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+          variant="text"
+          onClick={() => {handleSubmitClick(); handleSubmissions()}}
+          disabled={loading.run || loading.save || loading.submit}
         >
           Submit
         </Button>

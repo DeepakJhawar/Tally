@@ -51,6 +51,24 @@ const QuestionDetailsModal = ({
     tags = []
   } = details;
 
+  const handleApprove = async () => {
+    try {
+      await onApprove(); 
+      handleClose(); 
+    } catch (error) {
+      console.error('Approval failed:', error);
+    }
+  };
+
+  const handleDecline = async () => {
+    try {
+      await onDecline(); 
+      handleClose(); 
+    } catch (error) {
+      console.error('Decline failed:', error);
+    }
+  };
+
   return (
     <Modal
       open={open}
@@ -85,10 +103,10 @@ const QuestionDetailsModal = ({
           </Typography>
         </Box>
         <Box sx={buttonContainerStyle}>
-          <Button variant="contained" color="success" onClick={onApprove} sx={{ mr: 1 }}>
+          <Button variant="contained" color="success" onClick={handleApprove} sx={{ mr: 1 }}>
             Approve
           </Button>
-          <Button variant="contained" color="error" onClick={onDecline}>
+          <Button variant="contained" color="error" onClick={handleDecline}>
             Decline
           </Button>
         </Box>

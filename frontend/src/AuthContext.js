@@ -5,10 +5,10 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  const token = localStorage.getItem("token");
   useEffect(() => {
     const checkLoginStatus = async () => {
       try {
+        const token = localStorage.getItem("token");
         if (token) setIsLoggedIn(true);
         else setIsLoggedIn(false);
       } catch (error) {
@@ -17,7 +17,13 @@ export const AuthProvider = ({ children }) => {
     };
 
     checkLoginStatus();
-  }, [token]);
+
+    window.addEventListener("storage", checkLoginStatus);
+
+    return () => {
+      window.removeEventListener("storage", checkLoginStatus);
+    };
+  }, []);
 
   return (
     <AuthContext.Provider value={{ isLoggedIn }}>

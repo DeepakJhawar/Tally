@@ -1,69 +1,65 @@
-// import React from 'react';
-// import { Button, TableRow, TableCell } from '@mui/material';
+import React, { useState } from "react";
+import { TableRow, TableCell, Button, Typography } from "@mui/material";
+import TestCaseModal from "./TestCaseModal";
 
-// const TestCaseRowComponent = ({ serialNumber, onApprove, onDecline, onClick }) => {
-//   return (
-//     <TableRow>
-//       <TableCell>
-//         <Button 
-//           onClick={onClick} 
-//           style={{ color: 'white' }}
-//         >
-//           {serialNumber}
-//         </Button>
-//       </TableCell>
-//       <TableCell>
-//         <Button
-//           variant="contained"
-//           color="success"
-//           onClick={onApprove}
-//           style={{ marginRight: '8px' }}
-//         >
-//           Approve
-//         </Button>
-//         <Button
-//           variant="contained"
-//           color="error"
-//           onClick={onDecline}
-//         >
-//           Decline
-//         </Button>
-//       </TableCell>
-//     </TableRow>
-//   );
-// };
+const TestCaseRow = ({
+  problemNumber,
+  problemTitle,
+  testcase,
+  onApprove,
+  onDecline,
+  onOpenModal,
+}) => {
+  const [open, setOpen] = useState(false);
 
-// export default TestCaseRowComponent;
-import React from 'react';
-import { TableRow, TableCell, Button } from '@mui/material';
+  const handleClick = async () => {
+    onOpenModal();
+    setOpen(true);
+  };
 
-const TestCaseRowComponent = ({ serialNumber, onApprove, onDecline }) => {
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   return (
-    <TableRow>
-      <TableCell>
-        <Button onClick={onApprove} style={{ color: 'white' }}>
-          {serialNumber}
-        </Button>
-      </TableCell>
-      <TableCell>
-        <Button
-          variant="contained"
-          color="success"
-          onClick={onApprove}
-          style={{ marginRight: '8px' }}
-        >
-          Approve
-        </Button>
-        <Button
-          variant="contained"
-          color="error"
-          onClick={onDecline}
-        >
-          Decline
-        </Button>
-      </TableCell>
-    </TableRow>
+    <>
+      <TableRow>
+        <TableCell>
+          <Typography style={{ color: "white", marginLeft: "2rem" }}>
+            {problemNumber}
+          </Typography>
+        </TableCell>
+        <TableCell>
+          <Button onClick={handleClick} style={{ color: "white" }}>
+            {problemTitle}
+          </Button>
+        </TableCell>
+        <TableCell>
+          <Button
+            variant="contained"
+            color="success"
+            onClick={onApprove}
+            style={{ marginRight: "8px" }}
+          >
+            Approve
+          </Button>
+          <Button variant="contained" color="error" onClick={onDecline}>
+            Decline
+          </Button>
+        </TableCell>
+      </TableRow>
+
+      {open && (
+        <TestCaseModal
+          open={open}
+          handleClose={handleClose}
+          details={testcase}
+          onApprove={onApprove}
+          onDecline={onDecline}
+        />
+      )}
+    </>
   );
 };
 
-export default TestCaseRowComponent;
+export default TestCaseRow;

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -17,14 +17,14 @@ import axios from "axios";
 
 const schema = yup
   .object({
-    title: yup.string().required("Title is required"),
+    title: yup.string().trim().required("Title is required"),
     description: yup
-      .string()
+      .string().trim()
       .max(5000, "Description must be less than 5000 characters")
       .required("Description is required"),
-    constraints: yup.string(),
-    input: yup.string().required("Input is required"),
-    output: yup.string().required("Output is required"),
+    constraints: yup.string().trim(),
+    input: yup.string().trim().required("Input is required"),
+    output: yup.string().trim().required("Output is required"),
     tags: yup.array().of(yup.string()).min(1, "At least one tag is required"),
     difficulty: yup
       .string()
@@ -33,9 +33,11 @@ const schema = yup
   .required();
 
 const ContributeQuestion = () => {
+  const [loading, setLoading] = useState(false); 
   const {
     control,
     handleSubmit,
+    reset, 
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
@@ -51,6 +53,7 @@ const ContributeQuestion = () => {
   });
 
   const onSubmit = async (data) => {
+    setLoading(true); 
     const format = {
       constraints: data.constraints,
       description: data.description,
@@ -58,13 +61,13 @@ const ContributeQuestion = () => {
       givenInput: data.input,
       correctOutput: data.output,
       title: data.title,
-      tags: data.tags
-    }
-    console.log(format);
+      tags: data.tags,
+    };
+
     try {
       const response = await axios.post(
         "http://localhost:6969/create-pending-problem",
-        format, 
+        format,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -72,16 +75,18 @@ const ContributeQuestion = () => {
           validateStatus: (status) => status >= 200 && status < 500,
         }
       );
-      
 
-      alert(
-        response.data.status === "ok"
-          ? "Problem sent to our team for verification"
-          : response.data.message
-      );
+      if (response.data.status === "ok") {
+        alert("Problem sent to our team for verification");
+        reset(); 
+      } else {
+        alert(response.data.message);
+      }
     } catch (err) {
       console.log(err);
       alert("An error occurred while adding the problem");
+    } finally {
+      setLoading(false); 
     }
   };
 
@@ -271,8 +276,13 @@ const ContributeQuestion = () => {
           </Grid>
         </Grid>
         <Box mt={2}>
-          <Button type="submit" variant="contained" color="secondary">
-            Submit
+          <Button
+            type="submit"
+            variant="contained"
+            color="secondary"
+            disabled={loading} 
+          >
+            {loading ? "Submitting..." : "Submit"}
           </Button>
         </Box>
       </form>

@@ -10,13 +10,11 @@ import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { grey } from "@mui/material/colors";
 
 const schema = yup.object().shape({
   email: yup.string().email("Invalid email").required("Email is required"),
 });
-
-const defaultTheme = createTheme();
 
 const ForgotPassword = () => {
   const {
@@ -43,8 +41,14 @@ const ForgotPassword = () => {
   };
 
   return (
-    <ThemeProvider theme={defaultTheme}>
-      <Container component="main" maxWidth="xs">
+      <Container component="main" maxWidth="xl"
+      sx={{
+        backgroundImage: 'url("https://i.pinimg.com/236x/0c/84/3f/0c843f96a6e997fff64e65057100b4af.jpg")',
+        minHeight: "90vh",
+        backgroundSize: 'cover',
+        padding: 0,
+        margin: 0,
+      }}>
         <CssBaseline />
         <Box
           sx={{
@@ -76,19 +80,34 @@ const ForgotPassword = () => {
               {...register("email")}
               error={!!errors.email}
               helperText={errors.email?.message}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  "& fieldset": {
+                    borderColor: "gray", 
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "gray", 
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "white", 
+                  },
+                },
+                "& .MuiFormLabel-root.Mui-focused": {
+                  color: "white", 
+                },
+              }}
             />
             <Button
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+              sx={{ mt: 3, mb: 2, bgcolor: grey[500]}}
             >
               Reset Password
             </Button>
           </Box>
         </Box>
       </Container>
-    </ThemeProvider>
   );
 };
 

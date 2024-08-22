@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   Container,
   Box,
@@ -20,14 +20,19 @@ import {
   Grid,
   useMediaQuery,
   useTheme,
+  Pagination,
+  PaginationItem,
 } from "@mui/material";
-import { Link, useLocation, useNavigate} from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { PieChart, Pie, Cell, Legend, Tooltip } from "recharts";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import axios from "axios";
+import debounce from "lodash.debounce";
 
 const filters = {
-  status: ["All", "Solved", "Unsolved", "Attempted"],
-  difficulty: ["All", "Easy", "Medium", "Hard"],
+  status: ["All", "Solved", "Unsolved"],
+  difficulty: ["All", "easy", "medium", "hard"],
   tags: [
     "All",
     "Array",
@@ -66,22 +71,26 @@ const ProblemsPage = () => {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const navigate = useNavigate();
-  const token = params.get('token'); 
-  const role = params.get('role');
+  const token = params.get("token");
+  const role = params.get("role");
 
-  console.log('Query Params:', params.toString()); 
-
-  if (!localStorage.getItem('token') && token) {
-    localStorage.setItem('token', token);
-    localStorage.setItem('role', role);
-    params.delete("token");
-    params.delete("role");
-    navigate(`${location.pathname}?${params.toString()}`, { replace: true });
+  if (token) {
+    localStorage.setItem("token", token);
+    localStorage.setItem("role", role);
+    navigate("/problems", { replace: true });
   }
+
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [difficultyFilter, setDifficultyFilter] = useState("All");
   const [tagFilter, setTagFilter] = useState("All");
+  const [page, setPage] = useState(0);
+  const [totProblems, setTotProblems] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [easyProblems, setEasyProblems] = useState(0);
+  const [medProblems, setMedProblems] = useState(0);
+  const [hardProblems, setHardProblems] = useState(0);
+  const [solvedProblems, setSolvedProblems] = useState(0);
 
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
@@ -89,29 +98,45 @@ const ProblemsPage = () => {
   const [problems, setProblems] = useState([]);
 
   const getAllProblems = async () => {
+    const token = localStorage.getItem("token");
     try {
-      const response = await axios.get("http://localhost:6969/all-problems");
+      const response = await axios.get("http://localhost:6969/problems", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        params: {
+          page: page + 1,
+          limit: rowsPerPage,
+          difficulty: difficultyFilter === "All" ? "" : difficultyFilter,
+          tag: tagFilter === "All" ? "" : tagFilter,
+          title: searchQuery,
+          status: statusFilter === "All" ? "" : statusFilter,
+        },
+      });
+      console.log(response.data);
+      setEasyProblems(response.data.easySolved);
+      setMedProblems(response.data.mediumSolved);
+      setHardProblems(response.data.hardSolved);
       setProblems(response.data.data);
+      setTotProblems(response.data.totalDocuments);
+      setSolvedProblems(response.data.solved);
     } catch (err) {
       console.log(err);
     }
   };
 
-  const filteredProblems = problems.filter((problem) => {
-    const problemDifficulty = problem.difficulty
-      ? problem.difficulty.toLowerCase()
-      : "";
-    const problemStatus = problem.status ? problem.status.toLowerCase() : "";
-
-    return (
-      (statusFilter === "All" ||
-        problemStatus === statusFilter.toLowerCase()) &&
-      (difficultyFilter === "All" ||
-        problemDifficulty === difficultyFilter.toLowerCase()) &&
-      (tagFilter === "All" || problem.tags.includes(tagFilter)) &&
-      problem.title.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  });
+  const debouncedFetchProblems = useCallback(
+    debounce(() => {
+      getAllProblems();
+    }, 500),
+    [difficultyFilter, tagFilter, searchQuery, statusFilter, page, rowsPerPage]
+  );
+  useEffect(() => {
+    debouncedFetchProblems();
+    return () => {
+      debouncedFetchProblems.cancel();
+    };
+  }, [debouncedFetchProblems]);
 
   const difficultyColors = {
     easy: "lightgreen",
@@ -125,37 +150,11 @@ const ProblemsPage = () => {
     attempted: "yellow",
   };
 
-  const solvedProblems = problems.filter(
-    (problem) => problem.status?.toLowerCase() === "solved"
-  ).length;
-
-  const easyProblems = problems.filter(
-    (problem) =>
-      problem.difficulty?.toLowerCase() === "easy" &&
-      problem.status?.toLowerCase() === "solved"
-  ).length;
-  const mediumProblems = problems.filter(
-    (problem) =>
-      problem.difficulty?.toLowerCase() === "medium" &&
-      problem.status?.toLowerCase() === "solved"
-  ).length;
-  const hardProblems = problems.filter(
-    (problem) =>
-      problem.difficulty?.toLowerCase() === "hard" &&
-      problem.status?.toLowerCase() === "solved"
-  ).length;
-
-  const totalProblems = problems.length;
-
   const pieData = [
     { name: "Easy", value: easyProblems, color: difficultyColors.easy },
-    { name: "Medium", value: mediumProblems, color: difficultyColors.medium },
+    { name: "Medium", value: medProblems, color: difficultyColors.medium },
     { name: "Hard", value: hardProblems, color: difficultyColors.hard },
   ];
-
-  useEffect(() => {
-    getAllProblems();
-  }, []);
 
   const truncateString = (str, maxLength) => {
     if (str.length > maxLength) {
@@ -256,7 +255,7 @@ const ProblemsPage = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {filteredProblems.map((problem, index) => (
+                  {problems.map((problem, index) => (
                     <TableRow
                       key={problem.problem_id}
                       sx={{
@@ -273,6 +272,7 @@ const ProblemsPage = () => {
                         <Link
                           className="text-white hover:text-blue-500 transition-all duration-300"
                           to={`/problem/${problem?.problem_id}`}
+                          state={{ status: problem.status.toLowerCase() }}
                         >
                           {problem.title}
                         </Link>
@@ -302,6 +302,37 @@ const ProblemsPage = () => {
                 </TableBody>
               </Table>
             </TableContainer>
+            <Box className="flex  items-center justify-between mt-4">
+              <Pagination
+                count={Math.ceil(totProblems / rowsPerPage)} // Total number of pages
+                page={page + 1} // Pages are 1-based for the Pagination component
+                onChange={(event, value) => setPage(value - 1)} // Update page (convert back to 0-based index)
+                renderItem={(item) => (
+                  <PaginationItem
+                    slots={{ previous: ArrowBackIcon, next: ArrowForwardIcon }}
+                    {...item}
+                  />
+                )}
+              />
+              <FormControl
+                variant="outlined"
+                size="small"
+                className="ml-4 w-28"
+              >
+                <InputLabel id="rows-per-page-label">Rows per page</InputLabel>
+                <Select
+                  labelId="rows-per-page-label"
+                  value={rowsPerPage} // Default value from state
+                  onChange={(e) => setRowsPerPage(Number(e.target.value))} // Update state with the selected value
+                  label="Rows per page"
+                >
+                  <MenuItem value={10}>10</MenuItem>
+                  <MenuItem value={50}>50</MenuItem>
+                  <MenuItem value={100}>100</MenuItem>
+                  <MenuItem value={200}>200</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
           </Grid>
 
           <Grid item xs={12} md={3}>
@@ -311,7 +342,9 @@ const ProblemsPage = () => {
                   Progress Overview
                 </Typography>
                 <Typography variant="body1" gutterBottom>
-                  {`You have completed ${solvedProblems} out of ${totalProblems} problems.`}
+                  {`You have completed ${
+                    solvedProblems
+                  } out of ${totProblems} problems.`}
                 </Typography>
                 <PieChart width={240} height={240}>
                   <Pie

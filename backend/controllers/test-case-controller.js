@@ -54,13 +54,42 @@ const addPendingTestCase = async (req, res) => {
             return;
         }
 
-        const updatedTestCase = await PendingTestCase({ problemNumber, givenInput, correctOutput });
+        const checkTestCase = await PendingTestCase.findOne({ problemNumber, givenInput, correctOutput })
+        if (checkTestCase) {
+            res.status(409).json({
+                status: 'unsucessful',
+                message: `Testcase Already submitted for verification`,
+            });
+            return;
+        }
+
+        const testCase = await TestCase.findOne({ _id: problemData.testCaseId });
+        if (!testCase) {
+            res.status(500).json({
+                status: 'unsucessful',
+                message: `Failed to add the testCase`,
+            });
+            return;
+        }
+
+        const index = testCase.givenInput.indexOf(givenInput)
+        if (index != 1) {
+            if (testCase.correctOutput[index] == correctOutput) {
+                res.status(409).json({
+                    status: 'unsucessful',
+                    message: `Duplicate Test case`,
+                });
+                return;
+            }
+        }
+
+        const updatedTestCase = await PendingTestCase({ problemNumber, givenInput, correctOutput, title: problemData.title });
         await updatedTestCase.save()
 
         if (updatedTestCase) {
             res.status(200).json({
                 status: 'ok',
-                message: `Test case successfully submitted for verification: ${updatedTestCase}`,
+                message: `Test case successfully submitted for verification.`,
             });
         }
     } catch (err) {
@@ -73,22 +102,51 @@ const addPendingTestCase = async (req, res) => {
 
 const addTestCase = async (req, res) => {
     try {
-        const { problemNumber, givenInput, correctOutput } = req.body;
-        const problemData = await Problem.findOne({ problemNumber })
-        if (!problemData) {
+        const { testcaseID } = req.body;
+        const pendingTestCase = await PendingTestCase.findById(testcaseID)
+        if (!pendingTestCase) {
             res.status(404).json({
                 status: 'unsucessful',
-                message: `Problem Number not found`,
+                message: `TestCase ID not found`,
             });
             return;
         }
 
-        const updatedTestCase = await TestCase.findOneAndUpdate(
-            { _id: problemData.testCaseId }, // Filter: find by _id
+        const problem = await Problem.findOne({ problemNumber: pendingTestCase.problemNumber })
+        if (!problem) {
+            res.status(404).json({
+                status: 'unsucessful',
+                message: `problem not found`,
+            });
+            return;
+        }
+
+        const testCase = await TestCase.findOne({ _id: problem.testCaseId });
+        if (!testCase) {
+            res.status(404).json({
+                status: 'unsucessful',
+                message: `Test case not found with ID: ${problem.testCaseId}`,
+            });
+            return;
+        }
+
+        const index = testCase.givenInput.indexOf(pendingTestCase.givenInput)
+        if (index != 1) {
+            if (testCase.correctOutput[index] == pendingTestCase.correctOutput) {
+                res.status(409).json({
+                    status: 'unsucessful',
+                    message: `Duplicate Test case`,
+                });
+                return;
+            }
+        }
+
+        const updatedTestCase = await TestCase.updateOne(
+            { _id: problem.testCaseId }, // Filter: find by _id
             {
                 $push: {
-                    givenInput: givenInput,
-                    correctOutput: correctOutput,
+                    givenInput: pendingTestCase.givenInput,
+                    correctOutput: pendingTestCase.correctOutput,
                 },
             },
             {
@@ -97,19 +155,15 @@ const addTestCase = async (req, res) => {
             }
         );
 
+
         try {
-            await PendingTestCase.deleteOne({ problemNumber, givenInput, correctOutput });
+            await PendingTestCase.deleteOne({ _id: testcaseID });
         } catch { }
 
         if (updatedTestCase) {
             res.status(200).json({
                 status: 'ok',
-                message: `Test case updated successfully: ${updatedTestCase}`,
-            });
-        } else {
-            res.status(200).json({
-                status: 'ok',
-                message: `Test case not found with ID: ${problemData.testCaseId}`,
+                message: `Test case added successfully`,
             });
         }
     } catch (err) {
@@ -166,4 +220,30 @@ const editTestCase = async (req, res) => {
     }
 }
 
-export { addTestCase, editTestCase, getPendingTestCase, addPendingTestCase, getPendingTestCaseById };
+const declineTestCase = async (req, res) => {
+    try {
+		let { testcaseID } = req.body;
+
+		const pendingTestCase = await PendingTestCase.findById(testcaseID);
+		if (!pendingTestCase) {
+			return res.status(400).json({
+				status: "unsuccessful",
+				message: "Pending Test ID doesnt exists",
+			});
+		}
+
+		await PendingTestCase.deleteOne({ _id: testcaseID });
+		res.status(201).json({
+			status: "ok",
+			message: "Declined Sucessfully",
+		});
+	} catch (err) {
+		res.status(500).json({
+			status: "unsuccessful",
+			message: "Internal Server Error",
+			error: err.message,
+		});
+	}
+
+}
+export { addTestCase, editTestCase, getPendingTestCase, addPendingTestCase, getPendingTestCaseById, declineTestCase };

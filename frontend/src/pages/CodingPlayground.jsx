@@ -4,25 +4,75 @@ import { classnames } from "../utils/general";
 import { languageOptions } from "../constants/languageOptions";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import useKeyPress from "../hooks/useKeyPress";
-import CodeEditorWindow from "../components/codingPlayground/CodeEditorWindow";
+import CodeEditorWindow from "../components/Editor/CodeEditorWindow";
 import CustomInput from "../components/codingPlayground/CustomInput";
-import LanguagesDropdown from "../components/codingPlayground/LanguagesDropdown";
+import LanguagesDropdown from "../components/Editor/LanguagesDropdown";
 import Navbar from "../components/Navbar";
 import OutputWindow from "../components/codingPlayground/OutputWindow";
 
 const CodingPlayGround = () => {
-  const [code, setCode] = useState('');
+  const [code, setCode] = useState("");
   const [customInput, setCustomInput] = useState("");
   const [outputDetails, setOutputDetails] = useState(null);
   const [processing, setProcessing] = useState(false);
   const [language, setLanguage] = useState(languageOptions[0]);
 
-  const enterPress = useKeyPress("Enter");
-  const ctrlPress = useKeyPress("Control");
-
   const onSelectChange = (sl) => {
     setLanguage(sl);
+  };
+
+  const fetchCode = async (selectedLanguage) => {
+    try {
+      const response = await axios.get(`http://127.0.0.1:6969/get-saved-code?language=${selectedLanguage}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      if (response.data && response.data.code) {
+        setCode(response.data.code); 
+      } else {
+        setCode(""); 
+      }
+    } catch (err) {
+      console.log(err);
+      setCode(""); 
+    }
+  };
+
+  useEffect(() => {
+    fetchCode(language.value);
+  }, [language]);
+
+  const handleSave = async () => {
+    setProcessing(true);
+  
+    const formData = {
+      language: language.value,
+      code: btoa(code),
+    };
+  
+    try {
+      const response = await axios.post(
+        "http://127.0.0.1:6969/save-code",
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`
+          },
+          validateStatus: (status) => status >= 200 && status < 500,
+        }
+      );
+  
+      if (response.status === 200) {
+        showSuccessToast("Code saved successfully!");
+      } else {
+        showErrorToast("Failed to save code.");
+      }
+    } catch (error) {
+      showErrorToast("An error occurred while saving the code.");
+    } finally {
+      setProcessing(false);
+    }
   };
 
   const handleCompile = useCallback(async () => {
@@ -34,15 +84,21 @@ const CodingPlayGround = () => {
     };
 
     try {
-      const response = await axios.post("http://localhost:6969/run-playground-code", formData, {
-        validateStatus: (status) => status >= 200 && status < 500,
-      });
-      if(response.data.status === 'passed'){
-        setOutputDetails(response.data.output);
+      const response = await axios.post(
+        "http://localhost:6969/run-playground-code",
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`
+          },
+          validateStatus: (status) => status >= 200 && status < 500,
+        }
+      );
+      if (response.data.status === "Passed") {
+        setOutputDetails(response.data);
         showSuccessToast("Compiled Successfully!");
       } else {
-        console.log(response.data.error)
-        setOutputDetails(response.data.message);
+        setOutputDetails(response.data);
         showErrorToast(response.data.status);
       }
     } catch (error) {
@@ -51,12 +107,6 @@ const CodingPlayGround = () => {
       setProcessing(false);
     }
   }, [language.value, code, customInput]);
-
-  useEffect(() => {
-    if (enterPress && ctrlPress) {
-      handleCompile();
-    }
-  }, [enterPress, ctrlPress, handleCompile]);
 
   const onChange = (action, data) => {
     if (action === "code") {
@@ -121,22 +171,34 @@ const CodingPlayGround = () => {
         </div>
 
         <div className="right-container flex flex-shrink-0 w-[30%] flex-col h-[60%]">
-          <OutputWindow outputDetails={outputDetails} /> 
+          <OutputWindow outputDetails={outputDetails} />
           <div className="flex flex-col items-end">
             <CustomInput
               customInput={customInput}
               setCustomInput={setCustomInput}
             />
-            <button
-              onClick={handleCompile}
-              disabled={!code || processing}
-              className={classnames(
-                "mt-4 border-2 border-black z-10 rounded-md shadow-[5px_5px_0px_0px_rgba(0,0,0)] px-4 py-2 hover:shadow transition duration-200 bg-white flex-shrink-0 text-black",
-                !code || processing ? "opacity-50" : ""
-              )}
-            >
-              {processing ? "Processing..." : "Compile and Execute"}
-            </button>
+            <div className="flex flex-row">
+			<button
+                onClick={handleSave}
+                disabled={!code || processing}
+                className={classnames(
+                  "mt-4 border-2 border-black z-10 rounded-md shadow-[5px_5px_0px_0px_rgba(0,0,0)] px-4 py-2 hover:shadow transition duration-200 bg-white flex-shrink-0 text-black",
+                  !code ? "opacity-50" : ""
+                )}
+              >
+                Save
+              </button>
+              <button
+                onClick={handleCompile}
+                disabled={!code || processing}
+                className={classnames(
+                  "mt-4 border-2 border-black z-10 rounded-md shadow-[5px_5px_0px_0px_rgba(0,0,0)] px-4 py-2 hover:shadow transition duration-200 bg-white flex-shrink-0 text-black",
+                  !code || processing ? "opacity-50" : ""
+                )}
+              >
+                {processing ? "Processing..." : "Compile and Execute"}
+              </button>
+            </div>
           </div>
         </div>
       </div>

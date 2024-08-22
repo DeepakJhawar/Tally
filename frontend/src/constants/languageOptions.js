@@ -1,18 +1,18 @@
 export const languageOptions = [
   {
-    label: "Python (3.8.1)",
+    label: "Python 3",
     value: "python",
   },
   {
-    label: "JavaScript (Node.js 12.14.0)",
+    label: "JavaScript (Node.js)",
     value: "javascript",
   },
   {
-    label: "C (GCC 9.2.0)",
+    label: "C (GCC)",
     value: "c",
   },
   {
-    label: "C++ (GCC 9.2.0)",
+    label: "C++",
     value: "cpp",
   },
 ];

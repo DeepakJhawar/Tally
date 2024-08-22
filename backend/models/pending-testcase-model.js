@@ -13,6 +13,10 @@ const Schema = new mongoose.Schema(
     problemNumber: {
         type: Number,
         required: true
+    },
+    title: {
+        type: String,
+        required: true
     }
   },
   {

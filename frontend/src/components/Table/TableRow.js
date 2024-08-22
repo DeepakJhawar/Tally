@@ -8,8 +8,6 @@ const TableRowComponent = ({ serialNumber, problemHeading, details, onApprove, o
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  console.log('Problem Details:', details); 
-
   return (
     <>
       <TableRow>

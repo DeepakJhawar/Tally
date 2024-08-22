@@ -1,44 +1,23 @@
 import React, { useState } from "react";
-import { Box, Typography, Paper, Divider, Modal, Button, IconButton } from "@mui/material";
-import { customStyles } from "../../constants/customStyles";
+import { Box, Typography, Paper, Divider, Modal, Button, IconButton, Table, TableBody, TableCell, TableContainer, TableRow, TableHead } from "@mui/material";
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import { customStyles } from "../../constants/customStyles";
 
-const sampleCode = `// Sample code snippet
-function binarySearch(arr, target) {
-  let left = 0;
-  let right = arr.length - 1;
-  
-  while (left <= right) {
-    const mid = Math.floor((left + right) / 2);
-    if (arr[mid] === target) {
-      return mid;
-    }
-    if (arr[mid] < target) {
-      left = mid + 1;
-    } else {
-      right = mid - 1;
-    }
-  }
-  
-  return -1;
-}`;
-
-const Submissions = ({ submissions = [] }) => {
+const Submissions = ({ submissions }) => {
   const [open, setOpen] = useState(false);
   const [currentCode, setCurrentCode] = useState("");
 
-  const parseSubmission = (submissionString) => {
-    const parts = submissionString.split(", ");
-    const submission = {};
-    parts.forEach((part) => {
-      const [key, value] = part.split(": ");
-      submission[key.trim()] = value.trim();
-    });
-    return submission;
+  const parseSubmission = (submission) => {
+    return {
+      code: submission.code,
+      verdict: submission.verdict,
+      language: submission.language,
+      submittedAt: new Date(submission.submittedAt).toLocaleString(), // Format date
+    };
   };
 
   const handleOpen = (code) => {
-    setCurrentCode(code || sampleCode); 
+    setCurrentCode(code);
     setOpen(true);
   };
 
@@ -50,55 +29,41 @@ const Submissions = ({ submissions = [] }) => {
 
   return (
     <Box sx={{ padding: 2 }}>
-      {submissions.length ? (
-        submissions.map((submissionString, index) => {
-          const submission = parseSubmission(submissionString);
-          return (
-            <Paper
-              key={index}
-              elevation={3}
-              sx={{
-                padding: 2,
-                marginBottom: 2,
-                display: "flex",
-                justifyContent: "space-between",
-              }}
-            >
-              <Box>
-                <Typography variant="h6" component="h2" gutterBottom>
-                  {submission.questionName}
-                </Typography>
-                <Divider sx={{ marginBottom: 1 }} />
-                <Typography
-                  variant="body2"
-                  sx={{ cursor: "pointer", color: "blue" }}
-                  onClick={() => handleOpen(submission.code)}
-                >
-                  {submission.isCorrect === "true" ? "Correct" : "Incorrect"}
-                </Typography>
-              </Box>
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  alignItems: "flex-end",
-                  paddingLeft: 1.5,
-                  borderLeft: "1px solid #ddd",
-                }}
-              >
-                <Typography variant="body2">
-                  Memory Used: {submission.Memory || "N/A"}
-                </Typography>
-                <Typography variant="body2">
-                  Time Taken: {submission.Time || "N/A"}
-                </Typography>
-              </Box>
-            </Paper>
-          );
-        })
+      {submissions.length > 0 ? (
+        <TableContainer component={Paper} sx={{ maxWidth: 1200, margin: '0 auto', borderRadius: '8px', maxHeight: '90vh', overflowY: "auto" }}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell><Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>Submitted At</Typography></TableCell>
+                <TableCell><Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>Verdict</Typography></TableCell>
+                <TableCell><Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>Language</Typography></TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {submissions.map((submission, index) => {
+                const parsed = parseSubmission(submission);
+                const verdictColor = parsed.verdict === "ACCEPTED" ? "green" : "red";
+                return (
+                  <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                    <TableCell>
+                      <Typography variant="body2">{parsed.submittedAt}</Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="body2" sx={{ color: verdictColor, cursor: "pointer", "&:hover": { textDecoration: "underline" } }} onClick={() => handleOpen(parsed.code)}>
+                        {parsed.verdict}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="body2">{parsed.language}</Typography>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </TableContainer>
       ) : (
-        <Typography variant="body1">No submissions available.</Typography>
+        <Typography variant="body1" sx={{ textAlign: "center" }}>No submissions available.</Typography>
       )}
 
       <Modal
@@ -114,6 +79,7 @@ const Submissions = ({ submissions = [] }) => {
             left: "50%",
             transform: "translate(-50%, -50%)",
             width: "80%",
+            maxWidth: 800,
             bgcolor: "background.paper",
             boxShadow: 24,
             p: 4,
@@ -124,9 +90,9 @@ const Submissions = ({ submissions = [] }) => {
             <Typography id="code-modal-title" variant="h6" component="h2" sx={{ flexGrow: 1 }}>
               Submission Code
             </Typography>
-            <IconButton 
-              onClick={copyToClipboard} 
-              sx={{ color: "blue" }}
+            <IconButton
+              onClick={copyToClipboard}
+              sx={{ color: "#007bff" }}
               aria-label="copy to clipboard"
             >
               <ContentCopyIcon />
@@ -134,14 +100,15 @@ const Submissions = ({ submissions = [] }) => {
           </Box>
           <Divider sx={{ marginBottom: 2 }} />
           <Typography id="code-modal-description" variant="body1">
-            <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
+            <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word", backgroundColor: "secondary", padding: "16px", borderRadius: "8px", overflowX: "auto" }}>
               {currentCode}
             </pre>
           </Typography>
           <Button
-            sx={{ ...customStyles.control, marginTop: 2 }}
+            sx={{ ...customStyles.control, marginTop: 2, alignSelf: 'flex-end' }}
             onClick={handleClose}
             variant="contained"
+            color="primary"
           >
             Close
           </Button>

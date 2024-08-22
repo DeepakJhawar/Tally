@@ -14,7 +14,7 @@ const Schema = new mongoose.Schema(
         },
         submittedAt: {
             type: Date,
-            default: Date.now(),
+            default: Date.now,
         },
         code: {
             type: String,
@@ -23,7 +23,7 @@ const Schema = new mongoose.Schema(
         language: { type: String, required: true },
         verdict: {
             type: String,
-            enum: ["ACCEPTED", "WRONG ANSWER", "MEMORY ERROR", "TIMELIMITED ERROR", "ERROR"],
+            enum: ["ACCEPTED", "WRONG ANSWER", "MEMORY LIMIT EXCEEDED", "TIME LIMIT EXCEEDED", "ERROR"],
             required: [true, "You should provide the verdict"],
         },
     },
@@ -32,17 +32,6 @@ const Schema = new mongoose.Schema(
         toObject: { virtuals: true },
     }
 );
-
-Schema.pre(/^find/, function (next) {
-    this.populate({
-        path: "user",
-        select: "_id",
-    }).populate({
-        path: "problem",
-        select: "problemNumber",
-    });
-    next();
-});
 
 const Submission = mongoose.model("Submission", Schema);
 export default Submission;

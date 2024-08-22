@@ -8,7 +8,7 @@ const LanguagesDropdown = ({ onSelectChange }) => {
   const handleChange = (event) => {
     const selected = languageOptions.find(option => option.value === event.target.value);
     setSelectedLanguage(selected);
-    onSelectChange(selected); // Pass the selected language object
+    onSelectChange(selected); 
   };
 
   return (

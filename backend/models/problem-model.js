@@ -26,10 +26,6 @@ const Schema = new mongoose.Schema(
         constraints: {
             type: String,
         },
-        submissionsCount: {
-            type: Number,
-            default: 0,
-        },
         difficulty: {
             type: String,
             enum: ["easy", "medium", "hard"],

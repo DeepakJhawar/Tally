@@ -15,12 +15,20 @@ import axios from "axios";
 import { Link } from "react-router-dom"; 
 
 const Landing = () => {
-  const [problems, setProblems] = useState([]);
+  const [easyProblems, setEasyProblems] = useState(0);
+  const [mediumProblems, setMediumProblems] = useState(0);
+  const [hardProblems, setHardProblems] = useState(0);
+  const [totalProblems, setTotProblems] = useState(0);
+  const [solvedProblems, setSolvedProblems] = useState(0);
 
   const getAllProblems = async () => {
     try {
-      const response = await axios.get("http://localhost:6969/all-problems");
-      setProblems(response.data.data);
+      const response = await axios.get("http://localhost:6969/problems");
+      setEasyProblems(response.data.easyProblems);
+      setMediumProblems(response.data.mediumProblems);
+      setHardProblems(response.data.hardProblems);
+      setTotProblems(response.data.totalDocuments);
+      setSolvedProblems(response.data.solved);
     } catch (err) {
       console.log(err);
     }
@@ -35,22 +43,6 @@ const Landing = () => {
     medium: "yellow",
     hard: "red",
   };
-
-  const solvedProblems = problems.filter(
-    (problem) => problem.status?.toLowerCase() === "solved"
-  ).length;
-
-  const easyProblems = problems.filter(
-    (problem) => problem.difficulty?.toLowerCase() === "easy" && problem.status?.toLowerCase() === "solved"
-  ).length;
-  const mediumProblems = problems.filter(
-    (problem) => problem.difficulty?.toLowerCase() === "medium" && problem.status?.toLowerCase() === "solved"
-  ).length;
-  const hardProblems = problems.filter(
-    (problem) => problem.difficulty?.toLowerCase() === "hard" && problem.status?.toLowerCase() === "solved"
-  ).length;
-
-  const totalProblems = problems.length;
 
   const pieData = [
     { name: "Easy", value: easyProblems, color: difficultyColors.easy },
@@ -114,7 +106,7 @@ const Landing = () => {
                 <CardMedia
                   component="img"
                   height="200"
-                  image="/images/problems.png"
+                  image="/images/contest.png"
                   alt="contest"
                 />
                 <CardContent>

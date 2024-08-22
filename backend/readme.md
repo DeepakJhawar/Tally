@@ -17,14 +17,14 @@ Before you begin, ensure that you have the following installed:
    In the root directory of the project, create a file named `.env` and add the following parameters:
 
    ```env
-   MONGO_URI=mongodb+srv://Deepak:Deepak%40123@cluster0.owshv.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
-   GOOGLE_CLIENT_ID=75243409972-brqm91ntmgg1gdnttkjmn2kdqs3r78ei.apps.googleusercontent.com
-   GOOGLE_CLIENT_SECRET=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
-   GITHUB_CLIENT_ID=Ov23liVQJwj5pLW7PVVw
-   GITHUB_CLIENT_SECRET=761ebcd67ca5adcaef0c1a9c7c099e9d3a2123ef
-   SESSION_SECRET=DEEPAKMG6969
-   MAIL_ID=StudySphere41@gmail.com
-   MAIL_PASSWORD=ptsa dirl vcau xtio
+   MONGO_URI="your_mongodb_url"
+   GOOGLE_CLIENT_ID="google_client_id"
+   GOOGLE_CLIENT_SECRET="google_client_secret"
+   GITHUB_CLIENT_ID="github_client_id"
+   GITHUB_CLIENT_SECRET="github_client_screet"
+   SESSION_SECRET="session_secret"
+   MAIL_ID="mail_id"
+   MAIL_PASSWORD="mail_password"
    BASE_URL=http://127.0.0.1:6969
    ORIGIN_URL=http://127.0.0.1:3000
    MAX_CONCURRENT_PROCESSES=10
