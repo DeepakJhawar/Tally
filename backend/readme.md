@@ -82,5 +82,3 @@ Before you begin, ensure that you have the following installed:
 - **Access Denied Errors**: If you encounter permission issues, ensure Docker is properly installed and configured. Using `sudo` might be necessary depending on your system configuration.
 
 - **Environment Variables**: Ensure all required environment variables are correctly set in the `.env` file. Missing or incorrect values can lead to runtime errors.
-
-For further assistance or to report issues, please refer to the [GitHub repository](https://github.com/your-repo) or contact support.
